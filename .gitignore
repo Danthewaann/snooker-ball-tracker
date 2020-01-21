@@ -1,0 +1,12 @@
+*.pyc
+build/
+dist/
+resources/videos/*
+!resources/videos/pre-recorded-1.mp4
+!resources/videos/pre-recorded-2.mp4
+resources/images/*
+!resources/images/image-1.jpg
+!resources/images/image-2.jpg
+src/snooker_ball_tracker.egg-info/
+src/snooker-ball-tracker/__pycache__/
+src/snooker-ball-tracker/config/__pycache__/
