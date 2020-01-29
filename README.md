@@ -8,14 +8,14 @@ The app would therefore be able to automatically score points based upon which b
 
 `python ball_tracker_cli.py -i ../../resources/images/image-1.jpg --settings image-1`
 
-![](examples/image-1-frame-1.jpg)
+<img src="examples/image-1-frame-1.jpg" width=100%></img>
 
 `python ball_tracker_cli.py -i ../../resources/images/image-2.jpg --settings image-2 --crop`
 
-![](examples/image-2-frame-1.jpg)
+<img src="examples/image-2-frame-1.jpg" width=100%></img>
 
 `python ball_tracker_cli.py -v ../../resources/videos/pre-recorded-1.mp4 --settings pre_recorded_footage --crop`
 
-![](examples/pre-recorded-1-frame-1702.jpg)
+<img src="examples/pre-recorded-1-frame-1702.jpg" width=100%></img>
 
 <img src="examples/video-example.gif" width=100%></img>
