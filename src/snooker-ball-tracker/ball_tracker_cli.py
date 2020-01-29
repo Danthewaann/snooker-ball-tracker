@@ -51,6 +51,8 @@ if __name__ == '__main__':
                         help='Detect contours matching provided colour')
     parser.add_argument('--crop', dest='crop', action='store_true', default=False,
                         help='Crop video/image around detected table boundaries')
+    parser.add_argument('--save-video', dest='video_output', action='store_true', default=False,
+                        help='Save processed frames from video an output.mp4 file'),
     parser.add_argument('--morph', dest='morph', action='store_true', default=False,
                         help='Perform morph closing morphology on processed frames')
     parser.add_argument('--settings', dest='settings', default='default_settings',
@@ -58,14 +60,13 @@ if __name__ == '__main__':
                         help='Settings file to use, defaults to "%(default)s"')
     args = parser.parse_args()
 
-    print('==============')
-    print('USER CONTROLS:')
-    print('s -> save current frame to a jpg file')
-    print('q -> exit the program')
-    print('p -> pause/resume video/live footage')
-    print('waiting for user input...\n')
-
     if args.live or args.video or args.image:
+        print('==============')
+        print('USER CONTROLS:')
+        print('s -> save current frame to a jpg file')
+        print('q -> exit the program')
+        print('p -> pause/resume video/live footage')
+        print('waiting for user input...\n')
         s.settings_module_name = args.settings
         s.load()
         is_playing = True
@@ -110,6 +111,7 @@ if __name__ == '__main__':
         if args.live is not None:
             # main video capture loop
             ball_tracker.update_boundary = True
+            video_output = None
             while True:
                 if is_playing:
                     try:
@@ -120,8 +122,16 @@ if __name__ == '__main__':
                         if args.detect_colour is None:
                             frame, _, _ = ball_tracker.run(frame, width=args.width, crop=args.crop,
                                                            morph=args.morph, show_threshold=args.show_threshold)
+                        
+                        if args.video_output and video_output is None:
+                            video_output = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 
+                                                            20.0, (frame.shape[1], frame.shape[0]))
 
                             cv2.imshow(window_title, frame)
+                        
+                        if video_output is not None:
+                            video_output.write(frame)
+
                     except requests.ConnectionError:
                         print('Cannot connect to {}'.format(ip))
                         break
@@ -173,9 +183,13 @@ if __name__ == '__main__':
                     colour['LOWER'] = np.array([h_lower, s_lower, v_lower])
                     colour['UPPER'] = np.array([h_upper, s_upper, v_upper])
 
+            if video_output is not None:
+                video_output.release()
+
         elif args.video is not None:
             ball_tracker.update_boundary = True
             cap = cv2.VideoCapture(args.video)
+            video_output = None
 
             # make sure provided video stream or file is loaded
             if not cap.isOpened():
@@ -191,6 +205,13 @@ if __name__ == '__main__':
                             frame, _, _ = ball_tracker.run(frame, width=args.width, crop=args.crop,
                                                            morph=args.morph, show_threshold=args.show_threshold)
                             cv2.imshow(window_title, frame)
+                        
+                        if args.video_output and video_output is None:
+                            video_output = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'),
+                                                            20.0, (frame.shape[1], frame.shape[0]))
+
+                        if video_output is not None:
+                            video_output.write(frame)
 
                 # obtain trackbar values and use them for --detect-colour
                 if args.detect_colour is not None:
@@ -240,6 +261,8 @@ if __name__ == '__main__':
                     colour['UPPER'] = np.array([h_upper, s_upper, v_upper])
 
             cap.release()
+            if video_output is not None:
+                video_output.release()
 
         elif args.image is not None:
             # read in image provided from -i/--image
