@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='snooker-ball-tracker',
+    name='snooker-ball-tracker-python',
     version='0.1.dev0',
-    description='CLI app for tracking balls in a game of Snooker',
+    description='Demo app that tracks balls on a Snooker table',
     author='Daniel Black',
     author_email='danielcrblack@gmail.com',
     package_dir={'': 'src'},
