@@ -75,6 +75,13 @@ class BallTracker:
         self.__prev_snapshot = None
         self.__cur_snapshot = None
         self.update_boundary = False
+        self.increment_frame_counter = True
+
+    def reset(self):
+        self.__frame_counter = 0
+
+    def detected_table(self):
+        return self.__table_bounds is not None
 
     def perform_init_ops(self, frame, width=None, crop=True, morph=False):
         """
@@ -104,6 +111,7 @@ class BallTracker:
 
         if self.update_boundary:
             self.create_table_boundary(frame, contours)
+            self.update_boundary = False
 
         # crop frame, hsv and threshold
         if crop and self.__table_bounds is not None:
@@ -162,6 +170,12 @@ class BallTracker:
                 )
                 cv2.circle(frame, (int(ball.pt[0]), int(ball.pt[1])),
                            int(ball.size / 2), (0, 255, 0))
+
+
+    def draw_table_boundary(self, frame):
+        if self.__table_bounds is not None:
+            cv2.drawContours(frame, [self.__table_bounds], -1, (255, 255, 255), 3)
+
 
     def update_balls(self, balls, cur_balls):
         """
@@ -247,7 +261,7 @@ class BallTracker:
         frame, threshold, hsv = self.perform_init_ops(frame, width=width, crop=crop, morph=morph)
 
         # Every 5 frames run the colour detection phase, otherwise just update ball positions
-        if self.__frame_counter == 0 or self.__frame_counter % 5 == 0:
+        if self.__frame_counter == 0  or self.__frame_counter % 5 == 0:
             self.__balls = self.__run(threshold, hsv)
         else:
             cur_balls = self.__blob_detector.detect(threshold)
@@ -295,12 +309,15 @@ class BallTracker:
             self.__cur_snapshot.white_is_moving = self.__prev_snapshot.white_is_moving
             self.__prev_snapshot = self.__cur_snapshot
 
-        self.__frame_counter += 1
+        if self.increment_frame_counter:
+            self.__frame_counter += 1
 
         if show_threshold:
             frame = threshold
 
         self.draw_balls(frame, self.__balls)
+        if not crop:
+            self.draw_table_boundary(frame)
         if show_fps:
             fps = int(1.0 / (time.time() - start))
             cv2.putText(frame, str(fps) + ' fps', (20, 20), 0, 0.8, (0, 255, 0))

@@ -4,60 +4,73 @@ import snooker_ball_tracker.settings as s
 from PIL import Image, ImageTk
 
 class VideoProcessor(threading.Thread):
-    def __init__(self, master, stream, video_file, ball_tracker, lock):
-        super().__init__(args=(lock,), name="video_processor", daemon=True)
+    def __init__(self, master, stream, video_file, ball_tracker, lock, stop_event):
+        super().__init__(name="video_processor", daemon=True)
         self.master = master
+        self.stream_lock = lock
+        self.stop_event = stop_event
         self.play_stream = True
         self.stream = stream
         self.video_file = video_file
         self.ball_tracker = ball_tracker
         self.show_threshold = False
+        self.mask_colour = False
         self.detect_colour = "None"
-        self.__frame = None
+        self.crop_frames = False
+        self.__input_frame = None
+        self.__output_frame = None
+
 
     def run(self):
-        while True:
-            detect_colour = self.detect_colour
-            show_threshold = self.show_threshold
-            ball_tracker = self.ball_tracker
+        self._process_next_frame()
+        self.play_stream = False
+        while not self.stop_event.is_set():
             if self.play_stream:
-                success, frame = self.stream.read()
-                if success:
-                    if detect_colour != "None":
-                        self.__frame, threshold, hsv = ball_tracker.perform_init_ops(frame, width=800, crop=True)
-                        colour_mask, contours = ball_tracker.detect_colour(
-                            hsv, s.COLOURS[detect_colour]['LOWER'], s.COLOURS[detect_colour]['UPPER']
-                        )
-                        if show_threshold:
-                            self.__frame = threshold
-                        else:
-                            self.__frame = cv2.bitwise_and(self.__frame, self.__frame, mask=colour_mask)
-                        cv2.drawContours(self.__frame, contours, -1, (0, 255, 0), 2)
-                    else:
-                        self.__frame, _, _ = ball_tracker.run(frame, width=800, crop=True, show_threshold=show_threshold)
-                    
-                    self.__frame = ImageTk.PhotoImage(image=Image.fromarray(cv2.cvtColor(self.__frame, cv2.COLOR_BGR2RGB)))
-                else:
+                if not self._process_next_frame():
                     print("exiting...")
                     break
+            else:
+                self._process_frame()
+        with self.stream_lock:
+            self.stream.release()
 
 
-                self.master.main_view.file_output.configure(image=self.__frame)
-                self.master.main_view.file_output.image = self.__frame
-                if ball_tracker.update_boundary:
-                    ball_tracker.update_boundary = False
+    def _process_next_frame(self):
+        if self.play_stream:
+            with self.stream_lock:
+                success, self.__input_frame = self.stream.read()
+                if success:
+                    self._process_frame()
+                return success
+        return True
+
+
+    def _process_frame(self):
+        detect_colour = self.detect_colour
+        crop_frames = self.crop_frames
+        if detect_colour != "None":
+            self.__output_frame, threshold, hsv = self.ball_tracker.perform_init_ops(self.__input_frame, width=800, crop=crop_frames)
+            colour_mask, contours = self.ball_tracker.detect_colour(
+                hsv, s.COLOURS[detect_colour]['LOWER'], s.COLOURS[detect_colour]['UPPER']
+            )
+            if self.show_threshold:
+                self.__output_frame = threshold
+            else:
+                if self.mask_colour:
+                    self.__output_frame = cv2.bitwise_and(self.__output_frame, self.__output_frame, mask=colour_mask)
+            cv2.drawContours(self.__output_frame, contours, -1, (0, 255, 0), 2)
+        else:
+            self.__output_frame, _, _ = self.ball_tracker.run(self.__input_frame, width=800, crop=crop_frames, show_threshold=self.show_threshold)
+        
+        self.__output_frame = ImageTk.PhotoImage(image=Image.fromarray(cv2.cvtColor(self.__output_frame, cv2.COLOR_BGR2RGB)))
+        self.master.main_view.file_output.configure(image=self.__output_frame)
+        self.master.main_view.file_output.image = self.__output_frame
+
 
     def restart_stream(self):
+        self.ball_tracker.reset()
         self.stream = cv2.VideoCapture(self.video_file)
-        success, frame = self.stream.read()
-        if success and frame is not None:
-            frame, _, _ = self.ball_tracker.run(frame, width=800, crop=True, show_threshold=self.show_threshold)
-            frame = ImageTk.PhotoImage(image=Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)))
 
-            self.master.main_view.file_output.configure(image=frame)
-            self.master.main_view.file_output.image = frame
-            if self.ball_tracker.update_boundary:
-                self.ball_tracker.update_boundary = False
 
     def update_bounds(self):
         self.ball_tracker.update_boundary = True

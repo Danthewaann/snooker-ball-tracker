@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "GUI Entry Point",
+            "type": "python",
+            "request": "launch",
+            "program": "F:\\projects\\snooker-ball-tracker\\src\\snooker_ball_tracker\\__main__.py",
+            "console": "integratedTerminal"
+        }
+    ]
+}

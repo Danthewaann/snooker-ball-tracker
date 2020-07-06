@@ -21,10 +21,12 @@ from PIL import Image, ImageTk
 class Application(Tk):
     def __init__(self,):
         super().__init__()
+        self.title("Snooker Ball Tracker - Demo Application")
         s.settings_module_name = "pre_recorded_footage"
         s.load()
         self.state('zoomed')
         self.lock = threading.Lock()
+        self.stop_event = threading.Event()
         self.thread = None
         self.stream = None
         self.ball_tracker = None
@@ -43,14 +45,14 @@ class Application(Tk):
         }
 
         self.styles = {
-            "DB.TFrame": Style().configure("DB.TFrame", background="light gray", padding=20)
+            "DB.TFrame": Style().configure("DB.TFrame", background="light gray")
         }
 
-        menu = Menu(master=self)
-        self.config(menu=menu)
-        filemenu = Menu(master=menu)
-        menu.add_cascade(label="File", menu=filemenu)
-        filemenu.add_command(label="Open...", command=self.select_file_onclick)
+        # menu = Menu(master=self)
+        # self.config(menu=menu)
+        # filemenu = Menu(master=menu)
+        # menu.add_cascade(label="File", menu=filemenu)
+        # filemenu.add_command(label="Open...", command=self.select_file_onclick)
 
         self.main_view = MainView(master=self)
         self.nav_bar = Navbar(master=self)
@@ -66,9 +68,13 @@ class Application(Tk):
     def select_file_onclick(self):
         selected_file = filedialog.askopenfilename()
 
+        if selected_file == "":
+            return
+
         if self.thread is not None:
-            if self.thread.stream is not None:
-                self.thread.stream.release()
+            # if self.thread.stream is not None:
+            #     self.thread.stream.release()
+            self.thread.stop_event.set()
 
         self.stream = cv2.VideoCapture(selected_file)
         if not self.stream.isOpened():
@@ -81,6 +87,8 @@ class Application(Tk):
         self.main_view.file_output = Label(master=self.main_view.middle)
         self.main_view.file_output.pack(side="top", anchor="ne", padx=50, pady=(50, 0))
         self.main_view.btns_frame.pack(side="top", anchor="ne", padx=50, pady=20)
+        self.main_view.btns['toggle'].configure(text="Play")
         self.ball_tracker = BallTracker()
-        self.thread = VideoProcessor(master=self, stream=self.stream, video_file=selected_file, ball_tracker=self.ball_tracker, lock=self.lock)
+        self.stop_event = threading.Event()
+        self.thread = VideoProcessor(master=self, stream=self.stream, video_file=selected_file, ball_tracker=self.ball_tracker, lock=self.lock, stop_event=self.stop_event)
         self.thread.start()
