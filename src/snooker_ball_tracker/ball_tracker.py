@@ -77,6 +77,30 @@ class BallTracker:
         self.update_boundary = False
         self.increment_frame_counter = True
 
+    def update_blob_detector(self, **kwargs):
+        params = cv2.SimpleBlobDetector_Params()
+        params.filterByConvexity = kwargs.get('filter_by_convexity', s.FILTER_BY_CONVEXITY)
+        params.minConvexity = kwargs.get('min_convexity', s.MIN_CONVEXITY)
+        params.maxConvexity = kwargs.get('max_convexity', s.MAX_CONVEXITY)
+        params.filterByCircularity = kwargs.get('filter_by_circularity', s.FILTER_BY_CIRCULARITY)
+        params.minCircularity = kwargs.get('min_circularity', s.MIN_CIRCULARITY)
+        params.maxCircularity = kwargs.get('max_circularity', s.MAX_CIRCULARITY)
+        params.filterByInertia = kwargs.get('filter_by_inertia', s.FILTER_BY_INERTIA)
+        params.minInertiaRatio = kwargs.get('min_inertia_ratio', s.MIN_INERTIA_RATIO)
+        params.maxInertiaRatio = kwargs.get('max_inertia_ratio', s.MAX_INERTIA_RATIO)
+        params.filterByArea = kwargs.get('filter_by_area', s.FILTER_BY_AREA)
+        params.minArea = kwargs.get('min_area', s.MIN_AREA)
+        params.maxArea = kwargs.get('max_area', s.MAX_AREA)
+        params.filterByColor = kwargs.get('filter_by_colour', s.FILTER_BY_COLOUR)
+        params.blobColor = kwargs.get('blob_color', s.BLOB_COLOUR)
+        params.minDistBetweenBlobs = kwargs.get('min_dest_between_blobs', s.MIN_DIST_BETWEEN_BLOBS)
+        self.__blob_detector = cv2.SimpleBlobDetector_create(params)
+
+    def reset_snapshots(self):
+        self.__cur_snapshot = None
+        self.__prev_snapshot = None
+        self.__temp_snapshot = None
+
     def reset(self):
         self.__frame_counter = 0
 
@@ -207,10 +231,10 @@ class BallTracker:
 
         :returns: status of white ball
         """
-        if self.__prev_snapshot.white_is_moving:
-            return 'moving...'
-        else:
-            return 'stopped...'
+        if self.__prev_snapshot is not None:
+            if self.__prev_snapshot.white_is_moving:
+                return 'moving...'
+        return 'stopped...'
 
     def get_snapshot_status(self, current=True):
         """
@@ -221,9 +245,11 @@ class BallTracker:
         :returns: previous or temporary SnapShot info
         """
         if current:
-            return self.__prev_snapshot.__str__()
-        else:
-            return self.__temp_snapshot.__str__()
+            if self.__prev_snapshot is not None:
+                return self.__prev_snapshot.get_snapshot_info()
+        if self.__temp_snapshot is not None:
+            return self.__temp_snapshot.get_snapshot_info()
+        return SnapShot().get_snapshot_info()
 
     def run(self, frame, width=None, crop=True, morph=False, show_threshold=False, show_fps=True):
         """

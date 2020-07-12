@@ -2,7 +2,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "GUI Entry Point",
+            "name": "Linux - GUI Entry Point",
+            "type": "python",
+            "request": "launch",
+            "program": "src/snooker_ball_tracker/__main__.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Win - GUI Entry Point",
             "type": "python",
             "request": "launch",
             "program": "F:\\projects\\snooker-ball-tracker\\src\\snooker_ball_tracker\\__main__.py",
