@@ -1,80 +1,80 @@
-import tkinter as tk
+# import tkinter as tk
+# import tkinter.ttk as ttk
+from tkinter import *
+from tkinter.ttk import *
 import tkinter.ttk as ttk
 from collections import OrderedDict
 import time
 import snooker_ball_tracker.settings as s
 from snooker_ball_tracker.ball_tracker import BallTracker
 
-class VideoPlayer(tk.Frame):
+class VideoPlayer(Frame):
     def __init__(self, master=None, logger=None):
         super().__init__(master)
         self.logger = logger
-        self.file_output = tk.Canvas(master=self, width=800, height=400, bg="gray")
+        self.file_output = Canvas(master=self, width=800, height=400, bg="light gray")
 
         self.data = {
-            "threshold": tk.BooleanVar(self, False),
-            "detect-colour": tk.StringVar(self, "None"),
+            "threshold": BooleanVar(self, False),
+            "detect-colour": StringVar(self, "None"),
             "detect-colours": ["None"] + (list(s.COLOURS.keys())),
-            "mask-colour": tk.BooleanVar(self, False),
-            "crop-frames": tk.BooleanVar(self, False)
+            "mask-colour": BooleanVar(self, False),
+            "crop-frames": BooleanVar(self, False)
         }
 
-        self.btns_frame = tk.Frame(master=self)
+        self.btns_frame = Frame(master=self)
 
-        self.video_player_label = tk.Label(master=self.btns_frame, text="Video Player Options", font=("Helvetica", 18))
-        self.separator_hori = ttk.Separator(master=self.btns_frame, orient="horizontal")
-        self.separator_vert = ttk.Separator(master=self.btns_frame, orient="vertical")
-        self.threshold_label = tk.Label(master=self.btns_frame, text="Show Threshold", height=2)
-        self.detect_colour_label = tk.Label(master=self.btns_frame, text="Detect Colour", height=2)
-        self.detect_colour_options = tk.OptionMenu(self.btns_frame, self.data["detect-colour"], *self.data["detect-colours"], command=self._detect_colour)
+        self.video_player_label = Label(master=self.btns_frame, text="Video Player Options", font=("Helvetica", 18))
+        self.separator_hori = Separator(master=self.btns_frame, orient="horizontal")
+        self.separator_vert = Separator(master=self.btns_frame, orient="vertical")
+        self.threshold_label = Label(master=self.btns_frame, text="Show Threshold")
+        self.detect_colour_label = Label(master=self.btns_frame, text="Detect Colour")
+        self.detect_colour_options = OptionMenu(self.btns_frame, self.data["detect-colour"], *self.data["detect-colours"], command=self._detect_colour)
         self.detect_colour_options.configure(state="disabled")
-        self.mask_colour_label = tk.Label(master=self.btns_frame, text="Mask Colour", height=2)
+        self.mask_colour_label = Label(master=self.btns_frame, text="Mask Colour")
 
-        self.crop_frames = tk.Label(master=self.btns_frame, text="Crop Frames", height=2)
+        self.crop_frames = Label(master=self.btns_frame, text="Crop Frames")
 
         self.btns = OrderedDict([
-            ("toggle", tk.Button(
-                self.btns_frame, text="Play", command=self._toogle_output, height=1, width=10,
-                font=self.master.master.fonts["h4"], state="disabled"
+            ("toggle", Button(
+                self.btns_frame, text="Play", command=self._toogle_output
             )),
-            ("restart", tk.Button(
-                self.btns_frame, text="Restart", command=self._restart_output, height=1, width=10,
-                font=self.master.master.fonts["h4"], state="disabled"
+            ("restart", Button(
+                self.btns_frame, text="Restart", command=self._restart_output
             )),
-            ("update-bounds", tk.Button(
-                self.btns_frame, text="Detect Table", command=self._update_bounds, height=1, width=20,
-                font=self.master.master.fonts["h4"], state="disabled"
+            ("update-bounds", Button(
+                self.btns_frame, text="Detect Table", command=self._update_bounds
             )),
-            ("threshold-yes", tk.Radiobutton(
-                self.btns_frame, text="Yes", height=1, command=self._update_threshold, 
-                variable=self.data["threshold"], value=True, relief="raised", indicatoron=0, state="disabled"
+            ("threshold-yes", Radiobutton(
+                self.btns_frame, text="Yes", command=self._update_threshold,
+                variable=self.data["threshold"], value=True
             )),
-            ("threshold-no", tk.Radiobutton(
-                self.btns_frame, text="No", height=1, command=self._update_threshold, 
-                variable=self.data["threshold"], value=False, relief="raised", indicatoron=0, state="disabled"
+            ("threshold-no", Radiobutton(
+                self.btns_frame, text="No", command=self._update_threshold, 
+                variable=self.data["threshold"], value=False
             )),
-            ("mask-colour-yes", tk.Radiobutton(
-                self.btns_frame, text="Yes", height=1, command=self._mask_colour, 
-                variable=self.data["mask-colour"], value=True, relief="raised", indicatoron=0, state="disabled"
+            ("mask-colour-yes", Radiobutton(
+                self.btns_frame, text="Yes", command=self._mask_colour, 
+                variable=self.data["mask-colour"], value=True
             )),
-            ("mask-colour-no", tk.Radiobutton(
-                self.btns_frame, text="No", height=1, command=self._mask_colour, 
-                variable=self.data["mask-colour"], value=False, relief="raised", indicatoron=0, state="disabled"
+            ("mask-colour-no", Radiobutton(
+                self.btns_frame, text="No", command=self._mask_colour,
+                variable=self.data["mask-colour"], value=False
             )),
-            ("crop-frames-yes", tk.Radiobutton(
-                self.btns_frame, text="Yes", height=1, command=self._crop_frames, 
-                variable=self.data["crop-frames"], value=True, relief="raised", indicatoron=0, state="disabled"
+            ("crop-frames-yes", Radiobutton(
+                self.btns_frame, text="Yes", command=self._crop_frames, 
+                variable=self.data["crop-frames"], value=True
             )),
-            ("crop-frames-no", tk.Radiobutton(
-                self.btns_frame, text="No", height=1, command=self._crop_frames, 
-                variable=self.data["crop-frames"], value=False, relief="raised", indicatoron=0, state="disabled"
+            ("crop-frames-no", Radiobutton(
+                self.btns_frame, text="No", command=self._crop_frames, 
+                variable=self.data["crop-frames"], value=False
             )),
-            ("reset-options", tk.Button(
-                self.btns_frame, text="Reset", command=self.reset_video_options, height=1, width=10,
-                font=self.master.master.fonts["h4"], state="disabled"
+            ("reset-options", Button(
+                self.btns_frame, text="Reset", command=self.reset_video_options
             )),
         ])
 
+    def grid_children(self):
         self.video_player_label.grid(column=3, row=0, columnspan=4, sticky="e")
         self.separator_hori.grid(column=0, row=1, columnspan=7, sticky="ew", pady=(10, 0))
 
@@ -106,18 +106,17 @@ class VideoPlayer(tk.Frame):
         self.enable_btns()
         self.file_output.destroy()
         self.btns_frame.pack_forget()
-        self.file_output = tk.Label(master=self)
+        self.file_output = Label(master=self)
         self.file_output.pack(side="top", anchor="ne")
         self.btns_frame.pack(side="top", anchor="ne", pady=(20, 0))
 
-    
     def enable_btns(self):
         for btn in self.btns:
             self.btns[btn].configure(state="normal", cursor="hand2")
         self.btns["mask-colour-yes"].configure(state="disable", cursor="")
         self.btns["mask-colour-no"].configure(state="disable", cursor="")
-        self.btns["crop-frames-yes"].configure(state="disable", cursor="")
-        self.btns["crop-frames-no"].configure(state="disable", cursor="")
+        # self.btns["crop-frames-yes"].configure(state="disable", cursor="")
+        # self.btns["crop-frames-no"].configure(state="disable", cursor="")
         self.detect_colour_options.configure(state="normal", cursor="hand2")
 
     def reset_video_options(self):
@@ -184,7 +183,7 @@ class VideoPlayer(tk.Frame):
                 self.master.master.thread.restart_stream()
             else:
                 self.btns['toggle'].configure(text="Play")
-                self.master.master.start_video_processor()
+                self.master.master.master.start_video_processor()
 
     def _update_bounds(self):
         self.master.master.thread.update_bounds()
