@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter.ttk import *
 # from tkinter.ttk import Style, Separator, Progressbar
 import cv2
+import os
 import imutils
 import numpy as np
 import time
@@ -69,80 +70,101 @@ class SplashScreen:
 
 class GUI(Tk):
     def __init__(self):
-        super().__init__()
+        super().__init__() 
+        self.iconphoto(True, PhotoImage(file=os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "icon.png")))
+        self.iconname("Snooker Ball Tracker")
         self.title("Snooker Ball Tracker - Demo Application")
+        self.wm_protocol("WM_DELETE_WINDOW", self.on_close)
         self.withdraw()
-        threading.Thread(target=self.__load_splashscreen, daemon=True).start()
+        SplashScreen(self)
+
+        # threading.Thread(target=self.__load_splashscreen, daemon=True).start()
+
+        font.nametofont("TkDefaultFont").configure(size=10)
+        font.nametofont("TkTextFont").configure(size=10)
+
         s.settings_module_name = "pre_recorded_footage"
         s.load()
-        self.wm_protocol("WM_DELETE_WINDOW", self.on_close)
-
-        font.nametofont("TkDefaultFont").configure(size=11, family="Helvetica")
-        font.nametofont("TkTextFont").configure(size=11, family="Helvetica")
 
         self.fonts = {
-            "h1": font.Font(size=24, family="Helvetica", weight="bold"),
-            "h2-bold": font.Font(size=22, family="Helvetica", weight="bold"),
-            "h2": font.Font(size=22, family="Helvetica"),
-            "h3-bold": font.Font(size=18, family="Helvetica", weight="bold"),
-            "h3": font.Font(size=18, family="Helvetica"),
-            "h4": font.Font(size=14, family="Helvetica"),
-            "h5": font.Font(size=12, family="Helvetica")
+            "h1": font.Font(size=24, weight="bold"),
+            "h2-bold": font.Font(size=22, weight="bold"),
+            "h2": font.Font(size=22),
+            "h3-bold": font.Font(size=20, weight="bold"),
+            "h3": font.Font(size=16),
+            "h4": font.Font(size=14),
+            "h5": font.Font(size=12),
+            "logs": font.Font(size=10)
         }
 
+        self.lock = threading.Lock()
+        self.stop_event = threading.Event()
+        self.thread = None
+        self.stream = None
+        self.selected_file = None
+        self.ball_tracker = None
+
+        # Style().theme_use("clam")
+        print(Style().lookup("TButton", "background"))
         self.styles = [
             Style().configure("Canvas", background="NavajoWhite3"),
-            Style().configure("Left.TFrame"),
+            Style().configure("Left.TFrame", background="red"),
+            Style().configure("Middle.TFrame", background="blue"),
+            Style().configure("Right.TFrame", background="green"),
             Style().configure("DB.TFrame", background="light gray"),
             Style().configure("TButton", relief="flat", padding=6, cursor="hand2"),
             Style().configure("TMenubutton", background="light gray"),
             Style().configure("TRadiobutton", relief="raised", indicatorrelief="flat", indicatormargin=-1, indicatordiameter=-1)
         ]
 
-        self.scrollable_canvas = Canvas(master=self, highlightthickness = 0)
+        self.scrollable_canvas = Canvas(master=self, highlightthickness = 0, background="#dcdad5")
         self.vert_scrollbar = Scrollbar(master=self, orient="vertical", command=self.scrollable_canvas.yview)
-        self.hori_scrollbar = Scrollbar(master=self, orient="horizontal", command= self.scrollable_canvas.xview)
-        self.main_frame = Frame(master=self.scrollable_canvas, style="Left.TFrame")
+        self.hori_scrollbar = Scrollbar(master=self, orient="horizontal", command=self.scrollable_canvas.xview)
+        # self.main_frame = Frame(master=self)
 
-        self.main_frame.fonts = self.fonts
-        self.main_frame.styles = self.styles
-        self.main_frame.lock = threading.Lock()
-        self.main_frame.stop_event = threading.Event()
-        self.main_frame.thread = None
-        self.main_frame.stream = None
-        self.main_frame.selected_file = None
-        self.main_frame.ball_tracker = None
+        # self.main_frame.fonts = self.fonts
+        # self.main_frame.styles = self.styles
+        # self.main_frame.lock = threading.Lock()
+        # self.main_frame.stop_event = threading.Event()
+        # self.main_frame.thread = None
+        # self.main_frame.stream = None
+        # self.main_frame.selected_file = None
+        # self.main_frame.ball_tracker = None
 
-        self.left = Frame(master=self.main_frame, style="Left.TFrame")
-        self.middle = Frame(master=self.main_frame)
-        self.right = Frame(master=self.main_frame)
+        # self.left = Frame(master=self, style="Left.TFrame")
+        # self.middle = Frame(master=self, style="Middle.TFrame")
+        # self.right = Frame(master=self, style="Right.TFrame")
+        self.left = Frame(master=self)
+        self.middle = Frame(master=self)
+        self.right = Frame(master=self)
         self.bottom = Frame(master=self)
-        self.separator_vert_1 = Separator(master=self.main_frame, orient="vertical")
-        self.separator_vert_2 = Separator(master=self.main_frame, orient="vertical")
+        self.separator_vert_1 = Separator(master=self, orient="vertical")
+        self.separator_vert_2 = Separator(master=self, orient="vertical")
 
-        self.main_frame.bind(
-            "<Configure>",
-            lambda e: self.scrollable_canvas.configure(
-                scrollregion=self.scrollable_canvas.bbox("all")
-            )
-        )
+        # self.main_frame.bind(
+        #     "<Configure>",
+        #     lambda e: self.scrollable_canvas.configure(
+        #         scrollregion=self.scrollable_canvas.bbox("all")
+        #     )
+        # )
 
-        self.scrollable_canvas.create_window((0, 0), window=self.main_frame, anchor="nw")
-        self.scrollable_canvas.configure(yscrollcommand=self.vert_scrollbar.set)
-        self.scrollable_canvas.configure(xscrollcommand=self.hori_scrollbar.set)
+        # self.scrollable_canvas.configure(yscrollcommand=self.vert_scrollbar.set)
+        # self.scrollable_canvas.configure(xscrollcommand=self.hori_scrollbar.set)
 
         self.program_output = ProgramOutput(master=self.middle)
         self.ball_tracker_options = BallTrackerOptions(master=self.left, logger=self.program_output)
         self.colour_detection_options = ColourDetectionOptions(master=self.left, logger=self.program_output)
         self.video_player = VideoPlayer(master=self.right, logger=self.program_output)
 
-        self.nav_bar = Navbar(master=self.bottom,)
+        self.nav_bar = Navbar(master=self.bottom)
         self.nav_bar.pack(side="bottom", fill="x", anchor="s")
 
         self.bottom.pack(side="bottom", fill="x", anchor="s")
-        self.hori_scrollbar.pack(side="bottom", fill="x")
-        self.scrollable_canvas.pack(side="left", fill="both", expand=True)
-        self.vert_scrollbar.pack(side="right", fill="y")
+        # self.main_frame.pack(side="left", fill="both", expand=True)
+        # self.hori_scrollbar.pack(side="bottom", fill="x")
+        # self.scrollable_canvas.pack(side="left", fill="both", expand=True)
+        # self.vert_scrollbar.pack(side="right", fill="y")
+        # self.scrollable_canvas.create_window((0, 0), window=self.main_frame, anchor="center")
 
         self.__setup_left_column()
         self.__setup_middle_column()
@@ -153,29 +175,29 @@ class GUI(Tk):
         SplashScreen(self)
 
     def __setup_window(self):
-        self.left.pack(side="left", fill="both", expand=1, anchor="w", padx=(20, 0), pady=(20, 20))
-        self.separator_vert_1.pack(side="left", fill="y", expand=True, padx=20)
-        self.middle.pack(side="left", fill="both", expand=1, anchor="center", pady=(20, 20))
-        self.separator_vert_2.pack(side="left", fill="y", expand=True, padx=20)
-        self.right.pack(side="right", fill="both", expand=1, anchor="e", padx=(0, 20), pady=(20, 20))
+        self.left.pack(side="left", fill="y", expand=True, anchor="w", ipadx=10, ipady=10)
+        self.separator_vert_1.pack(side="left", fill="y", expand=True)
+        self.middle.pack(side="left", fill="y", expand=True, anchor="center", ipady=20)
+        self.separator_vert_2.pack(side="left", fill="y", expand=True)
+        self.right.pack(side="left", fill="y", expand=True, anchor="e", ipadx=10, ipady=10)
 
     def __setup_left_column(self):
-        self.ball_tracker_options.pack(side="top", fill="both", expand=1, anchor="nw")
+        self.ball_tracker_options.pack(side="top", fill="both", expand=1, anchor="nw", padx=(20, 0), pady=(20, 10))
         self.ball_tracker_options.grid_children()
-        self.colour_detection_options.pack(side="top", fill="both", expand=1, anchor="w")
+        self.colour_detection_options.pack(side="top", fill="both", expand=1, anchor="w", padx=(20, 0), pady=(0, 20))
         self.colour_detection_options.grid_children()
 
     def __setup_middle_column(self):
-        self.program_output.pack(side="top", fill="both", anchor="n")
+        self.program_output.pack(side="left", fill="both", expand=True, pady=(20, 10))
         self.program_output.grid_children()
 
     def __setup_right_column(self):
-        self.video_player.pack(side="top", fill="both", expand=1, anchor="sw")
+        self.video_player.pack(side="top", fill="both", expand=1, anchor="sw", padx=(0, 20), pady=(20, 10))
         self.video_player.grid_children()
 
     def on_close(self):
-        if self.main_frame.stream is not None:
-            self.main_frame.stream.release()
+        if self.stream is not None:
+            self.stream.release()
         self.quit()
         
     def select_file_onclick(self):
@@ -184,12 +206,12 @@ class GUI(Tk):
         if self.selected_file == "":
             return
 
-        if self.main_frame.thread is not None:
-            self.main_frame.thread.stop_event.set()
+        if self.thread is not None:
+            self.thread.stop_event.set()
 
         try:
-            self.main_frame.stream = cv2.VideoCapture(self.selected_file)
-            if not self.main_frame.stream.isOpened():
+            self.stream = cv2.VideoCapture(self.selected_file)
+            if not self.stream.isOpened():
                 self.program_output.error('Invalid file, please select a video file!')
                 return
         except TypeError:
@@ -203,10 +225,10 @@ class GUI(Tk):
 
     def start_video_processor(self):
         self.program_output.info("Starting video processor...")
-        self.main_frame.stream = cv2.VideoCapture(self.selected_file)
-        self.main_frame.ball_tracker = BallTracker()
-        self.main_frame.stop_event = threading.Event()
-        self.main_frame.thread = VideoProcessor(master=self, stream=self.main_frame.stream, 
-                                                video_file=self.selected_file, ball_tracker=self.main_frame.ball_tracker, 
-                                                lock=self.main_frame.lock, stop_event=self.main_frame.stop_event)
-        self.main_frame.thread.start()
+        self.stream = cv2.VideoCapture(self.selected_file)
+        self.ball_tracker = BallTracker()
+        self.stop_event = threading.Event()
+        self.thread = VideoProcessor(master=self, stream=self.stream, 
+                                                video_file=self.selected_file, ball_tracker=self.ball_tracker, 
+                                                lock=self.lock, stop_event=self.stop_event)
+        self.thread.start()

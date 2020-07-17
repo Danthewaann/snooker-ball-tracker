@@ -24,12 +24,12 @@ class VideoPlayer(Frame):
 
         self.btns_frame = Frame(master=self)
 
-        self.video_player_label = Label(master=self.btns_frame, text="Video Player Options", font=("Helvetica", 18))
+        self.video_player_label = Label(master=self.btns_frame, text="Video Player Options", font=self.master.master.fonts["h3-bold"])
         self.separator_hori = Separator(master=self.btns_frame, orient="horizontal")
         self.separator_vert = Separator(master=self.btns_frame, orient="vertical")
         self.threshold_label = Label(master=self.btns_frame, text="Show Threshold")
         self.detect_colour_label = Label(master=self.btns_frame, text="Detect Colour")
-        self.detect_colour_options = OptionMenu(self.btns_frame, self.data["detect-colour"], *self.data["detect-colours"], command=self._detect_colour)
+        self.detect_colour_options = OptionMenu(self.btns_frame, self.data["detect-colour"], "None", *self.data["detect-colours"], command=self._detect_colour)
         self.detect_colour_options.configure(state="disabled")
         self.mask_colour_label = Label(master=self.btns_frame, text="Mask Colour")
 
@@ -37,40 +37,40 @@ class VideoPlayer(Frame):
 
         self.btns = OrderedDict([
             ("toggle", Button(
-                self.btns_frame, text="Play", command=self._toogle_output
+                self.btns_frame, text="Play", command=self._toogle_output, state="disable"
             )),
             ("restart", Button(
-                self.btns_frame, text="Restart", command=self._restart_output
+                self.btns_frame, text="Restart", command=self._restart_output, state="disable"
             )),
             ("update-bounds", Button(
-                self.btns_frame, text="Detect Table", command=self._update_bounds
+                self.btns_frame, text="Detect Table", command=self._update_bounds, state="disable"
             )),
             ("threshold-yes", Radiobutton(
-                self.btns_frame, text="Yes", command=self._update_threshold,
+                self.btns_frame, text="Yes", command=self._update_threshold, state="disable",
                 variable=self.data["threshold"], value=True
             )),
             ("threshold-no", Radiobutton(
-                self.btns_frame, text="No", command=self._update_threshold, 
+                self.btns_frame, text="No", command=self._update_threshold, state="disable",
                 variable=self.data["threshold"], value=False
             )),
             ("mask-colour-yes", Radiobutton(
-                self.btns_frame, text="Yes", command=self._mask_colour, 
+                self.btns_frame, text="Yes", command=self._mask_colour, state="disable",
                 variable=self.data["mask-colour"], value=True
             )),
             ("mask-colour-no", Radiobutton(
-                self.btns_frame, text="No", command=self._mask_colour,
+                self.btns_frame, text="No", command=self._mask_colour, state="disable",
                 variable=self.data["mask-colour"], value=False
             )),
             ("crop-frames-yes", Radiobutton(
-                self.btns_frame, text="Yes", command=self._crop_frames, 
+                self.btns_frame, text="Yes", command=self._crop_frames, state="disable",
                 variable=self.data["crop-frames"], value=True
             )),
             ("crop-frames-no", Radiobutton(
-                self.btns_frame, text="No", command=self._crop_frames, 
+                self.btns_frame, text="No", command=self._crop_frames, state="disable",
                 variable=self.data["crop-frames"], value=False
             )),
             ("reset-options", Button(
-                self.btns_frame, text="Reset", command=self.reset_video_options
+                self.btns_frame, text="Reset", command=self.reset_video_options, state="disable"
             )),
         ])
 

@@ -43,83 +43,83 @@ class BallTrackerOptions(Frame):
         self.separator_hori_3 = Separator(master=self, orient="horizontal")
         self.separator_vert = Separator(master=self, orient="vertical")
 
-        self.ball_tracker_options = Label(master=self, text="Ball Tracker Options", font=("Helvetica", 18))
-        self.ball_tracker_reset = Button(master=self, text="Reset", command=self._reset_tracker_options)
+        self.ball_tracker_options = Label(master=self, text="Ball Tracker Options", font=self.master.master.fonts["h3-bold"])
+        self.ball_tracker_reset = Button(master=self, text="Reset", command=self._reset_tracker_options, cursor="hand2")
 
         self.convexity_widgets = OrderedDict([
             ('radio_label', Label(self.convexity_frame, text="Filter by Convexity", anchor="w")),
             ('radio_true', Radiobutton(self.convexity_frame, text="Yes", value=True, command=self._update_ball_tracker,
-                                          variable=self.ball_detection_settings['filter_by_convexity'])),
+                                          variable=self.ball_detection_settings['filter_by_convexity'], cursor="hand2")),
             ('radio_false', Radiobutton(self.convexity_frame, text="No", value=False, command=self._update_ball_tracker,
-                                           variable=self.ball_detection_settings['filter_by_convexity'])),
+                                           variable=self.ball_detection_settings['filter_by_convexity'], cursor="hand2")),
             ('min_label', Label(self.convexity_frame, text="Minimum Convexity", anchor="w")),
             ('min', Scale(self.convexity_frame, from_=0, to=1, orient=HORIZONTAL,
-                             variable=self.ball_detection_settings['min_convexity'])),
+                             variable=self.ball_detection_settings['min_convexity'], cursor="hand2")),
             ('max_label', Label(self.convexity_frame, text="Maximum Convexity", anchor="w")),
             ('max', Scale(self.convexity_frame, from_=0, to=1, orient=HORIZONTAL,
-                             variable=self.ball_detection_settings['max_convexity']))
+                             variable=self.ball_detection_settings['max_convexity'], cursor="hand2"))
         ])
 
         self.circularity_widgets = OrderedDict([
             ('radio_label', Label(self.circularity_frame, text="Filter by Circularity", anchor="w")),
             ('radio_true', Radiobutton(self.circularity_frame, text="Yes", value=True, command=self._update_ball_tracker,
-                                          variable=self.ball_detection_settings['filter_by_circularity'])),
+                                          variable=self.ball_detection_settings['filter_by_circularity'], cursor="hand2")),
             ('radio_false', Radiobutton(self.circularity_frame, text="No", value=False, command=self._update_ball_tracker,
-                                           variable=self.ball_detection_settings['filter_by_circularity'])),
+                                           variable=self.ball_detection_settings['filter_by_circularity'], cursor="hand2")),
             ('min_label', Label(self.circularity_frame, text="Minimum Circularity", anchor="w")),
             ('min', Scale(self.circularity_frame, from_=0, to=1, orient=HORIZONTAL,
-                             variable=self.ball_detection_settings['min_circularity'])),
+                             variable=self.ball_detection_settings['min_circularity'], cursor="hand2")),
             ('max_label', Label(self.circularity_frame, text="Maximum Circularity", anchor="w")),
             ('max', Scale(self.circularity_frame, from_=0, to=1, orient=HORIZONTAL,
-                             variable=self.ball_detection_settings['max_circularity']))
+                             variable=self.ball_detection_settings['max_circularity'], cursor="hand2"))
         ])
 
         self.inertia_widgets = OrderedDict([
             ('radio_label', Label(self.inertia_frame, text="Filter by Inertia", anchor="w")),
             ('radio_true',
              Radiobutton(self.inertia_frame, text="Yes", value=True, command=self._update_ball_tracker,
-                            variable=self.ball_detection_settings['filter_by_inertia'])),
+                            variable=self.ball_detection_settings['filter_by_inertia'], cursor="hand2")),
             ('radio_false',
              Radiobutton(self.inertia_frame, text="No", value=False, command=self._update_ball_tracker,
-                            variable=self.ball_detection_settings['filter_by_inertia'])),
+                            variable=self.ball_detection_settings['filter_by_inertia'], cursor="hand2")),
             ('min_label', Label(self.inertia_frame, text="Minimum Inertia", anchor="w")),
             ('min', Scale(self.inertia_frame, from_=0, to=1, orient=HORIZONTAL,
-                             variable=self.ball_detection_settings['min_inertia'])),
+                             variable=self.ball_detection_settings['min_inertia'], cursor="hand2")),
             ('max_label', Label(self.inertia_frame, text="Maximum Inertia", anchor="w")),
             ('max', Scale(self.inertia_frame, from_=0, to=1, orient=HORIZONTAL,
-                             variable=self.ball_detection_settings['max_inertia']))
+                             variable=self.ball_detection_settings['max_inertia'], cursor="hand2"))
         ])
 
         self.area_widgets = OrderedDict([
             ('radio_label', Label(self.area_frame, text="Filter by Area", anchor="w")),
             ('radio_true',
              Radiobutton(self.area_frame, text="Yes", variable=self.ball_detection_settings['filter_by_area'],
-                            value=True, command=self._update_ball_tracker)),
+                            value=True, command=self._update_ball_tracker, cursor="hand2")),
             ('radio_false',
              Radiobutton(self.area_frame, text="No", variable=self.ball_detection_settings['filter_by_area'],
-                            value=False, command=self._update_ball_tracker)),
+                            value=False, command=self._update_ball_tracker, cursor="hand2")),
             ('min_label', Label(self.area_frame, text="Minimum Area", anchor="w")),
             ('min', Scale(self.area_frame, from_=1, to=2000, orient=HORIZONTAL, length=400,
-                             variable=self.ball_detection_settings['min_area'])),
+                             variable=self.ball_detection_settings['min_area'], cursor="hand2")),
             ('max_label', Label(self.area_frame, text="Maximum Area", anchor="w")),
             ('max', Scale(self.area_frame, from_=1, to=2000, orient=HORIZONTAL, length=400,
-                             variable=self.ball_detection_settings['max_area']))
+                             variable=self.ball_detection_settings['max_area'], cursor="hand2"))
         ])
 
         self.threshold_widgets = OrderedDict([
             ('min_label', Label(self.threshold_frame, text="Minimum Threshold", anchor="w", width=20)),
             ('min', Scale(self.threshold_frame, from_=0, to=255, orient=HORIZONTAL,
-                             variable=self.ball_detection_settings['min_threshold'])),
+                             variable=self.ball_detection_settings['min_threshold'], cursor="hand2")),
             ('max_label', Label(self.threshold_frame, text="Maximum Threshold", anchor="w", width=20)),
             ('max', Scale(self.threshold_frame, from_=0, to=255, orient=HORIZONTAL,
-                             variable=self.ball_detection_settings['max_threshold']))
+                             variable=self.ball_detection_settings['max_threshold'], cursor="hand2"))
         ])
 
         self.dist_widgets = OrderedDict([
             ('min_label', Label(self.dist_frame, text="Minimum distance between balls", anchor="w",
                                    wraplength=150)),
             ('min', Scale(self.dist_frame, from_=0, to=100, orient=HORIZONTAL,
-                             variable=self.ball_detection_settings['min_dist_between_blobs'])),
+                             variable=self.ball_detection_settings['min_dist_between_blobs'], cursor="hand2")),
         ])
 
         self.convexity_widgets['min'].bind("<ButtonRelease-1>", self._update_ball_tracker)
@@ -134,40 +134,40 @@ class BallTrackerOptions(Frame):
         self.threshold_widgets['max'].bind("<ButtonRelease-1>", self._update_ball_tracker)
         self.dist_widgets['min'].bind("<ButtonRelease-1>", self._update_ball_tracker)
 
-        self.convexity_widgets['radio_label'].grid(column=0, row=0, sticky="w", padx=(0, 20))
-        self.convexity_widgets['radio_true'].grid(column=1, row=0)
-        self.convexity_widgets['radio_false'].grid(column=2, row=0)
-        self.convexity_widgets['min_label'].grid(column=0, row=1, sticky="w", padx=(0, 20))
-        self.convexity_widgets['min'].grid(column=1, row=1, columnspan=2)
-        self.convexity_widgets['max_label'].grid(column=0, row=2, sticky="w", padx=(0, 20))
-        self.convexity_widgets['max'].grid(column=1, row=2, columnspan=2)
-
-        self.circularity_widgets['radio_label'].grid(column=0, row=0, sticky="w", padx=(0, 20))
-        self.circularity_widgets['radio_true'].grid(column=1, row=0)
-        self.circularity_widgets['radio_false'].grid(column=2, row=0)
-        self.circularity_widgets['min_label'].grid(column=0, row=1, sticky="w", padx=(0, 20))
-        self.circularity_widgets['min'].grid(column=1, row=1, columnspan=2)
-        self.circularity_widgets['max_label'].grid(column=0, row=2, sticky="w", padx=(0, 20))
-        self.circularity_widgets['max'].grid(column=1, row=2, columnspan=2)
-
-        self.inertia_widgets['radio_label'].grid(column=0, row=0, sticky="w", padx=(0, 20))
-        self.inertia_widgets['radio_true'].grid(column=1, row=0)
-        self.inertia_widgets['radio_false'].grid(column=2, row=0)
-        self.inertia_widgets['min_label'].grid(column=0, row=1, sticky="w", padx=(0, 20))
-        self.inertia_widgets['min'].grid(column=1, row=1, columnspan=2)
-        self.inertia_widgets['max_label'].grid(column=0, row=2, sticky="w", padx=(0, 20))
-        self.inertia_widgets['max'].grid(column=1, row=2, columnspan=2)
-
     def grid_children(self):
-        self.area_widgets['radio_label'].grid(column=0, row=0)
-        self.area_widgets['radio_true'].grid(column=1, row=0)
-        self.area_widgets['radio_false'].grid(column=2, row=0)
-        self.area_widgets['min_label'].grid(column=0, row=1)
-        self.area_widgets['min'].grid(column=1, row=1, columnspan=10)
-        self.area_widgets['max_label'].grid(column=0, row=2)
-        self.area_widgets['max'].grid(column=1, row=2, columnspan=10)
+        self.convexity_widgets['radio_label'].grid(column=0, row=0, sticky="w", padx=(0, 20), pady=(0, 10))
+        self.convexity_widgets['radio_true'].grid(column=1, row=0, padx=(0, 10), pady=(0, 10))
+        self.convexity_widgets['radio_false'].grid(column=2, row=0, padx=(0, 10), pady=(0, 10))
+        self.convexity_widgets['min_label'].grid(column=0, row=1, sticky="w", padx=(0, 20), pady=(0, 10))
+        self.convexity_widgets['min'].grid(column=1, row=1, columnspan=2, pady=(0, 10))
+        self.convexity_widgets['max_label'].grid(column=0, row=2, sticky="w", padx=(0, 20), pady=(0, 10))
+        self.convexity_widgets['max'].grid(column=1, row=2, columnspan=2, pady=(0, 10))
 
-        self.dist_widgets['min_label'].grid(column=0, row=0)
+        self.circularity_widgets['radio_label'].grid(column=0, row=0, sticky="w", padx=(0, 20), pady=(0, 10))
+        self.circularity_widgets['radio_true'].grid(column=1, row=0, padx=(0, 10), pady=(0, 10))
+        self.circularity_widgets['radio_false'].grid(column=2, row=0, padx=(0, 10), pady=(0, 10))
+        self.circularity_widgets['min_label'].grid(column=0, row=1, sticky="w", padx=(0, 20), pady=(0, 10))
+        self.circularity_widgets['min'].grid(column=1, row=1, columnspan=2, pady=(0, 10))
+        self.circularity_widgets['max_label'].grid(column=0, row=2, sticky="w", padx=(0, 20))
+        self.circularity_widgets['max'].grid(column=1, row=2, columnspan=2, pady=(0, 10))
+
+        self.inertia_widgets['radio_label'].grid(column=0, row=0, sticky="w", padx=(0, 20), pady=(0, 10))
+        self.inertia_widgets['radio_true'].grid(column=1, row=0, padx=(0, 10), pady=(0, 10))
+        self.inertia_widgets['radio_false'].grid(column=2, row=0, padx=(0, 10), pady=(0, 10))
+        self.inertia_widgets['min_label'].grid(column=0, row=1, sticky="w", padx=(0, 20), pady=(0, 10))
+        self.inertia_widgets['min'].grid(column=1, row=1, columnspan=2, pady=(0, 10))
+        self.inertia_widgets['max_label'].grid(column=0, row=2, sticky="w", padx=(0, 20), pady=(0, 10))
+        self.inertia_widgets['max'].grid(column=1, row=2, columnspan=2, pady=(0, 10))
+
+        self.area_widgets['radio_label'].grid(column=0, row=0, sticky="w", padx=(0, 20), pady=(0, 10))
+        self.area_widgets['radio_true'].grid(column=1, row=0, padx=(0, 10), pady=(0, 10))
+        self.area_widgets['radio_false'].grid(column=2, row=0, padx=(0, 10), pady=(0, 10))
+        self.area_widgets['min_label'].grid(column=0, row=1, sticky="w", padx=(0, 20), pady=(0, 10))
+        self.area_widgets['min'].grid(column=1, row=1, columnspan=10, pady=(0, 10))
+        self.area_widgets['max_label'].grid(column=0, row=2, sticky="w", padx=(0, 20), pady=(0, 10))
+        self.area_widgets['max'].grid(column=1, row=2, columnspan=10, pady=(0, 10))
+
+        self.dist_widgets['min_label'].grid(column=0, row=0, padx=(0, 20), pady=(0, 10))
         self.dist_widgets['min'].grid(column=1, row=0)
 
         self.ball_tracker_options.grid(column=0, row=0, sticky="w")
