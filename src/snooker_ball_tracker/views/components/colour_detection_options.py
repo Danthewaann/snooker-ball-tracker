@@ -1,5 +1,6 @@
 # import tkinter as tk
 # import tkinter.ttk as ttk
+import tkinter as tk
 from tkinter import *
 from tkinter.ttk import *
 from collections import OrderedDict
@@ -38,24 +39,24 @@ class ColourDetectionOptions(Frame):
         self.colour_detection_widgets = {
             'lower_label': Label(self.colour_detection, text="Lower", anchor="w"),
             'lower_h_label': Label(self.colour_detection, text="H", anchor="w"),
-            'lower_h': Scale(self.colour_detection, from_=0, to=255, orient=HORIZONTAL,
+            'lower_h': tk.Scale(self.colour_detection, from_=0, to=255, orient=HORIZONTAL, resolution=-1,
                                        variable=self.colour_detection_settings["colour"]['lower_h'], cursor="hand2"),
             'lower_s_label': Label(self.colour_detection, text="S", anchor="w"),
-            'lower_s': Scale(self.colour_detection, from_=0, to=255, orient=HORIZONTAL,
+            'lower_s': tk.Scale(self.colour_detection, from_=0, to=255, orient=HORIZONTAL, resolution=-1,
                                        variable=self.colour_detection_settings["colour"]['lower_s'], cursor="hand2"),
             'lower_v_label': Label(self.colour_detection, text="V", anchor="w"),
-            'lower_v': Scale(self.colour_detection, from_=0, to=255, orient=HORIZONTAL,
+            'lower_v': tk.Scale(self.colour_detection, from_=0, to=255, orient=HORIZONTAL, resolution=-1,
                                        variable=self.colour_detection_settings["colour"]['lower_v'], cursor="hand2"),
 
             'upper_label': Label(self.colour_detection, text="Upper", anchor="w"),
             'upper_h_label': Label(self.colour_detection, text="H", anchor="w"),
-            'upper_h': Scale(self.colour_detection, from_=0, to=255, orient=HORIZONTAL,
+            'upper_h': tk.Scale(self.colour_detection, from_=0, to=255, orient=HORIZONTAL, resolution=-1,
                                        variable=self.colour_detection_settings["colour"]['upper_h'], cursor="hand2"),
             'upper_s_label': Label(self.colour_detection, text="S", anchor="w"),
-            'upper_s': Scale(self.colour_detection, from_=0, to=255, orient=HORIZONTAL,
+            'upper_s': tk.Scale(self.colour_detection, from_=0, to=255, orient=HORIZONTAL, resolution=-1,
                                        variable=self.colour_detection_settings["colour"]['upper_s'], cursor="hand2"),
             'upper_v_label': Label(self.colour_detection, text="V", anchor="w"),
-            'upper_v': Scale(self.colour_detection, from_=0, to=255, orient=HORIZONTAL,
+            'upper_v': tk.Scale(self.colour_detection, from_=0, to=255, orient=HORIZONTAL, resolution=-1,
                                        variable=self.colour_detection_settings["colour"]['upper_v'], cursor="hand2")
         }
 

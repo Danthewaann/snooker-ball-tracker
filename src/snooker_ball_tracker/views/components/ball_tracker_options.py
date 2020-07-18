@@ -1,5 +1,6 @@
 # import tkinter as tk
 # import tkinter.ttk as ttk
+import tkinter as tk
 from tkinter import *
 from tkinter.ttk import *
 from collections import OrderedDict
@@ -53,10 +54,10 @@ class BallTrackerOptions(Frame):
             ('radio_false', Radiobutton(self.convexity_frame, text="No", value=False, command=self._update_ball_tracker,
                                            variable=self.ball_detection_settings['filter_by_convexity'], cursor="hand2")),
             ('min_label', Label(self.convexity_frame, text="Minimum Convexity", anchor="w")),
-            ('min', Scale(self.convexity_frame, from_=0, to=1, orient=HORIZONTAL,
+            ('min', tk.Scale(self.convexity_frame, from_=0, to=1, orient=HORIZONTAL, resolution=-1,
                              variable=self.ball_detection_settings['min_convexity'], cursor="hand2")),
             ('max_label', Label(self.convexity_frame, text="Maximum Convexity", anchor="w")),
-            ('max', Scale(self.convexity_frame, from_=0, to=1, orient=HORIZONTAL,
+            ('max', tk.Scale(self.convexity_frame, from_=0, to=1, orient=HORIZONTAL, resolution=-1,
                              variable=self.ball_detection_settings['max_convexity'], cursor="hand2"))
         ])
 
@@ -67,10 +68,10 @@ class BallTrackerOptions(Frame):
             ('radio_false', Radiobutton(self.circularity_frame, text="No", value=False, command=self._update_ball_tracker,
                                            variable=self.ball_detection_settings['filter_by_circularity'], cursor="hand2")),
             ('min_label', Label(self.circularity_frame, text="Minimum Circularity", anchor="w")),
-            ('min', Scale(self.circularity_frame, from_=0, to=1, orient=HORIZONTAL,
+            ('min', tk.Scale(self.circularity_frame, from_=0, to=1, orient=HORIZONTAL, resolution=-1,
                              variable=self.ball_detection_settings['min_circularity'], cursor="hand2")),
             ('max_label', Label(self.circularity_frame, text="Maximum Circularity", anchor="w")),
-            ('max', Scale(self.circularity_frame, from_=0, to=1, orient=HORIZONTAL,
+            ('max', tk.Scale(self.circularity_frame, from_=0, to=1, orient=HORIZONTAL, resolution=-1,
                              variable=self.ball_detection_settings['max_circularity'], cursor="hand2"))
         ])
 
@@ -83,10 +84,10 @@ class BallTrackerOptions(Frame):
              Radiobutton(self.inertia_frame, text="No", value=False, command=self._update_ball_tracker,
                             variable=self.ball_detection_settings['filter_by_inertia'], cursor="hand2")),
             ('min_label', Label(self.inertia_frame, text="Minimum Inertia", anchor="w")),
-            ('min', Scale(self.inertia_frame, from_=0, to=1, orient=HORIZONTAL,
+            ('min', tk.Scale(self.inertia_frame, from_=0, to=1, orient=HORIZONTAL, resolution=-1,
                              variable=self.ball_detection_settings['min_inertia'], cursor="hand2")),
             ('max_label', Label(self.inertia_frame, text="Maximum Inertia", anchor="w")),
-            ('max', Scale(self.inertia_frame, from_=0, to=1, orient=HORIZONTAL,
+            ('max', tk.Scale(self.inertia_frame, from_=0, to=1, orient=HORIZONTAL, resolution=-1,
                              variable=self.ball_detection_settings['max_inertia'], cursor="hand2"))
         ])
 
@@ -99,26 +100,26 @@ class BallTrackerOptions(Frame):
              Radiobutton(self.area_frame, text="No", variable=self.ball_detection_settings['filter_by_area'],
                             value=False, command=self._update_ball_tracker, cursor="hand2")),
             ('min_label', Label(self.area_frame, text="Minimum Area", anchor="w")),
-            ('min', Scale(self.area_frame, from_=1, to=2000, orient=HORIZONTAL, length=400,
+            ('min', tk.Scale(self.area_frame, from_=1, to=2000, orient=HORIZONTAL, length=400, resolution=-1,
                              variable=self.ball_detection_settings['min_area'], cursor="hand2")),
             ('max_label', Label(self.area_frame, text="Maximum Area", anchor="w")),
-            ('max', Scale(self.area_frame, from_=1, to=2000, orient=HORIZONTAL, length=400,
+            ('max', tk.Scale(self.area_frame, from_=1, to=2000, orient=HORIZONTAL, length=400, resolution=-1,
                              variable=self.ball_detection_settings['max_area'], cursor="hand2"))
         ])
 
         self.threshold_widgets = OrderedDict([
             ('min_label', Label(self.threshold_frame, text="Minimum Threshold", anchor="w", width=20)),
-            ('min', Scale(self.threshold_frame, from_=0, to=255, orient=HORIZONTAL,
+            ('min', tk.Scale(self.threshold_frame, from_=0, to=255, orient=HORIZONTAL, resolution=-1,
                              variable=self.ball_detection_settings['min_threshold'], cursor="hand2")),
             ('max_label', Label(self.threshold_frame, text="Maximum Threshold", anchor="w", width=20)),
-            ('max', Scale(self.threshold_frame, from_=0, to=255, orient=HORIZONTAL,
+            ('max', tk.Scale(self.threshold_frame, from_=0, to=255, orient=HORIZONTAL, resolution=-1,
                              variable=self.ball_detection_settings['max_threshold'], cursor="hand2"))
         ])
 
         self.dist_widgets = OrderedDict([
             ('min_label', Label(self.dist_frame, text="Minimum distance between balls", anchor="w",
                                    wraplength=150)),
-            ('min', Scale(self.dist_frame, from_=0, to=100, orient=HORIZONTAL,
+            ('min', tk.Scale(self.dist_frame, from_=0, to=100, orient=HORIZONTAL, resolution=-1,
                              variable=self.ball_detection_settings['min_dist_between_blobs'], cursor="hand2")),
         ])
 
