@@ -132,14 +132,20 @@ class VideoPlayer(Frame):
 
     def _update_threshold(self):
         self.data["mask-colour"].set(False)
-        self.logger.info("Showing binary frames...")
+        if self.data["threshold"].get():
+            self.logger.info("Showing binary frames...")
+        else:
+            self.logger.info("Hiding binary frames...")
         if self.master.master.thread is not None:
             self.master.master.thread.mask_colour = self.data["mask-colour"].get()
             self.master.master.thread.show_threshold = self.data["threshold"].get()
 
     def _mask_colour(self):
         self.data["threshold"].set(False)
-        self.logger.info("Showing selected colour mask...")
+        if self.data["mask-colour"].get():
+            self.logger.info("Showing selected colour mask...")
+        else:
+            self.logger.info("Hiding selected colour mask...")
         if self.master.master.thread is not None:
             self.master.master.thread.show_threshold = self.data["threshold"].get()
             self.master.master.thread.mask_colour = self.data["mask-colour"].get()
@@ -147,20 +153,20 @@ class VideoPlayer(Frame):
     def _crop_frames(self):
         crop = self.data["crop-frames"].get()
         if crop:
-            self.logger.info("Enabling cropped frames around detected boundary...")
+            self.logger.info("Enabling cropped frames around table boundary...")
         else:
-            self.logger.info("Disabling cropped frames around detected boundary...")
+            self.logger.info("Disabling cropped frames around table boundary...")
         if self.master.master.thread is not None:
             self.master.master.thread.crop_frames_around_boundary(crop)
 
     def _detect_colour(self, value):
         if value != "None":
-            self.logger.info("Disabling colour detection mode...")
+            self.logger.info(f"Detecting {value} in frames...")
+            self.data["mask-colour"].set(False)
             self.btns["mask-colour-yes"].configure(state="normal", cursor="hand2")
             self.btns["mask-colour-no"].configure(state="normal", cursor="hand2")
         else:
-            self.logger.info(f"Detecting {value} in frames...")
-            self.data["mask-colour"].set(False)
+            self.logger.info("Detecting all colours in frames...")
             self.btns["mask-colour-yes"].configure(state="disable", cursor="")
             self.btns["mask-colour-no"].configure(state="disable", cursor="")
         if self.master.master.thread is not None:
@@ -186,9 +192,5 @@ class VideoPlayer(Frame):
                 self.master.master.master.start_video_processor()
 
     def _update_bounds(self):
-        self.master.master.thread.update_bounds()
         self.logger.info("Detecting table boundary...")
-        # time.sleep(0.3)
-        # if self.master.master.thread.ball_tracker.detected_table():
-        #     self.btns["crop-frames-yes"].configure(state="normal", cursor="hand2")
-        #     self.btns["crop-frames-no"].configure(state="normal", cursor="hand2")
+        self.master.master.thread.update_bounds()
