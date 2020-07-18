@@ -4,7 +4,8 @@ from collections import OrderedDict
 
 class Navbar(ttk.Frame):
     def __init__(self, master=None):
-        super().__init__(master, style="DB.TFrame", padding="10p")
+        super().__init__(master)
+        self.separator_hori = Separator(master=self, orient="horizontal")
         self.btns_frame = Frame(master=self)
         self.btns = OrderedDict([
             ('select_file', Button(
@@ -18,4 +19,5 @@ class Navbar(ttk.Frame):
         for btn in self.btns:
             self.btns[btn].pack(side="left", fill="x", expand=True)
 
-        self.btns_frame.pack(anchor="center")
+        self.separator_hori.pack(side="top", fill="x", expand=True)
+        self.btns_frame.pack(anchor="center", padx=10, pady=10)

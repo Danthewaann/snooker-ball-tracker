@@ -34,7 +34,7 @@ class ColourDetectionOptions(Frame):
         self.reset_colour_btn = Button(master=self, text="Reset", command=self._reset_colour, cursor="hand2")
         self.select_colour_label = Label(master=self, text="Select Colour")
         self.select_colour_options = OptionMenu(self, self.colour_detection_settings["select-colour"], "RED", *self.colour_detection_settings["select-colours"], command=self._select_colour)
-        self.select_colour_options.configure(cursor="hand2")
+        self.select_colour_options.configure(cursor="hand2", width=10)
         self.colour_detection_widgets = {
             'lower_label': Label(self.colour_detection, text="Lower", anchor="w"),
             'lower_h_label': Label(self.colour_detection, text="H", anchor="w"),

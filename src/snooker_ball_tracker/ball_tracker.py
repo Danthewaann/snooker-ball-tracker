@@ -543,13 +543,10 @@ class SnapShot:
         :param title: title for snapshot info
         :returns: snapshot ball info
         """
-        snapshot_info = '==========\n'
-        snapshot_info += title + '\n'
-        snapshot_info += '==========\n'
+        snapshot_info = ''
         for ball_colour in s.DETECT_COLOURS:
             if s.DETECT_COLOURS[ball_colour]:
                 snapshot_info += '{}s: {}\n'.format(ball_colour.lower(), len(self.balls[ball_colour]))
-        snapshot_info += '==========\n'
         return snapshot_info
 
     def compare_ball_diff(self, ball_colour, snapshot):

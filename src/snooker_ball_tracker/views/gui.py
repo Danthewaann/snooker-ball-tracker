@@ -26,7 +26,6 @@ class SplashScreen:
         # Gets the requested values of the height and width.
         windowWidth = root.winfo_reqwidth()
         windowHeight = root.winfo_reqheight()
-        print("Width",windowWidth,"Height",windowHeight)
 
         # Gets both half the screen width/height and window width/height
         positionRight = int(root.winfo_screenwidth()/2 - windowWidth/2)
@@ -114,7 +113,6 @@ class GUI(Tk):
         self.selected_file = None
         self.ball_tracker = None
 
-        print(Style().lookup("TButton", "background"))
         self.styles = [
             Style().configure("Canvas", background="NavajoWhite3"),
             Style().configure("Left.TFrame", background="red"),
