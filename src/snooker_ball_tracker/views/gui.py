@@ -55,11 +55,12 @@ class SplashScreen:
         self.load.config(text="Loading{}{}".format("."*self.dots, " "*(5-self.dots)))
         if self.progress_bar["value"] >= 100:
             self.a.destroy()
-            try:
-                self.root.attributes('-zoomed', True)
-            except TclError:
-                self.root.state("zoomed")
-            return
+            self.root.deiconify()
+            # try:
+            #     self.root.attributes('-zoomed', True)
+            # except TclError:
+            #     self.root.state("zoomed")
+            # return
         else:
             self.root.after(100,self.load_bar)
     
@@ -75,6 +76,10 @@ class GUI(Tk):
         self.iconname("Snooker Ball Tracker")
         self.title("Snooker Ball Tracker - Demo Application")
         self.wm_protocol("WM_DELETE_WINDOW", self.on_close)
+        try:
+            self.attributes('-zoomed', True)
+        except TclError:
+            self.state("zoomed")
         self.withdraw()
         SplashScreen(self)
 
@@ -176,9 +181,9 @@ class GUI(Tk):
 
     def __setup_window(self):
         self.left.pack(side="left", fill="y", expand=True, anchor="w", ipadx=10, ipady=10)
-        self.separator_vert_1.pack(side="left", fill="y", expand=True)
+        self.separator_vert_1.pack(side="left", fill="y", expand=True, padx=20)
         self.middle.pack(side="left", fill="y", expand=True, anchor="center", ipady=20)
-        self.separator_vert_2.pack(side="left", fill="y", expand=True)
+        self.separator_vert_2.pack(side="left", fill="y", expand=True, padx=20)
         self.right.pack(side="left", fill="y", expand=True, anchor="e", ipadx=10, ipady=10)
 
     def __setup_left_column(self):
