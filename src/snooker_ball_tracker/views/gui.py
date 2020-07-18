@@ -65,8 +65,8 @@ class SplashScreen:
             self.root.after(100,self.load_bar)
     
     def on_close(self):
-        self.a.quit()
-        self.root.quit()
+        self.a.destroy()
+        self.root.destroy()
 
 
 class GUI(Tk):
@@ -81,6 +81,11 @@ class GUI(Tk):
         except TclError:
             self.state("zoomed")
         self.withdraw()
+
+        try:
+            Style().theme_use("vista")
+        except TclError:
+            Style().theme_use("default")
         SplashScreen(self)
 
         # threading.Thread(target=self.__load_splashscreen, daemon=True).start()
@@ -109,7 +114,6 @@ class GUI(Tk):
         self.selected_file = None
         self.ball_tracker = None
 
-        # Style().theme_use("clam")
         print(Style().lookup("TButton", "background"))
         self.styles = [
             Style().configure("Canvas", background="NavajoWhite3"),
@@ -117,9 +121,9 @@ class GUI(Tk):
             Style().configure("Middle.TFrame", background="blue"),
             Style().configure("Right.TFrame", background="green"),
             Style().configure("DB.TFrame", background="light gray"),
-            Style().configure("TButton", relief="flat", padding=6, cursor="hand2"),
-            Style().configure("TMenubutton", background="light gray"),
-            Style().configure("TRadiobutton", relief="raised", indicatorrelief="flat", indicatormargin=-1, indicatordiameter=-1)
+            Style().configure("TButton", padding=6, cursor="hand2"),
+            Style().configure("TMenubutton", padding=6, background="light gray"),
+            Style().configure("TRadiobutton", relief="raised")
         ]
 
         self.scrollable_canvas = Canvas(master=self, highlightthickness = 0, background="#dcdad5")

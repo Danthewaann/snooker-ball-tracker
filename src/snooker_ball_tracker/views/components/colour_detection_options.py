@@ -84,12 +84,12 @@ class ColourDetectionOptions(Frame):
         self.colour_detection_widgets['upper_v'].grid(column=6, row=1, padx=(0, 10), pady=(0, 10))
 
         self.colour_detection_label.grid(column=0, row=7, columnspan=3, sticky="w")
-        self.separator_hori_2.grid(column=0, row=8, columnspan=3, sticky="ew", pady=(10, 10))
+        self.separator_hori_2.grid(column=0, row=8, columnspan=4, sticky="ew", pady=(10, 10))
         self.select_colour_label.grid(column=0, row=9, sticky="w")
-        self.select_colour_options.grid(column=1, row=9, columnspan=2, sticky="w")
+        self.select_colour_options.grid(column=1, row=9, sticky="w")
         self.reset_colour_btn.grid(column=2, row=9, sticky="w")
-        self.separator_hori_3.grid(column=0, row=10, columnspan=3, sticky="ew", pady=(10, 10))
-        self.colour_detection.grid(column=0, row=11, columnspan=3, sticky="w", pady=(10, 0))
+        self.separator_hori_3.grid(column=0, row=10, columnspan=4, sticky="ew", pady=(10, 10))
+        self.colour_detection.grid(column=0, row=11, columnspan=4, sticky="w", pady=(10, 0))
 
     def _select_colour(self, colour):
         self.colour_detection_settings["colour"]["lower_h"].set(s.COLOURS[colour]["LOWER"][0])
