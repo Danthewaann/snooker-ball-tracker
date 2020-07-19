@@ -19,20 +19,20 @@ class ProgramOutput(Frame):
         self.separator_hori_3 = Separator(master=self, orient="horizontal")
         self.separator_hori_4 = Separator(master=self, orient="horizontal")
         self.separator_vert = Separator(master=self, orient="vertical")
-        self.current_ball_count_label = Label(self, text='Current ball count', font=self.master.master.fonts["h4"])
-        self.current_ball_count = Label(self, text=SnapShot().get_snapshot_info(), font=self.master.master.fonts["h5"])
-        self.last_ball_count_label = Label(self, text='Last ball count', font=self.master.master.fonts["h4"])
-        self.last_ball_count = Label(self, text=SnapShot().get_snapshot_info(), font=self.master.master.fonts["h5"])
+        self.current_ball_count_label = Label(master=self, text='Current ball count', font=self.master.master.fonts["h4"])
+        self.current_ball_count = Label(master=self, text=SnapShot().get_snapshot_info(), font=self.master.master.fonts["h5"])
+        self.last_ball_count_label = Label(master=self, text='Last ball count', font=self.master.master.fonts["h4"])
+        self.last_ball_count = Label(master=self, text=SnapShot().get_snapshot_info(), font=self.master.master.fonts["h5"])
 
         self.balls_potted_label = Label(master=self, text='Balls potted', font=self.master.master.fonts["h4"])
         self.balls_potted_frame = Frame(master=self)
         self.balls_potted_scrollbar = Scrollbar(self.balls_potted_frame, orient="vertical")
-        self.balls_potted_list = Listbox(self.balls_potted_frame, font=self.master.master.fonts["logs"], 
+        self.balls_potted_list = Listbox(master=self.balls_potted_frame, font=self.master.master.fonts["logs"], 
                                             width=20, height=7, yscrollcommand=self.balls_potted_scrollbar.set)
         self.balls_potted_scrollbar.config(command=self.balls_potted_list.yview)
 
-        self.white_ball_status_label = Label(self, text='White status', font=self.master.master.fonts["h4"])
-        self.white_ball_status = Label(self, text=BallTracker().get_white_ball_status() ,font=self.master.master.fonts["h4"])
+        self.white_ball_status_label = Label(master=self, text='White status', font=self.master.master.fonts["h4"])
+        self.white_ball_status = Label(master=self, text=BallTracker().get_white_ball_status() ,font=self.master.master.fonts["h4"])
 
         self.output_log_label = Label(master=self, text="Program Output", font=self.master.master.fonts["h3-bold"])
         self.output_log_frame = Frame(master=self)
