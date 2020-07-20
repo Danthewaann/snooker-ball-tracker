@@ -299,7 +299,6 @@ class BallTracker:
             if not self.__prev_snapshot:
                 self.__prev_snapshot = SnapShot(self.__balls)
                 self.__temp_snapshot = self.__prev_snapshot
-                print(self.__temp_snapshot.get_snapshot_info('INITIAL SNAPSHOT'))
 
             self.__cur_snapshot = SnapShot(self.__balls)
 
@@ -312,7 +311,6 @@ class BallTracker:
                             pot_count = count
                             ball_status = 'Potted {} {}/s'.format(pot_count, ball_potted.lower())
 
-                    print(get_snapshot_report(self.__temp_snapshot, self.__cur_snapshot))
                     if ball_status is not None:
                         print(ball_status)
                     print('===========================================\n')
@@ -326,7 +324,6 @@ class BallTracker:
                         pot_count = count
                         ball_status = 'Potted {} {}/s'.format(pot_count, ball_potted.lower())
 
-                print(get_snapshot_report(self.__temp_snapshot, self.__cur_snapshot))
                 if ball_status is not None:
                     print(ball_status)
                 print('===========================================\n')

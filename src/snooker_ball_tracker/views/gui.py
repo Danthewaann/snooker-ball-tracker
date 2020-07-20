@@ -48,7 +48,6 @@ class SplashScreen:
     def load_bar(self):
         self.dots += 1
         self.progress_bar["value"] += 3
-        self.root.update_idletasks()
         if self.dots > 5:
             self.dots = 1
         self.load.config(text="Loading{}{}".format("."*self.dots, " "*(5-self.dots)))
@@ -61,6 +60,7 @@ class SplashScreen:
             #     self.root.state("zoomed")
             # return
         else:
+            self.root.update()
             self.root.after(100,self.load_bar)
     
     def on_close(self):
@@ -75,6 +75,7 @@ class GUI(Tk):
         self.iconname("Snooker Ball Tracker")
         self.title("Snooker Ball Tracker - Demo Application")
         self.wm_protocol("WM_DELETE_WINDOW", self.on_close)
+
         try:
             self.attributes('-zoomed', True)
         except TclError:
@@ -85,9 +86,10 @@ class GUI(Tk):
             Style().theme_use("vista")
         except TclError:
             Style().theme_use("default")
+
         SplashScreen(self)
 
-        # threading.Thread(target=self.__load_splashscreen, daemon=True).start()
+        # threading.Thread(target=self.__load_splashscreen).start()
 
         font.nametofont("TkDefaultFont").configure(size=10)
         font.nametofont("TkTextFont").configure(size=10)
