@@ -54,11 +54,6 @@ class SplashScreen:
         if self.progress_bar["value"] >= 100:
             self.a.destroy()
             self.root.deiconify()
-            # try:
-            #     self.root.attributes('-zoomed', True)
-            # except TclError:
-            #     self.root.state("zoomed")
-            # return
         else:
             self.root.update()
             self.root.after(100,self.load_bar)
@@ -116,13 +111,14 @@ class GUI(Tk):
         self.ball_tracker = None
 
         self.styles = [
-            Style().configure("Canvas", background="NavajoWhite3"),
+            # Style().configure(".", background="gainsboro"),
+            # Style().configure("Canvas", background="NavajoWhite3"),
             Style().configure("Left.TFrame", background="red"),
             Style().configure("Middle.TFrame", background="blue"),
             Style().configure("Right.TFrame", background="green"),
-            Style().configure("DB.TFrame", background="light gray"),
+            Style().configure("NavBar.TFrame", background="light gray"),
             Style().configure("TButton", padding=6, cursor="hand2"),
-            Style().configure("TMenubutton", padding=6, background="light gray"),
+            Style().configure("TMenubutton", padding=6, relief="raised"),
             Style().configure("TRadiobutton", relief="raised")
         ]
 
@@ -184,24 +180,24 @@ class GUI(Tk):
         SplashScreen(self)
 
     def __setup_window(self):
-        self.left.pack(side="left", fill="y", expand=True, anchor="w", ipadx=10, ipady=10)
-        self.separator_vert_1.pack(side="left", fill="y", expand=True, padx=20)
-        self.middle.pack(side="left", fill="y", expand=True, anchor="center", ipady=20)
-        self.separator_vert_2.pack(side="left", fill="y", expand=True, padx=20)
-        self.right.pack(side="left", fill="y", expand=True, anchor="e", ipadx=10, ipady=10)
+        self.left.pack(side="left", fill="both", expand=True, anchor="w", ipadx=10, ipady=10)
+        self.separator_vert_1.pack(side="left", fill="both")
+        self.middle.pack(side="left", fill="both", expand=True, anchor="center", ipady=20)
+        self.separator_vert_2.pack(side="left", fill="both")
+        self.right.pack(side="left", fill="both", expand=True, anchor="e", ipadx=10, ipady=10)
 
     def __setup_left_column(self):
-        self.ball_tracker_options.pack(side="top", fill="both", expand=1, anchor="nw", padx=(20, 0), pady=(20, 10))
+        self.ball_tracker_options.pack(side="top", fill="both", expand=True, padx=(20, 0), pady=(20, 10))
         self.ball_tracker_options.grid_children()
-        self.colour_detection_options.pack(side="top", fill="both", expand=1, anchor="w", padx=(20, 0), pady=(0, 20))
+        self.colour_detection_options.pack(side="top", fill="both", expand=True, padx=(20, 0), pady=(0, 20))
         self.colour_detection_options.grid_children()
 
     def __setup_middle_column(self):
-        self.program_output.pack(side="left", fill="both", expand=True, pady=(20, 10))
+        self.program_output.pack(side="top", fill="both", expand=True, padx=20, pady=(20, 10))
         self.program_output.grid_children()
 
     def __setup_right_column(self):
-        self.video_player.pack(side="top", fill="both", expand=1, anchor="sw", padx=(0, 20), pady=(20, 10))
+        self.video_player.pack(side="top", fill="both", expand=True, padx=(0, 20), pady=(20, 10))
         self.video_player.grid_children()
 
     def on_close(self):
