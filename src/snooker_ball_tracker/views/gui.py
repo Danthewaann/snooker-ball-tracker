@@ -1,6 +1,5 @@
 from tkinter import *
 from tkinter.ttk import *
-# from tkinter.ttk import Style, Separator, Progressbar
 import cv2
 import os
 import imutils
@@ -23,6 +22,7 @@ from PIL import Image, ImageTk
 class SplashScreen:
     def __init__(self, root):
         self.root = root
+
         # Gets the requested values of the height and width.
         windowWidth = root.winfo_reqwidth()
         windowHeight = root.winfo_reqheight()
@@ -75,16 +75,13 @@ class GUI(Tk):
             self.attributes('-zoomed', True)
         except TclError:
             self.state("zoomed")
+
         self.withdraw()
 
         try:
             Style().theme_use("vista")
         except TclError:
             Style().theme_use("default")
-
-        SplashScreen(self)
-
-        # threading.Thread(target=self.__load_splashscreen).start()
 
         font.nametofont("TkDefaultFont").configure(size=10)
         font.nametofont("TkTextFont").configure(size=10)
@@ -111,7 +108,7 @@ class GUI(Tk):
         self.ball_tracker = None
 
         self.styles = [
-            # Style().configure(".", background="gainsboro"),
+            # Style().configure(".", background="NavajoWhite3"),
             # Style().configure("Canvas", background="NavajoWhite3"),
             Style().configure("Left.TFrame", background="red"),
             Style().configure("Middle.TFrame", background="blue"),
@@ -122,39 +119,16 @@ class GUI(Tk):
             Style().configure("TRadiobutton", relief="raised")
         ]
 
-        self.scrollable_canvas = Canvas(master=self, highlightthickness = 0, background="#dcdad5")
-        self.vert_scrollbar = Scrollbar(master=self, orient="vertical", command=self.scrollable_canvas.yview)
-        self.hori_scrollbar = Scrollbar(master=self, orient="horizontal", command=self.scrollable_canvas.xview)
-        # self.main_frame = Frame(master=self)
+        SplashScreen(self)
+        threading.Thread(target=self.__setup_widgets).start()
 
-        # self.main_frame.fonts = self.fonts
-        # self.main_frame.styles = self.styles
-        # self.main_frame.lock = threading.Lock()
-        # self.main_frame.stop_event = threading.Event()
-        # self.main_frame.thread = None
-        # self.main_frame.stream = None
-        # self.main_frame.selected_file = None
-        # self.main_frame.ball_tracker = None
-
-        # self.left = Frame(master=self, style="Left.TFrame")
-        # self.middle = Frame(master=self, style="Middle.TFrame")
-        # self.right = Frame(master=self, style="Right.TFrame")
+    def __setup_widgets(self):
         self.left = Frame(master=self)
         self.middle = Frame(master=self)
         self.right = Frame(master=self)
         self.bottom = Frame(master=self)
         self.separator_vert_1 = Separator(master=self, orient="vertical")
         self.separator_vert_2 = Separator(master=self, orient="vertical")
-
-        # self.main_frame.bind(
-        #     "<Configure>",
-        #     lambda e: self.scrollable_canvas.configure(
-        #         scrollregion=self.scrollable_canvas.bbox("all")
-        #     )
-        # )
-
-        # self.scrollable_canvas.configure(yscrollcommand=self.vert_scrollbar.set)
-        # self.scrollable_canvas.configure(xscrollcommand=self.hori_scrollbar.set)
 
         self.program_output = ProgramOutput(master=self.middle)
         self.ball_tracker_options = BallTrackerOptions(master=self.left, logger=self.program_output)
@@ -165,19 +139,11 @@ class GUI(Tk):
         self.nav_bar.pack(side="bottom", fill="x", anchor="s")
 
         self.bottom.pack(side="bottom", fill="x", anchor="s")
-        # self.main_frame.pack(side="left", fill="both", expand=True)
-        # self.hori_scrollbar.pack(side="bottom", fill="x")
-        # self.scrollable_canvas.pack(side="left", fill="both", expand=True)
-        # self.vert_scrollbar.pack(side="right", fill="y")
-        # self.scrollable_canvas.create_window((0, 0), window=self.main_frame, anchor="center")
 
         self.__setup_left_column()
         self.__setup_middle_column()
         self.__setup_right_column()
         self.__setup_window()
-
-    def __load_splashscreen(self):
-        SplashScreen(self)
 
     def __setup_window(self):
         self.left.pack(side="left", fill="both", expand=True, anchor="w", ipadx=10, ipady=10)

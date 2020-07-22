@@ -1,5 +1,3 @@
-# import tkinter as tk
-# import tkinter.ttk as ttk
 from tkinter import *
 from tkinter.ttk import *
 import tkinter.ttk as ttk

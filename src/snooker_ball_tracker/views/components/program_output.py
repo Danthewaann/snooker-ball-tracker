@@ -1,5 +1,3 @@
-# import tkinter as tk
-# import tkinter.ttk as ttk
 from tkinter import *
 from tkinter.ttk import *
 from collections import OrderedDict
@@ -57,15 +55,6 @@ class ProgramOutput(Frame):
         self.separator_vert.grid(column=1, row=3, rowspan=8, sticky="ns", padx=10)
         self.last_ball_count.grid(column=0, row=6, pady=10, sticky="w")
         self.current_ball_count.grid(column=2, row=6, pady=10, sticky="w")
-
-        # self.balls_potted_label.grid(column=0, row=8, sticky="ew")
-        # self.white_ball_status_label.grid(column=2, row=8, sticky="ew")
-        # self.separator_hori_3.grid(column=0, row=7, columnspan=3, sticky="ew", pady=(0, 10))
-        # self.separator_hori_4.grid(column=0, row=9, columnspan=3, sticky="ew", pady=(10, 0))
-        # self.balls_potted_frame.grid(column=0, row=10, sticky="ew", pady=20)
-        # self.balls_potted_list.pack(side="left", fill="y")
-        # self.balls_potted_scrollbar.pack(side="left", fill="y")
-        # self.white_ball_status.grid(column=2, row=10, sticky="nw", pady=20)
 
         self.balls_potted_label.grid(column=2, row=8, sticky="ew")
         self.white_ball_status_label.grid(column=0, row=8, sticky="ew")
