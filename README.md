@@ -16,6 +16,8 @@ Python => 3.6.9
 The GUI provides an interface to allow you to configure the ball tracker in real-time as the app
 is processing video. Currently only supports pre-recorded video.
 
+When running the app click on the `Select File` button at the bottom, and use one of the provided video files located under `resources/videos/`.
+
 ### Interface screenshot
 
 <img src="examples/gui-screenshot.png" width=100%></img>
