@@ -1,14 +1,28 @@
 # Snooker Ball Tracker
 
-This is a CLI prototype that I developed in Python 3 to demo an idea I had for an app that could automatically detect and track Snooker balls on a Snooker table.
+This project is a prototype that I developed in Python to demo an idea I had for an app that could automatically detect and track Snooker balls on a Snooker table.
 
 The app would therefore be able to automatically score points based upon which ball was potted.
 
-## Setup and Run
-- Run `python setup.py install` to install all required modules and dependancies
-- Go into `src/snooker-ball-tracker` and run `python ball_tracker_cli.py` to get list of available commands
+## Python version
+Python => 3.6.9 
 
-## Examples
+## Setup and Run
+- Run `python setup.py install` to install all required modules and dependencies
+- Run `python -m snooker_ball_tracker` to run the GUI app or;
+- Run `python -m snooker_ball_tracker.ball_tracker_cli` to run the older CLI
+
+## GUI Examples
+The GUI provides an interface to allow you to configure the ball tracker in real-time as the app
+is processing video. Currently only supports pre-recorded video.
+
+### Interface screenshot
+
+<img src="examples/gui-screenshot.png" width=100%></img>
+
+
+## CLI Examples
+The CLI was the original tool used to demonstrate the ball tracker.
 
 ### Image 1
 `python ball_tracker_cli.py -i ../../resources/images/image-1.jpg --settings image-1`

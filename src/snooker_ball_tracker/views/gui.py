@@ -119,8 +119,8 @@ class GUI(Tk):
             Style().configure("TRadiobutton", relief="raised")
         ]
 
-        SplashScreen(self)
         threading.Thread(target=self.__setup_widgets).start()
+        SplashScreen(self)
 
     def __setup_widgets(self):
         self.left = Frame(master=self)
