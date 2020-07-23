@@ -8,5 +8,5 @@ resources/images/*
 !resources/images/image-1.jpg
 !resources/images/image-2.jpg
 src/snooker_ball_tracker.egg-info/
-src/snooker-ball-tracker/__pycache__/
-src/snooker-ball-tracker/config/__pycache__/
+src/snooker_ball_tracker/__pycache__/
+src/snooker_ball_tracker/config/__pycache__/

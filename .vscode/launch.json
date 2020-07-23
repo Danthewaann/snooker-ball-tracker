@@ -1,0 +1,43 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Linux - CLI image-1",
+            "type": "python",
+            "request": "launch",
+            "program": "src/snooker_ball_tracker/ball_tracker_cli.py",
+            "console": "integratedTerminal",
+            "args": ["-i", "resources/images/image-1.jpg", "--settings", "image-1"]
+        },
+        {
+            "name": "Linux - CLI image-2",
+            "type": "python",
+            "request": "launch",
+            "program": "src/snooker_ball_tracker/ball_tracker_cli.py",
+            "console": "integratedTerminal",
+            "args": ["-i", "resources/images/image-2.jpg", "--settings", "image-2", "--crop"]
+        },
+        {
+            "name": "Linux - CLI video-1",
+            "type": "python",
+            "request": "launch",
+            "program": "src/snooker_ball_tracker/ball_tracker_cli.py",
+            "console": "integratedTerminal",
+            "args": ["-v", "resources/videos/pre-recorded-1.mp4", "--settings", "pre_recorded_footage", "--crop"]
+        },
+        {
+            "name": "Linux - GUI Entry Point",
+            "type": "python",
+            "request": "launch",
+            "program": "src/snooker_ball_tracker/__main__.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Win - GUI Entry Point",
+            "type": "python",
+            "request": "launch",
+            "program": "src\\snooker_ball_tracker\\__main__.py",
+            "console": "integratedTerminal"
+        }
+    ]
+}
