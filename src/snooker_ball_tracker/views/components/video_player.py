@@ -187,7 +187,7 @@ class VideoPlayer(Frame):
                 self.master.master.thread.restart_stream()
             else:
                 self.btns['toggle'].configure(text="Play")
-                self.master.master.master.start_video_processor()
+                self.master.master.start_video_processor()
 
     def _update_bounds(self):
         self.logger.info("Detecting table boundary...")
