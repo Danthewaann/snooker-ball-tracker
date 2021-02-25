@@ -2,9 +2,7 @@ from tkinter import *
 from tkinter.ttk import *
 import cv2
 import os
-import imutils
 import numpy as np
-import time
 import threading
 from snooker_ball_tracker.views.components.navbar import Navbar
 from snooker_ball_tracker.views.components.ball_tracker_options import BallTrackerOptions
@@ -13,11 +11,13 @@ from snooker_ball_tracker.views.components.program_output import ProgramOutput
 from snooker_ball_tracker.views.components.video_player import VideoPlayer
 from snooker_ball_tracker.ball_tracker import BallTracker
 from snooker_ball_tracker.video_processor import VideoProcessor
+from snooker_ball_tracker.video_file_stream import VideoFileStream
 import snooker_ball_tracker.settings as s
 from collections import OrderedDict
 from tkinter import font
 from tkinter import filedialog
 from PIL import Image, ImageTk
+
 
 class SplashScreen:
     def __init__(self, root):
@@ -38,9 +38,12 @@ class SplashScreen:
         self.dots = 5
         Label(self.a, text="=== Snooker Ball Tracker - Demo Application ===").pack(padx=20, pady=(20, 5))
         Label(self.a, text="Version: 0.1.dev0").pack(padx=20)
-        Separator(self.a, orient="horizontal").pack(pady=(20, 0), fill="x", expand=True)
-        self.load = Label(self.a, text="Loading{}".format("."*5), font=("Helvetica", 18))
-        self.progress_bar = Progressbar(self.a, orient="horizontal", length=200, mode="determinate")
+        Separator(self.a, orient="horizontal").pack(
+            pady=(20, 0), fill="x", expand=True)
+        self.load = Label(self.a, text="Loading{}".format(
+            "."*5), font=("Helvetica", 18))
+        self.progress_bar = Progressbar(
+            self.a, orient="horizontal", length=200, mode="determinate")
         self.load.pack(padx=20, pady=(20, 0))
         self.progress_bar.pack(padx=20, pady=(0, 20))
         self.load_bar()
@@ -50,14 +53,15 @@ class SplashScreen:
         self.progress_bar["value"] += 3
         if self.dots > 5:
             self.dots = 1
-        self.load.config(text="Loading{}{}".format("."*self.dots, " "*(5-self.dots)))
+        self.load.config(text="Loading{}{}".format(
+            "."*self.dots, " "*(5-self.dots)))
         if self.progress_bar["value"] >= 100:
             self.a.destroy()
             self.root.deiconify()
         else:
             self.root.update()
-            self.root.after(100,self.load_bar)
-    
+            self.root.after(100, self.load_bar)
+
     def on_close(self):
         self.a.destroy()
         self.root.destroy()
@@ -65,8 +69,9 @@ class SplashScreen:
 
 class GUI(Tk):
     def __init__(self):
-        super().__init__() 
-        self.iconphoto(True, PhotoImage(file=os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "icon.png")))
+        super().__init__()
+        self.iconphoto(True, PhotoImage(file=os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), "..", "icon.png")))
         self.iconname("Snooker Ball Tracker")
         self.title("Snooker Ball Tracker - Demo Application")
         self.wm_protocol("WM_DELETE_WINDOW", self.on_close)
@@ -108,8 +113,6 @@ class GUI(Tk):
         self.ball_tracker = None
 
         self.styles = [
-            # Style().configure(".", background="NavajoWhite3"),
-            # Style().configure("Canvas", background="NavajoWhite3"),
             Style().configure("Left.TFrame", background="red"),
             Style().configure("Middle.TFrame", background="blue"),
             Style().configure("Right.TFrame", background="green"),
@@ -131,9 +134,12 @@ class GUI(Tk):
         self.separator_vert_2 = Separator(master=self, orient="vertical")
 
         self.program_output = ProgramOutput(master=self.middle)
-        self.ball_tracker_options = BallTrackerOptions(master=self.left, logger=self.program_output)
-        self.colour_detection_options = ColourDetectionOptions(master=self.left, logger=self.program_output)
-        self.video_player = VideoPlayer(master=self.right, logger=self.program_output)
+        self.ball_tracker_options = BallTrackerOptions(
+            master=self.left, logger=self.program_output)
+        self.colour_detection_options = ColourDetectionOptions(
+            master=self.left, logger=self.program_output)
+        self.video_player = VideoPlayer(
+            master=self.right, logger=self.program_output)
 
         self.nav_bar = Navbar(master=self.bottom)
         self.nav_bar.pack(side="bottom", fill="x", anchor="s")
@@ -146,33 +152,41 @@ class GUI(Tk):
         self.__setup_window()
 
     def __setup_window(self):
-        self.left.pack(side="left", fill="both", expand=True, anchor="w", ipadx=10, ipady=10)
+        self.left.pack(side="left", fill="both", expand=True,
+                       anchor="w", ipadx=10, ipady=10)
         self.separator_vert_1.pack(side="left", fill="both")
-        self.middle.pack(side="left", fill="both", expand=True, anchor="center", ipady=20)
+        self.middle.pack(side="left", fill="both",
+                         expand=True, anchor="center", ipady=20)
         self.separator_vert_2.pack(side="left", fill="both")
-        self.right.pack(side="left", fill="both", expand=True, anchor="e", ipadx=10, ipady=10)
+        self.right.pack(side="left", fill="both", expand=True,
+                        anchor="e", ipadx=10, ipady=10)
 
     def __setup_left_column(self):
-        self.ball_tracker_options.pack(side="top", fill="both", expand=True, padx=(20, 0), pady=(20, 10))
+        self.ball_tracker_options.pack(
+            side="top", fill="both", expand=True, padx=(20, 0), pady=(20, 10))
         self.ball_tracker_options.grid_children()
-        self.colour_detection_options.pack(side="top", fill="both", expand=True, padx=(20, 0), pady=(0, 20))
+        self.colour_detection_options.pack(
+            side="top", fill="both", expand=True, padx=(20, 0), pady=(0, 20))
         self.colour_detection_options.grid_children()
 
     def __setup_middle_column(self):
-        self.program_output.pack(side="top", fill="both", expand=True, padx=20, pady=(20, 10))
+        self.program_output.pack(
+            side="top", fill="both", expand=True, padx=20, pady=(20, 10))
         self.program_output.grid_children()
 
     def __setup_right_column(self):
-        self.video_player.pack(side="top", fill="both", expand=True, padx=(0, 20), pady=(20, 10))
+        self.video_player.pack(side="top", fill="both",
+                               expand=True, padx=(0, 20), pady=(20, 10))
         self.video_player.grid_children()
 
     def on_close(self):
         if self.stream is not None:
-            self.stream.release()
+            self.stream.stop()
         self.quit()
-        
+
     def select_file_onclick(self):
-        self.selected_file = filedialog.askopenfilename()
+        self.selected_file = filedialog.askopenfilename(
+            initialdir="../../../resources/videos")
 
         if self.selected_file == "":
             return
@@ -183,10 +197,12 @@ class GUI(Tk):
         try:
             self.stream = cv2.VideoCapture(self.selected_file)
             if not self.stream.isOpened():
-                self.program_output.error('Invalid file, please select a video file!')
+                self.program_output.error(
+                    'Invalid file, please select a video file!')
                 return
         except TypeError:
-            self.program_output.error('Invalid file, please select a video file!')
+            self.program_output.error(
+                'Invalid file, please select a video file!')
             return
 
         self.video_player.load_video_player()
@@ -196,10 +212,17 @@ class GUI(Tk):
 
     def start_video_processor(self):
         self.program_output.info("Starting video processor...")
-        self.stream = cv2.VideoCapture(self.selected_file)
+        self.stream = VideoFileStream(self.selected_file, queue_size=1)
+
         self.ball_tracker = BallTracker()
         self.stop_event = threading.Event()
-        self.thread = VideoProcessor(master=self, stream=self.stream, 
-                                                video_file=self.selected_file, ball_tracker=self.ball_tracker, 
-                                                lock=self.lock, stop_event=self.stop_event)
+        self.thread = VideoProcessor(master=self, stream=self.stream,
+                                     video_file=self.selected_file, ball_tracker=self.ball_tracker,
+                                     lock=self.lock, stop_event=self.stop_event)
         self.thread.start()
+
+    def restart_video_processor(self):
+        if self.thread is not None:
+            self.thread.stop_event.set()
+
+        self.start_video_processor()

@@ -33,10 +33,12 @@ def get_snapshot_report(prev_snapshot, cur_snapshot):
     report += 'PREVIOUS SNAPSHOT | CURRENT SNAPSHOT \n'
     report += '------------------|-------------------\n'
     for ball in prev_snapshot.balls:
-        prev_ball_status = '{}s: {}'.format(ball.lower(), len(prev_snapshot.balls[ball]))
+        prev_ball_status = '{}s: {}'.format(
+            ball.lower(), len(prev_snapshot.balls[ball]))
         while len(prev_ball_status) < 17:
             prev_ball_status += ' '
-        cur_ball_status = '{}s: {}'.format(ball.lower(), len(cur_snapshot.balls[ball]))
+        cur_ball_status = '{}s: {}'.format(
+            ball.lower(), len(cur_snapshot.balls[ball]))
         report += prev_ball_status + ' | ' + cur_ball_status + '\n'
     report += '--------------------------------------\n'
     return report
@@ -51,49 +53,64 @@ class BallTracker:
                          the underlying blob detector to detect balls with
         """
         params = cv2.SimpleBlobDetector_Params()
-        params.filterByConvexity = kwargs.get('filter_by_convexity', s.FILTER_BY_CONVEXITY)
+        params.filterByConvexity = kwargs.get(
+            'filter_by_convexity', s.FILTER_BY_CONVEXITY)
         params.minConvexity = kwargs.get('min_convexity', s.MIN_CONVEXITY)
         params.maxConvexity = kwargs.get('max_convexity', s.MAX_CONVEXITY)
-        params.filterByCircularity = kwargs.get('filter_by_circularity', s.FILTER_BY_CIRCULARITY)
-        params.minCircularity = kwargs.get('min_circularity', s.MIN_CIRCULARITY)
-        params.maxCircularity = kwargs.get('max_circularity', s.MAX_CIRCULARITY)
-        params.filterByInertia = kwargs.get('filter_by_inertia', s.FILTER_BY_INERTIA)
-        params.minInertiaRatio = kwargs.get('min_inertia_ratio', s.MIN_INERTIA_RATIO)
-        params.maxInertiaRatio = kwargs.get('max_inertia_ratio', s.MAX_INERTIA_RATIO)
+        params.filterByCircularity = kwargs.get(
+            'filter_by_circularity', s.FILTER_BY_CIRCULARITY)
+        params.minCircularity = kwargs.get(
+            'min_circularity', s.MIN_CIRCULARITY)
+        params.maxCircularity = kwargs.get(
+            'max_circularity', s.MAX_CIRCULARITY)
+        params.filterByInertia = kwargs.get(
+            'filter_by_inertia', s.FILTER_BY_INERTIA)
+        params.minInertiaRatio = kwargs.get(
+            'min_inertia_ratio', s.MIN_INERTIA_RATIO)
+        params.maxInertiaRatio = kwargs.get(
+            'max_inertia_ratio', s.MAX_INERTIA_RATIO)
         params.filterByArea = kwargs.get('filter_by_area', s.FILTER_BY_AREA)
         params.minArea = kwargs.get('min_area', s.MIN_AREA)
         params.maxArea = kwargs.get('max_area', s.MAX_AREA)
-        params.filterByColor = kwargs.get('filter_by_colour', s.FILTER_BY_COLOUR)
+        params.filterByColor = kwargs.get(
+            'filter_by_colour', s.FILTER_BY_COLOUR)
         params.blobColor = kwargs.get('blob_color', s.BLOB_COLOUR)
-        params.minDistBetweenBlobs = kwargs.get('min_dest_between_blobs', s.MIN_DIST_BETWEEN_BLOBS)
+        params.minDistBetweenBlobs = kwargs.get(
+            'min_dest_between_blobs', s.MIN_DIST_BETWEEN_BLOBS)
         self.__blob_detector = cv2.SimpleBlobDetector_create(params)
-        self.__table_bounds = None
-        self.__table_bounds_mask = None
         self.__balls = []
         self.__frame_counter = 0
         self.__temp_snapshot = None
         self.__prev_snapshot = None
         self.__cur_snapshot = None
-        self.update_boundary = False
         self.increment_frame_counter = True
 
     def update_blob_detector(self, **kwargs):
         params = cv2.SimpleBlobDetector_Params()
-        params.filterByConvexity = kwargs.get('filter_by_convexity', s.FILTER_BY_CONVEXITY)
+        params.filterByConvexity = kwargs.get(
+            'filter_by_convexity', s.FILTER_BY_CONVEXITY)
         params.minConvexity = kwargs.get('min_convexity', s.MIN_CONVEXITY)
         params.maxConvexity = kwargs.get('max_convexity', s.MAX_CONVEXITY)
-        params.filterByCircularity = kwargs.get('filter_by_circularity', s.FILTER_BY_CIRCULARITY)
-        params.minCircularity = kwargs.get('min_circularity', s.MIN_CIRCULARITY)
-        params.maxCircularity = kwargs.get('max_circularity', s.MAX_CIRCULARITY)
-        params.filterByInertia = kwargs.get('filter_by_inertia', s.FILTER_BY_INERTIA)
-        params.minInertiaRatio = kwargs.get('min_inertia_ratio', s.MIN_INERTIA_RATIO)
-        params.maxInertiaRatio = kwargs.get('max_inertia_ratio', s.MAX_INERTIA_RATIO)
+        params.filterByCircularity = kwargs.get(
+            'filter_by_circularity', s.FILTER_BY_CIRCULARITY)
+        params.minCircularity = kwargs.get(
+            'min_circularity', s.MIN_CIRCULARITY)
+        params.maxCircularity = kwargs.get(
+            'max_circularity', s.MAX_CIRCULARITY)
+        params.filterByInertia = kwargs.get(
+            'filter_by_inertia', s.FILTER_BY_INERTIA)
+        params.minInertiaRatio = kwargs.get(
+            'min_inertia_ratio', s.MIN_INERTIA_RATIO)
+        params.maxInertiaRatio = kwargs.get(
+            'max_inertia_ratio', s.MAX_INERTIA_RATIO)
         params.filterByArea = kwargs.get('filter_by_area', s.FILTER_BY_AREA)
         params.minArea = kwargs.get('min_area', s.MIN_AREA)
         params.maxArea = kwargs.get('max_area', s.MAX_AREA)
-        params.filterByColor = kwargs.get('filter_by_colour', s.FILTER_BY_COLOUR)
+        params.filterByColor = kwargs.get(
+            'filter_by_colour', s.FILTER_BY_COLOUR)
         params.blobColor = kwargs.get('blob_color', s.BLOB_COLOUR)
-        params.minDistBetweenBlobs = kwargs.get('min_dest_between_blobs', s.MIN_DIST_BETWEEN_BLOBS)
+        params.minDistBetweenBlobs = kwargs.get(
+            'min_dest_between_blobs', s.MIN_DIST_BETWEEN_BLOBS)
         self.__blob_detector = cv2.SimpleBlobDetector_create(params)
 
     def reset_snapshots(self):
@@ -107,78 +124,6 @@ class BallTracker:
     def detected_table(self):
         return self.__table_bounds is not None
 
-    def perform_init_ops(self, frame, width=None, crop=True, morph=False):
-        """
-        Performs initial operations on `frame` before it is properly processed
-
-        :param frame: image to process
-        :param width: width to resize `frame` to
-        :param crop: if True crop `frame` around the detected table boundary
-        :param morph: if True perform morph closing morphology to `frame`
-        :returns: processed `frame`, binary version of `frame` and HSV version of `frame`
-        """
-        # resize the frame if width is provided
-        if width:
-            frame = imutils.resize(frame, width=width)
-
-        # convert frame into HSV colour space
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-        # get mask of table cloth colour
-        threshold, contours = self.get_mask_contours_for_colour(hsv, 'TABLE')
-        threshold = cv2.cvtColor(threshold, cv2.COLOR_GRAY2BGR)
-        threshold = cv2.bitwise_not(threshold)
-
-        # Perform closing morphology if `morph` is True
-        if morph:
-            threshold = cv2.morphologyEx(threshold, cv2.MORPH_CLOSE, np.ones((5,5), np.uint8))
-
-        if self.update_boundary:
-            self.create_table_boundary(frame, contours)
-            self.update_boundary = False
-
-        # crop frame, hsv and threshold
-        if crop and self.__table_bounds is not None:
-            frame = self.crop(frame)
-            hsv = self.crop(hsv)
-            threshold = self.crop(threshold)
-
-        return frame, threshold, hsv
-
-    def create_table_boundary(self, frame, contours=None):
-        """
-        Creates the table boundary mask from `frame`
-
-        :param frame: image to process
-        :param contours: list of contours to possibly use for the table boundary
-        """
-        # Create mask where white is what we want, black otherwise
-        self.__table_bounds_mask = np.zeros_like(frame)
-        if len(contours) > 1:
-            self.__table_bounds = max(contours, key=lambda el: cv2.contourArea(el))
-        elif len(contours) == 1:
-            self.__table_bounds = contours[0]
-        else:
-            self.__table_bounds = None
-        if self.__table_bounds is not None:
-            cv2.drawContours(self.__table_bounds_mask, [self.__table_bounds], -1, (255, 255, 255), -1)
-
-    def crop(self, frame):
-        """
-        Crops `frame` using the detected table boundary
-
-        :param frame: image to process
-        :returns: cropped `frame`
-        """
-        # Extract out the object and place into output image
-        out = np.zeros_like(frame)
-        out[self.__table_bounds_mask == 255] = frame[self.__table_bounds_mask == 255]
-        (x, y, _) = np.where(self.__table_bounds_mask == 255)
-        (topx, topy) = (np.min(x), np.min(y))
-        (bottomx, bottomy) = (np.max(x), np.max(y))
-        frame = out[topx:bottomx + 1, topy:bottomy + 1]
-        return frame
-
     def draw_balls(self, frame, balls):
         """
         Draws each ball from `balls` onto `frame`
@@ -189,17 +134,12 @@ class BallTracker:
         for ball_colour in balls:
             for ball in balls[ball_colour]:
                 cv2.putText(
-                    frame, ball_colour, (int(ball.pt[0] + 10), int(ball.pt[1])),
+                    frame, ball_colour, (int(
+                        ball.pt[0] + 10), int(ball.pt[1])),
                     0, 0.6, (0, 255, 0), thickness=2
                 )
                 cv2.circle(frame, (int(ball.pt[0]), int(ball.pt[1])),
                            int(ball.size / 2), (0, 255, 0))
-
-
-    def draw_table_boundary(self, frame):
-        if self.__table_bounds is not None:
-            cv2.drawContours(frame, [self.__table_bounds], -1, (255, 255, 255), 3)
-
 
     def update_balls(self, balls, cur_balls):
         """
@@ -268,15 +208,15 @@ class BallTracker:
         #  - Previous shot SnapShot
         #  - Current shot SnapShot
         #  - Temporary shot SnapShot
-        #  
-        # The previous shot SnapShot stores info about the state of the table 
+        #
+        # The previous shot SnapShot stores info about the state of the table
         # of the last shot taken
         #
         # The Current shot SnapShot stores info about the state of the table
         # currently in play before the shot is taken
         #
-        # The Temporary shot SnapShot is used to determine when a shot has 
-        # started and finished, which is determined by comparing the 
+        # The Temporary shot SnapShot is used to determine when a shot has
+        # started and finished, which is determined by comparing the
         # Temporary SnapShot with the Current SnapShot
 
         ball_potted = None
@@ -284,10 +224,10 @@ class BallTracker:
         start = time.time()
 
         # Perform initial operations on provided frame (resize and crop)
-        frame, threshold, hsv = self.perform_init_ops(frame, width=width, crop=crop, morph=morph)
+        frame, threshold, hsv = frame
 
         # Every 5 frames run the colour detection phase, otherwise just update ball positions
-        if self.__frame_counter == 0  or self.__frame_counter % 5 == 0:
+        if self.__frame_counter == 0 or self.__frame_counter % 5 == 0:
             self.__balls = self.__run(threshold, hsv)
         else:
             cur_balls = self.__blob_detector.detect(threshold)
@@ -305,11 +245,13 @@ class BallTracker:
             if self.__prev_snapshot.has_shot_started(self.__cur_snapshot):
                 if self.__cur_snapshot != self.__temp_snapshot:
                     for ball_colour in self.__temp_snapshot.balls:
-                        potted, count = self.__temp_snapshot.compare_ball_diff(ball_colour, self.__cur_snapshot)
+                        potted, count = self.__temp_snapshot.compare_ball_diff(
+                            ball_colour, self.__cur_snapshot)
                         if potted != 'WHITE' and count > 0:
                             ball_potted = potted
                             pot_count = count
-                            ball_status = 'Potted {} {}/s'.format(pot_count, ball_potted.lower())
+                            ball_status = 'Potted {} {}/s'.format(
+                                pot_count, ball_potted.lower())
 
                     if ball_status is not None:
                         print(ball_status)
@@ -318,11 +260,13 @@ class BallTracker:
 
             if self.__prev_snapshot.has_shot_finished(self.__cur_snapshot):
                 for ball_colour in self.__temp_snapshot.balls:
-                    potted, count = self.__temp_snapshot.compare_ball_diff(ball_colour, self.__cur_snapshot)
+                    potted, count = self.__temp_snapshot.compare_ball_diff(
+                        ball_colour, self.__cur_snapshot)
                     if potted != 'WHITE' and count > 0:
                         ball_potted = potted
                         pot_count = count
-                        ball_status = 'Potted {} {}/s'.format(pot_count, ball_potted.lower())
+                        ball_status = 'Potted {} {}/s'.format(
+                            pot_count, ball_potted.lower())
 
                 if ball_status is not None:
                     print(ball_status)
@@ -339,12 +283,6 @@ class BallTracker:
             frame = threshold
 
         self.draw_balls(frame, self.__balls)
-        if not crop:
-            self.draw_table_boundary(frame)
-        if show_fps:
-            fps = int(1.0 / (time.time() - start))
-            cv2.putText(frame, str(fps) + ' fps', (20, 20), 0, 0.8, (0, 255, 0))
-            cv2.putText(frame, 'frame ' + str(self.__frame_counter), (120, 20), 0, 0.8, (0, 255, 0))
 
         return frame, ball_potted, pot_count
 
@@ -356,7 +294,7 @@ class BallTracker:
         :param hsv: HSV colour space image to detect colours with
         :returns: list of balls mapped to an appropriate colour found in `threshold`
         """
-        # This function handles the colour detection phase and returns a list of 
+        # This function handles the colour detection phase and returns a list of
         # detected balls in the frame and maps the appropriate colour to each ball
         balls = {
             'WHITE': [],
@@ -399,22 +337,28 @@ class BallTracker:
                 is_ball = self.__keypoint_is_ball('RED', reds, keypoint, balls)
 
             if not is_ball and s.DETECT_COLOURS['WHITE']:
-                is_ball = self.__keypoint_is_ball('WHITE', whites, keypoint, balls)
+                is_ball = self.__keypoint_is_ball(
+                    'WHITE', whites, keypoint, balls)
 
             if not is_ball and s.DETECT_COLOURS['YELLOW']:
-                is_ball = self.__keypoint_is_ball('YELLOW', yellows, keypoint, balls, biggest_contour=True)
+                is_ball = self.__keypoint_is_ball(
+                    'YELLOW', yellows, keypoint, balls, biggest_contour=True)
 
             if not is_ball and s.DETECT_COLOURS['GREEN']:
-                is_ball = self.__keypoint_is_ball('GREEN', greens, keypoint, balls, biggest_contour=False)
+                is_ball = self.__keypoint_is_ball(
+                    'GREEN', greens, keypoint, balls, biggest_contour=False)
 
             if not is_ball and s.DETECT_COLOURS['BLUE']:
-                is_ball = self.__keypoint_is_ball('BLUE', blues, keypoint, balls, biggest_contour=True)
+                is_ball = self.__keypoint_is_ball(
+                    'BLUE', blues, keypoint, balls, biggest_contour=True)
 
             if not is_ball and s.DETECT_COLOURS['PINK']:
-                is_ball = self.__keypoint_is_ball('PINK', pinks, keypoint, balls, biggest_contour=True)
+                is_ball = self.__keypoint_is_ball(
+                    'PINK', pinks, keypoint, balls, biggest_contour=True)
 
             if not is_ball and s.DETECT_COLOURS['BLACK']:
-                is_ball = self.__keypoint_is_ball('BLACK', blacks, keypoint, balls)
+                is_ball = self.__keypoint_is_ball(
+                    'BLACK', blacks, keypoint, balls)
 
             if not is_ball and s.DETECT_COLOURS['BROWN']:
                 self.__keypoint_is_ball('BROWN', browns, keypoint, balls)
@@ -433,7 +377,8 @@ class BallTracker:
         :returns: True if `keypoint` is within `contour`, False otherwise
         """
         if len(colour_contours) > 1 and biggest_contour:
-            colour_contour = max(colour_contours, key=lambda el: cv2.contourArea(el))
+            colour_contour = max(
+                colour_contours, key=lambda el: cv2.contourArea(el))
             if self.__keypoint_in_contour(keypoint, colour_contour):
                 balls[colour].append(keypoint)
                 return True
@@ -470,7 +415,8 @@ class BallTracker:
         if colour in s.COLOURS:
             colour_mask = cv2.inRange(frame, s.COLOURS[colour]['LOWER'],
                                       s.COLOURS[colour]['UPPER'])
-            contours, _ = cv2.findContours(colour_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+            contours, _ = cv2.findContours(
+                colour_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         return colour_mask, contours
 
     def detect_colour(self, frame, lower, upper):
@@ -483,7 +429,8 @@ class BallTracker:
         :returns: colour mask of `lower` and `upper` HSV values and a list of contours
         """
         colour_mask = cv2.inRange(frame, lower, upper)
-        contours, _ = cv2.findContours(colour_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        contours, _ = cv2.findContours(
+            colour_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         return colour_mask, contours
 
     def get_threshold(self, frame, color_space=cv2.COLOR_BGR2GRAY, threshold_type=cv2.THRESH_BINARY_INV):
@@ -495,7 +442,8 @@ class BallTracker:
         :param threshold_type: threshold type to use in conversion
         """
         gray = cv2.cvtColor(frame, color_space)
-        retval, threshold = cv2.threshold(gray, s.MIN_THRESHOLD, s.MAX_THRESHOLD, threshold_type)
+        retval, threshold = cv2.threshold(
+            gray, s.MIN_THRESHOLD, s.MAX_THRESHOLD, threshold_type)
         return threshold
 
     def get_frame_counter(self):
@@ -543,7 +491,8 @@ class SnapShot:
         snapshot_info = ''
         for ball_colour in s.DETECT_COLOURS:
             if s.DETECT_COLOURS[ball_colour]:
-                snapshot_info += '{}s: {}\n'.format(ball_colour.lower(), len(self.balls[ball_colour]))
+                snapshot_info += '{}s: {}\n'.format(
+                    ball_colour.lower(), len(self.balls[ball_colour]))
         return snapshot_info
 
     def compare_ball_diff(self, ball_colour, snapshot):
