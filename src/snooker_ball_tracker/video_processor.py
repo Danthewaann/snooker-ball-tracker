@@ -8,6 +8,7 @@ from imutils.video import FPS
 from snooker_ball_tracker.video_file_stream import VideoFileStream
 from queue import Queue
 from random import randint
+from copy import copy
 
 
 class VideoProcessor(threading.Thread):
@@ -29,7 +30,6 @@ class VideoProcessor(threading.Thread):
         self.__input_threshold = None
         self.__output_frame = None
         self.__fps = FPS()
-        self.__frame_displayed = False
 
     def get_hsv(self):
         return self.__input_hsv
@@ -44,21 +44,20 @@ class VideoProcessor(threading.Thread):
         while not self.stop_event.is_set():
             if self.play_stream and self.stream.running():
                 if not self._process_next_frame():
-                    print("exiting...")
-                    break
+                    continue
             else:
-                if not self.__frame_displayed:
-                    self.display_frame()
+                self._process_frame()
         with self.stream_lock:
             self.stream.stop()
 
     def _process_next_frame(self):
-        if self.play_stream:
-            with self.stream_lock:
-                self.__input_frame, self.__input_threshold, self.__input_hsv = self.stream.read()
+        with self.stream_lock:
+            input_frame, input_threshold, input_hsv = self.stream.read()
 
-                if self.__input_frame is not None:
-                    self._process_frame()
+        if input_frame is not None:
+            self.__input_frame, self.__input_threshold, self.__input_hsv = input_frame, input_threshold, input_hsv
+            self._process_frame()
+
         if self.stream.running():
             return True
 
@@ -71,14 +70,14 @@ class VideoProcessor(threading.Thread):
         count = None
 
         self.__output_frame, ball_potted, count = self.ball_tracker.run(
-            (self.__input_frame, self.__input_threshold, self.__input_hsv), width=800, crop=self.stream.crop_frames, show_threshold=self.show_threshold)
+            (copy(self.__input_frame), copy(self.__input_threshold), copy(self.__input_hsv)), width=800, crop=self.stream.crop_frames, show_threshold=self.show_threshold)
 
         if self.stream.detect_colour != "None":
             colour_mask, contours = self.ball_tracker.detect_colour(
                 self.__input_hsv, s.COLOURS[self.stream.detect_colour]['LOWER'], s.COLOURS[self.stream.detect_colour]['UPPER']
             )
             if self.show_threshold:
-                self.__output_frame = self.__input_threshold
+                self.__output_frame = copy(self.__input_threshold)
             else:
                 if self.mask_colour:
                     self.__output_frame = cv2.bitwise_and(
@@ -86,8 +85,9 @@ class VideoProcessor(threading.Thread):
 
             cv2.drawContours(self.__output_frame, contours, -1, (0, 255, 0), 2)
 
-        self.__fps.update()
-        self.__fps.stop()
+        if self.play_stream:
+            self.__fps.update()
+            self.__fps.stop()
 
         cv2.putText(self.__output_frame, "Queue Size: {}".format(self.stream.Q.qsize()),
                     (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
@@ -116,8 +116,6 @@ class VideoProcessor(threading.Thread):
             False)
         self.master.program_output.white_ball_status['text'] = self.ball_tracker.get_white_ball_status(
         )
-
-        self.__frame_displayed = True
 
     def update_bounds(self):
         self.stream.update_boundary = True

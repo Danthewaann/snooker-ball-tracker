@@ -221,9 +221,7 @@ class BallTracker:
 
         ball_potted = None
         pot_count = 0
-        start = time.time()
 
-        # Perform initial operations on provided frame (resize and crop)
         frame, threshold, hsv = frame
 
         # Every 5 frames run the colour detection phase, otherwise just update ball positions

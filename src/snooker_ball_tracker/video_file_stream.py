@@ -7,7 +7,7 @@ from random import randint
 
 
 class VideoFileStream(imutils.video.FileVideoStream):
-    def __init__(self, path, crop=False, morph=False, queue_size=128):
+    def __init__(self, path, crop=False, morph=True, queue_size=128):
         super().__init__(path, transform=self.transform_frame, queue_size=queue_size)
         self.crop_frames = crop
         self.morph = morph
@@ -39,10 +39,10 @@ class VideoFileStream(imutils.video.FileVideoStream):
             threshold = cv2.cvtColor(threshold, cv2.COLOR_GRAY2BGR)
             threshold = cv2.bitwise_not(threshold)
 
-            # Perform closing morphology if `morph` is True
+            # perform closing morphology if `morph` is True
             if self.morph:
-                threshold = cv2.morphologyEx(
-                    threshold, cv2.MORPH_CLOSE, np.ones((5, 5), np.uint8))
+                kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
+                threshold = cv2.morphologyEx(threshold, cv2.MORPH_OPEN, kernel)
 
             # get the bounds of the table
             if self.update_boundary:

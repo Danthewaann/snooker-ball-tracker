@@ -110,7 +110,7 @@ class GUI(Tk):
         self.thread = None
         self.stream = None
         self.selected_file = None
-        self.ball_tracker = None
+        self.ball_tracker = BallTracker()
 
         self.styles = [
             Style().configure("Left.TFrame", background="red"),
@@ -214,7 +214,6 @@ class GUI(Tk):
         self.program_output.info("Starting video processor...")
         self.stream = VideoFileStream(self.selected_file, queue_size=1)
 
-        self.ball_tracker = BallTracker()
         self.stop_event = threading.Event()
         self.thread = VideoProcessor(master=self, stream=self.stream,
                                      video_file=self.selected_file, ball_tracker=self.ball_tracker,
