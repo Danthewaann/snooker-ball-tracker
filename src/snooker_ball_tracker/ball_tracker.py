@@ -52,65 +52,32 @@ class BallTracker:
         :param **kwargs: dictionary of options to use to configure
                          the underlying blob detector to detect balls with
         """
-        params = cv2.SimpleBlobDetector_Params()
-        params.filterByConvexity = kwargs.get(
-            'filter_by_convexity', s.FILTER_BY_CONVEXITY)
-        params.minConvexity = kwargs.get('min_convexity', s.MIN_CONVEXITY)
-        params.maxConvexity = kwargs.get('max_convexity', s.MAX_CONVEXITY)
-        params.filterByCircularity = kwargs.get(
-            'filter_by_circularity', s.FILTER_BY_CIRCULARITY)
-        params.minCircularity = kwargs.get(
-            'min_circularity', s.MIN_CIRCULARITY)
-        params.maxCircularity = kwargs.get(
-            'max_circularity', s.MAX_CIRCULARITY)
-        params.filterByInertia = kwargs.get(
-            'filter_by_inertia', s.FILTER_BY_INERTIA)
-        params.minInertiaRatio = kwargs.get(
-            'min_inertia_ratio', s.MIN_INERTIA_RATIO)
-        params.maxInertiaRatio = kwargs.get(
-            'max_inertia_ratio', s.MAX_INERTIA_RATIO)
-        params.filterByArea = kwargs.get('filter_by_area', s.FILTER_BY_AREA)
-        params.minArea = kwargs.get('min_area', s.MIN_AREA)
-        params.maxArea = kwargs.get('max_area', s.MAX_AREA)
-        params.filterByColor = kwargs.get(
-            'filter_by_colour', s.FILTER_BY_COLOUR)
-        params.blobColor = kwargs.get('blob_color', s.BLOB_COLOUR)
-        params.minDistBetweenBlobs = kwargs.get(
-            'min_dest_between_blobs', s.MIN_DIST_BETWEEN_BLOBS)
-        self.__blob_detector = cv2.SimpleBlobDetector_create(params)
         self.__balls = []
+        self.__blob_detector = None
         self.__frame_counter = 0
         self.__temp_snapshot = None
         self.__prev_snapshot = None
         self.__cur_snapshot = None
         self.increment_frame_counter = True
+        self.setup_blob_detector(**kwargs)
 
-    def update_blob_detector(self, **kwargs):
+    def setup_blob_detector(self, **kwargs):
         params = cv2.SimpleBlobDetector_Params()
-        params.filterByConvexity = kwargs.get(
-            'filter_by_convexity', s.FILTER_BY_CONVEXITY)
+        params.filterByConvexity = kwargs.get('filter_by_convexity', s.FILTER_BY_CONVEXITY)
         params.minConvexity = kwargs.get('min_convexity', s.MIN_CONVEXITY)
         params.maxConvexity = kwargs.get('max_convexity', s.MAX_CONVEXITY)
-        params.filterByCircularity = kwargs.get(
-            'filter_by_circularity', s.FILTER_BY_CIRCULARITY)
-        params.minCircularity = kwargs.get(
-            'min_circularity', s.MIN_CIRCULARITY)
-        params.maxCircularity = kwargs.get(
-            'max_circularity', s.MAX_CIRCULARITY)
-        params.filterByInertia = kwargs.get(
-            'filter_by_inertia', s.FILTER_BY_INERTIA)
-        params.minInertiaRatio = kwargs.get(
-            'min_inertia_ratio', s.MIN_INERTIA_RATIO)
-        params.maxInertiaRatio = kwargs.get(
-            'max_inertia_ratio', s.MAX_INERTIA_RATIO)
+        params.filterByCircularity = kwargs.get('filter_by_circularity', s.FILTER_BY_CIRCULARITY)
+        params.minCircularity = kwargs.get('min_circularity', s.MIN_CIRCULARITY)
+        params.maxCircularity = kwargs.get('max_circularity', s.MAX_CIRCULARITY)
+        params.filterByInertia = kwargs.get('filter_by_inertia', s.FILTER_BY_INERTIA)
+        params.minInertiaRatio = kwargs.get('min_inertia_ratio', s.MIN_INERTIA_RATIO)
+        params.maxInertiaRatio = kwargs.get('max_inertia_ratio', s.MAX_INERTIA_RATIO)
         params.filterByArea = kwargs.get('filter_by_area', s.FILTER_BY_AREA)
         params.minArea = kwargs.get('min_area', s.MIN_AREA)
         params.maxArea = kwargs.get('max_area', s.MAX_AREA)
-        params.filterByColor = kwargs.get(
-            'filter_by_colour', s.FILTER_BY_COLOUR)
+        params.filterByColor = kwargs.get('filter_by_colour', s.FILTER_BY_COLOUR)
         params.blobColor = kwargs.get('blob_color', s.BLOB_COLOUR)
-        params.minDistBetweenBlobs = kwargs.get(
-            'min_dest_between_blobs', s.MIN_DIST_BETWEEN_BLOBS)
+        params.minDistBetweenBlobs = kwargs.get('min_dest_between_blobs', s.MIN_DIST_BETWEEN_BLOBS)
         self.__blob_detector = cv2.SimpleBlobDetector_create(params)
 
     def reset_snapshots(self):

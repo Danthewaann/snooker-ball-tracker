@@ -7,7 +7,7 @@ from random import randint
 
 
 class VideoFileStream(imutils.video.FileVideoStream):
-    def __init__(self, path, crop=False, morph=True, queue_size=128):
+    def __init__(self, path, crop=False, morph=False, queue_size=128):
         super().__init__(path, transform=self.transform_frame, queue_size=queue_size)
         self.crop_frames = crop
         self.morph = morph

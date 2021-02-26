@@ -230,7 +230,9 @@ class VideoPlayer(Frame):
         self.master.master.thread.update_bounds()
 
     def _update_selected_colour(self, event):
-        pixel = self.master.master.thread.get_hsv()[event.y, event.x]
+        #TODO check surrounding pixels to get lower and upper values
+        hsv = self.master.master.thread.get_hsv()
+        pixel = hsv[event.y, event.x]
         upper = np.array([pixel[0] + 10, pixel[1] + 10, pixel[2] + 20])
         lower = np.array([pixel[0] - 10, pixel[1] - 10, pixel[2] - 20])
 

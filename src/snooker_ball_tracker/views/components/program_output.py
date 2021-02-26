@@ -2,7 +2,6 @@ from tkinter import *
 from tkinter.ttk import *
 from collections import OrderedDict
 import time
-import snooker_ball_tracker.settings as s
 from snooker_ball_tracker.ball_tracker import BallTracker
 from snooker_ball_tracker.ball_tracker import SnapShot
 from copy import copy, deepcopy

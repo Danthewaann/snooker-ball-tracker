@@ -30,14 +30,17 @@
             "type": "python",
             "request": "launch",
             "program": "src/snooker_ball_tracker/__main__.py",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "args": [ "--settings", "${workspaceFolder}/resources/config/pre_recorded_footage.json"]
         },
         {
             "name": "Win - GUI Entry Point",
             "type": "python",
             "request": "launch",
             "program": "src\\snooker_ball_tracker\\__main__.py",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "args": [ "--settings", "${workspaceFolder}\\resources\\config\\pre_recorded_footage.json"
+            ]
         }
     ]
 }

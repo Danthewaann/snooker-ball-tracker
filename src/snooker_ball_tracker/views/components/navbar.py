@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter.ttk import *
 from collections import OrderedDict
 
+
 class Navbar(ttk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
@@ -10,6 +11,9 @@ class Navbar(ttk.Frame):
         self.btns = OrderedDict([
             ('select_file', Button(
                 self.btns_frame, text="Select File", command=self.master.master.select_file_onclick, cursor="hand2"
+            )),
+            ('settings', Button(
+                self.btns_frame, text="Settings", command=self.master.master.load_settings, cursor="hand2"
             )),
             ('quit', Button(
                 self.btns_frame, text="Quit", command=self.master.master.on_close, cursor="hand2"

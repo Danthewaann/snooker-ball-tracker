@@ -68,8 +68,12 @@ class SplashScreen:
 
 
 class GUI(Tk):
-    def __init__(self):
+    def __init__(self, args):
         super().__init__()
+
+        if args.settings_file:
+            s.load_settings(args.settings_file)
+
         self.iconphoto(True, PhotoImage(file=os.path.join(
             os.path.abspath(os.path.dirname(__file__)), "..", "icon.png")))
         self.iconname("Snooker Ball Tracker")
@@ -91,9 +95,6 @@ class GUI(Tk):
         font.nametofont("TkDefaultFont").configure(size=10)
         font.nametofont("TkTextFont").configure(size=10)
 
-        s.settings_module_name = "pre_recorded_footage"
-        s.load()
-
         self.fonts = {
             "h1": font.Font(size=24, weight="bold"),
             "h2-bold": font.Font(size=22, weight="bold"),
@@ -105,6 +106,10 @@ class GUI(Tk):
             "logs": font.Font(size=10)
         }
 
+        # with open(settings_file, "r") as fp:
+        #     self.settings = json.load(fp)
+
+        # validate(self.settings, schema=SETTINGS_SCHEMA)
         self.lock = threading.Lock()
         self.stop_event = threading.Event()
         self.thread = None
@@ -134,12 +139,9 @@ class GUI(Tk):
         self.separator_vert_2 = Separator(master=self, orient="vertical")
 
         self.program_output = ProgramOutput(master=self.middle)
-        self.ball_tracker_options = BallTrackerOptions(
-            master=self.left, logger=self.program_output)
-        self.colour_detection_options = ColourDetectionOptions(
-            master=self.left, logger=self.program_output)
-        self.video_player = VideoPlayer(
-            master=self.right, logger=self.program_output)
+        self.ball_tracker_options = BallTrackerOptions(master=self.left, logger=self.program_output)
+        self.colour_detection_options = ColourDetectionOptions(master=self.left, logger=self.program_output)
+        self.video_player = VideoPlayer(master=self.right, logger=self.program_output)
 
         self.nav_bar = Navbar(master=self.bottom)
         self.nav_bar.pack(side="bottom", fill="x", anchor="s")
@@ -225,3 +227,15 @@ class GUI(Tk):
             self.thread.stop_event.set()
 
         self.start_video_processor()
+
+    def load_settings(self):
+        settings_file = filedialog.askopenfilename(
+            filetypes=[("Json File", ".json")])
+
+        if settings_file == "":
+            return
+
+        s.load_settings(settings_file)
+        self.colour_detection_options.update()
+        self.ball_tracker_options.update()
+        self.program_output.info(f"Loaded {os.path.basename(settings_file)}")

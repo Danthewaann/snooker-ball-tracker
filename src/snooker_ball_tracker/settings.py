@@ -1,104 +1,108 @@
-from snooker_ball_tracker.config import default_settings
-import importlib
-
-settings_module_name = 'default_settings'
-try:
-    settings_module = importlib.import_module('config.' + settings_module_name, package=__package__)
-except ImportError:
-    settings_module = None
+import json
+import numpy as np
 
 
-def get_setting(name):
+def load_settings(settings_file):
+    global __SETTINGS
+    with open(settings_file, "r") as fp:
+        __SETTINGS = json.load(fp)
+        for colour in __SETTINGS["COLOURS"]:
+            __SETTINGS["COLOURS"][colour]["LOWER"] = np.array(__SETTINGS["COLOURS"][colour]["LOWER"])
+            __SETTINGS["COLOURS"][colour]["UPPER"] = np.array(__SETTINGS["COLOURS"][colour]["UPPER"])
+
+
+def __getattr__(key):
     try:
-        return getattr(settings_module, name)
-    except AttributeError:
-        return getattr(default_settings, name)
+        return __SETTINGS.get(key, __DEFAULT_SETTINGS.get(key, None)) 
+    except KeyError:
+        return None
 
 
-###################
-#  BASE SETTINGS  #
-###################
-DETECT_COLOURS = get_setting('DETECT_COLOURS')
+#####################
+#  LOADED SETTINGS  #
+#####################
+__SETTINGS = {}
 
-#############################
-#  BLOB DETECTION SETTINGS  #
-#############################
-FILTER_BY_CONVEXITY = get_setting('FILTER_BY_CONVEXITY')
-MIN_CONVEXITY = get_setting('MIN_CONVEXITY')
-MAX_CONVEXITY = get_setting('MAX_CONVEXITY')
-
-FILTER_BY_CIRCULARITY = get_setting('FILTER_BY_CIRCULARITY')
-MIN_CIRCULARITY = get_setting('MIN_CIRCULARITY')
-MAX_CIRCULARITY = get_setting('MAX_CIRCULARITY')
-
-FILTER_BY_INERTIA = get_setting('FILTER_BY_INERTIA')
-MIN_INERTIA_RATIO = get_setting('MIN_INERTIA_RATIO')
-MAX_INERTIA_RATIO = get_setting('MAX_INERTIA_RATIO')
-
-FILTER_BY_AREA = get_setting('FILTER_BY_AREA')
-MIN_AREA = get_setting('MIN_AREA')
-MAX_AREA = get_setting('MAX_AREA')
-
-FILTER_BY_COLOUR = get_setting('FILTER_BY_COLOUR')
-BLOB_COLOUR = get_setting('BLOB_COLOUR')
-
-MIN_DIST_BETWEEN_BLOBS = get_setting('MIN_DIST_BETWEEN_BLOBS')
-
-MIN_THRESHOLD = get_setting('MIN_THRESHOLD')
-MAX_THRESHOLD = get_setting('MAX_THRESHOLD')
-
-###############################
-#  HSV COLOUR RANGE SETTINGS  #
-###############################
-COLOURS = get_setting('COLOURS')
-
-
-def load():
-    global settings_module, DETECT_COLOURS, FILTER_BY_CONVEXITY, MIN_CONVEXITY, \
-        MAX_CONVEXITY, FILTER_BY_CIRCULARITY, MIN_CIRCULARITY, \
-        MAX_CIRCULARITY, FILTER_BY_INERTIA, MIN_INERTIA_RATIO, MAX_INERTIA_RATIO, FILTER_BY_AREA, \
-        MIN_AREA, MAX_AREA, FILTER_BY_COLOUR, BLOB_COLOUR, MIN_DIST_BETWEEN_BLOBS, MIN_THRESHOLD, MAX_THRESHOLD, \
-        COLOURS
-
-    try:
-        settings_module = importlib.import_module('snooker_ball_tracker.config.' + settings_module_name, package=__package__)
-    except ImportError as e:
-        print(e)
-        settings_module = None
-
-    ###################
-    #  BASE SETTINGS  #
-    ###################
-    DETECT_COLOURS = get_setting('DETECT_COLOURS')
+######################
+#  DEFAULT SETTINGS  #
+######################
+__DEFAULT_SETTINGS = {
+    "DETECT_COLOURS": {
+        "WHITE": True,
+        "RED": True,
+        "YELLOW": True,
+        "GREEN": True,
+        "BROWN": True,
+        "BLUE": True,
+        "PINK": True,
+        "BLACK": True,
+    },
 
     #############################
     #  BLOB DETECTION SETTINGS  #
     #############################
-    FILTER_BY_CONVEXITY = get_setting('FILTER_BY_CONVEXITY')
-    MIN_CONVEXITY = get_setting('MIN_CONVEXITY')
-    MAX_CONVEXITY = get_setting('MAX_CONVEXITY')
+    "FILTER_BY_CONVEXITY": False,
+    "MIN_CONVEXITY": 0.5,
+    "MAX_CONVEXITY": 1,
 
-    FILTER_BY_CIRCULARITY = get_setting('FILTER_BY_CIRCULARITY')
-    MIN_CIRCULARITY = get_setting('MIN_CIRCULARITY')
-    MAX_CIRCULARITY = get_setting('MAX_CIRCULARITY')
+    "FILTER_BY_CIRCULARITY": True,
+    "MIN_CIRCULARITY": 0.3,
+    "MAX_CIRCULARITY": 1,
 
-    FILTER_BY_INERTIA = get_setting('FILTER_BY_INERTIA')
-    MIN_INERTIA_RATIO = get_setting('MIN_INERTIA_RATIO')
-    MAX_INERTIA_RATIO = get_setting('MAX_INERTIA_RATIO')
+    "FILTER_BY_INERTIA": False,
+    "MIN_INERTIA_RATIO": 0.2,
+    "MAX_INERTIA_RATIO": 1,
 
-    FILTER_BY_AREA = get_setting('FILTER_BY_AREA')
-    MIN_AREA = get_setting('MIN_AREA')
-    MAX_AREA = get_setting('MAX_AREA')
+    "FILTER_BY_AREA": True,
+    "MIN_AREA": 200,
+    "MAX_AREA": 2000,
 
-    FILTER_BY_COLOUR = get_setting('FILTER_BY_COLOUR')
-    BLOB_COLOUR = get_setting('BLOB_COLOUR')
+    "FILTER_BY_COLOUR": True,
+    "BLOB_COLOUR": 255,
 
-    MIN_DIST_BETWEEN_BLOBS = get_setting('MIN_DIST_BETWEEN_BLOBS')
-
-    MIN_THRESHOLD = get_setting('MIN_THRESHOLD')
-    MAX_THRESHOLD = get_setting('MAX_THRESHOLD')
+    "MIN_DIST_BETWEEN_BLOBS": 10,
+    "MIN_THRESHOLD": 170,
+    "MAX_THRESHOLD": 255,
 
     ###############################
     #  HSV COLOUR RANGE SETTINGS  #
     ###############################
-    COLOURS = get_setting('COLOURS')
+    "COLOURS": {
+        "RED": {
+            "LOWER": np.array([25, 190, 150]),
+            "UPPER": np.array([180, 255, 255])
+        },
+        "YELLOW": {
+            "LOWER": np.array([10, 100, 100]),
+            "UPPER": np.array([35, 255, 255])
+        },
+        "GREEN": {
+            "LOWER": np.array([55, 50, 50]),
+            "UPPER": np.array([100, 255, 255])
+        },
+        "BROWN": {
+            "LOWER": np.array([0, 136, 150]),
+            "UPPER": np.array([10, 225, 255])
+        },
+        "BLUE": {
+            "LOWER": np.array([115, 60, 60]),
+            "UPPER": np.array([135, 255, 255])
+        },
+        "PINK": {
+            "LOWER": np.array([160, 60, 240]),
+            "UPPER": np.array([180, 120, 255])
+        },
+        "BLACK": {
+            "LOWER": np.array([0, 0, 0]),
+            "UPPER": np.array([180, 255, 40])
+        },
+        "WHITE": {
+            "LOWER": np.array([0, 0, 240]),
+            "UPPER": np.array([30, 80, 255])
+        },
+        "TABLE": {
+            "LOWER": np.array([0, 18, 0]),
+            "UPPER": np.array([66, 125, 230])
+        }
+    }
+}

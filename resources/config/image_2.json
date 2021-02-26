@@ -1,0 +1,67 @@
+{
+    "DETECT_COLOURS": {
+        "WHITE": true,
+        "RED": true,
+        "YELLOW": true,
+        "GREEN": true,
+        "BROWN": true,
+        "BLUE": true,
+        "PINK": true,
+        "BLACK": true
+    },
+    "FILTER_BY_CONVEXITY": false,
+    "MIN_CONVEXITY": 0.5,
+    "MAX_CONVEXITY": 1,
+    "FILTER_BY_CIRCULARITY": false,
+    "MIN_CIRCULARITY": 0.3,
+    "MAX_CIRCULARITY": 1,
+    "FILTER_BY_INERTIA": true,
+    "MIN_INERTIA_RATIO": 0.2,
+    "MAX_INERTIA_RATIO": 1,
+    "FILTER_BY_AREA": true,
+    "MIN_AREA": 50,
+    "MAX_AREA": 2000,
+    "FILTER_BY_COLOUR": false,
+    "BLOB_COLOUR": 255,
+    "MIN_DIST_BETWEEN_BLOBS": 10,
+    "MIN_THRESHOLD": 170,
+    "MAX_THRESHOLD": 255,
+    "COLOURS": {
+        "RED": {
+            "LOWER": [25, 190, 150],
+            "UPPER": [180, 255, 255]
+        },
+        "YELLOW": {
+            "LOWER": [10, 100, 100],
+            "UPPER": [35, 255, 255]
+        },
+        "GREEN": {
+            "LOWER": [58, 50, 50],
+            "UPPER": [100, 255, 255]
+        },
+        "BROWN": {
+            "LOWER": [0, 136, 150],
+            "UPPER": [10, 225, 255]
+        },
+        "BLUE": {
+            "LOWER": [115, 60, 60],
+            "UPPER": [135, 255, 255]
+        },
+        "PINK": {
+            "LOWER": [160, 37, 240],
+            "UPPER": [180, 153, 255]
+        },
+        "BLACK": {
+            "LOWER": [0, 0, 0],
+            "UPPER": [180, 255, 40]
+        },
+        "WHITE": {
+            "LOWER": [9, 0, 240],
+            "UPPER": [30, 80, 255]
+        },
+        "TABLE": {
+            "LOWER": [0, 0, 0],
+            "UPPER": [66, 105, 217]
+        }
+    }
+}
