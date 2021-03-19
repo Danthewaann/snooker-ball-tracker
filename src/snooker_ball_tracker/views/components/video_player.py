@@ -230,15 +230,14 @@ class VideoPlayer(Frame):
         self.master.master.thread.update_bounds()
 
     def _update_selected_colour(self, event):
-        #TODO check surrounding pixels to get lower and upper values
         hsv = self.master.master.thread.get_hsv()
-        pixel = hsv[event.y, event.x]
-        upper = np.array([pixel[0] + 10, pixel[1] + 10, pixel[2] + 20])
-        lower = np.array([pixel[0] - 10, pixel[1] - 10, pixel[2] - 20])
+        pixels = hsv[event.y-5:event.y+5, event.x-5:event.x+5]
+        min_pixel = np.min(pixels, axis=0)[0]
+        max_pixel = np.max(pixels, axis=0)[0]
 
         colour = {}
-        colour['LOWER'] = lower
-        colour['UPPER'] = upper
+        colour['LOWER'] = min_pixel
+        colour['UPPER'] = max_pixel
 
         self.master.master.colour_detection_options.colour_detection_settings["colour"]["lower_h"].set(
             colour["LOWER"][0])
@@ -253,3 +252,10 @@ class VideoPlayer(Frame):
             colour["UPPER"][1])
         self.master.master.colour_detection_options.colour_detection_settings["colour"]["upper_v"].set(
             colour["UPPER"][2])
+
+        s.COLOURS[self.master.master.colour_detection_options.colour_detection_settings["select-colour"].get()]['LOWER'][0] = self.master.master.colour_detection_options.colour_detection_settings['colour']['lower_h'].get()
+        s.COLOURS[self.master.master.colour_detection_options.colour_detection_settings["select-colour"].get()]['LOWER'][1] = self.master.master.colour_detection_options.colour_detection_settings['colour']['lower_s'].get()
+        s.COLOURS[self.master.master.colour_detection_options.colour_detection_settings["select-colour"].get()]['LOWER'][2] = self.master.master.colour_detection_options.colour_detection_settings['colour']['lower_v'].get()
+        s.COLOURS[self.master.master.colour_detection_options.colour_detection_settings["select-colour"].get()]['UPPER'][0] = self.master.master.colour_detection_options.colour_detection_settings['colour']['upper_h'].get()
+        s.COLOURS[self.master.master.colour_detection_options.colour_detection_settings["select-colour"].get()]['UPPER'][1] = self.master.master.colour_detection_options.colour_detection_settings['colour']['upper_s'].get()
+        s.COLOURS[self.master.master.colour_detection_options.colour_detection_settings["select-colour"].get()]['UPPER'][2] = self.master.master.colour_detection_options.colour_detection_settings['colour']['upper_v'].get()
