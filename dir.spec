@@ -4,9 +4,10 @@ block_cipher = None
 
 
 a = Analysis(['src/snooker_ball_tracker/__main__.py'],
-             pathex=['/home/dblack/snooker-ball-tracker'],
              binaries=[],
-             datas=[ ('src/snooker_ball_tracker/config/*.py', 'config') ],
+             datas=[ ('resources/config/*.json', '.'),
+                     ('src/snooker_ball_tracker/icon.png', '.')
+              ],
              hiddenimports=['PIL._tkinter_finder'],
              hookspath=[],
              runtime_hooks=[],
@@ -30,4 +31,12 @@ exe = EXE(pyz,
           upx=True,
           upx_exclude=[],
           runtime_tmpdir=None,
-          console=True )
+          console=False)
+coll = COLLECT(exe,
+               a.binaries,
+               a.zipfiles,
+               a.datas,
+               strip=False,
+               upx=True,
+               upx_exclude=[],
+               name='snooker_ball_tracker')
