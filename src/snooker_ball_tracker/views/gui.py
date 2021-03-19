@@ -88,7 +88,8 @@ class GUI(Tk):
         except TclError:
             self.state("zoomed")
 
-        self.withdraw()
+        if args.splash:
+            self.withdraw()
 
         try:
             Style().theme_use("vista")
@@ -127,7 +128,8 @@ class GUI(Tk):
         ]
 
         threading.Thread(target=self.__setup_widgets).start()
-        SplashScreen(self)
+        if args.splash:
+            SplashScreen(self)
 
     def __setup_widgets(self):
         self.left = Frame(master=self)
