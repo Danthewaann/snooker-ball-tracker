@@ -12,8 +12,11 @@ class Navbar(ttk.Frame):
             ('select_file', Button(
                 self.btns_frame, text="Select File", command=self.master.master.select_file_onclick, cursor="hand2"
             )),
-            ('settings', Button(
-                self.btns_frame, text="Settings", command=self.master.master.load_settings, cursor="hand2"
+            ('load_settings', Button(
+                self.btns_frame, text="Load Settings", command=self.master.master.load_settings, cursor="hand2"
+            )),
+            ('save_settings', Button(
+                self.btns_frame, text="Save Settings", command=self.master.master.save_settings, cursor="hand2"
             )),
             ('quit', Button(
                 self.btns_frame, text="Quit", command=self.master.master.on_close, cursor="hand2"

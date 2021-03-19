@@ -71,8 +71,10 @@ class GUI(Tk):
     def __init__(self, args):
         super().__init__()
 
-        if args.settings_file:
-            s.load_settings(args.settings_file)
+        self.settings_file = args.settings_file
+
+        if self.settings_file:
+            s.load(self.settings_file)
 
         try:
             self.iconphoto(True, PhotoImage(file="icon.png"))
@@ -188,10 +190,10 @@ class GUI(Tk):
         self.quit()
 
     def select_file_onclick(self):
-        self.selected_file = filedialog.askopenfilename(
+        self.selected_file = filedialog.askopenfilename(title="Select Video File",
             initialdir="../../../resources/videos")
 
-        if self.selected_file == "":
+        if self.selected_file is None:
             return
 
         if self.thread is not None:
@@ -230,13 +232,28 @@ class GUI(Tk):
         self.start_video_processor()
 
     def load_settings(self):
-        settings_file = filedialog.askopenfilename(
+        settings_file = filedialog.askopenfilename(title="Load Settings",
             filetypes=[("Json File", ".json")])
 
-        if settings_file == "":
+        if settings_file is None:
             return
 
-        s.load_settings(settings_file)
+        self.settings_file = settings_file
+        s.load(settings_file)
         self.colour_detection_options.update()
         self.ball_tracker_options.update()
-        self.program_output.info(f"Loaded {os.path.basename(settings_file)}")
+        self.program_output.info(f"Loaded \"{os.path.basename(settings_file)}\"")
+
+    def save_settings(self):
+        data = [("Json File", ".json")]
+        name, ext = os.path.splitext(os.path.basename(self.settings_file))
+        settings_file = filedialog.asksaveasfilename(title="Save Settings", initialfile=f"{name} copy{ext}",
+            filetypes=data, defaultextension=data)
+
+        if settings_file is None:
+            return
+
+        s.save(settings_file)
+        self.colour_detection_options.update()
+        self.ball_tracker_options.update()
+        self.program_output.info(f"Saved \"{os.path.basename(settings_file)}\"")

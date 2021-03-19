@@ -1,14 +1,28 @@
 import json
 import numpy as np
+from json import JSONEncoder
 
 
-def load_settings(settings_file):
+class __SettingsJSONEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return JSONEncoder.default(self, obj)
+
+
+def load(settings_file):
     global __SETTINGS
     with open(settings_file, "r") as fp:
         __SETTINGS = json.load(fp)
         for colour in __SETTINGS["COLOURS"]:
             __SETTINGS["COLOURS"][colour]["LOWER"] = np.array(__SETTINGS["COLOURS"][colour]["LOWER"])
             __SETTINGS["COLOURS"][colour]["UPPER"] = np.array(__SETTINGS["COLOURS"][colour]["UPPER"])
+
+
+def save(settings_file):
+    global __SETTINGS
+    with open(settings_file, "w") as fp:
+        json.dump(__SETTINGS, fp, indent=4, sort_keys=True, cls=__SettingsJSONEncoder)
 
 
 def __getattr__(key):
