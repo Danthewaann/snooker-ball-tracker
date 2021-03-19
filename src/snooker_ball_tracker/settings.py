@@ -10,13 +10,18 @@ class __SettingsJSONEncoder(JSONEncoder):
         return JSONEncoder.default(self, obj)
 
 
+def __decode_colour_to_np_array(dct):
+    if "LOWER" in dct:
+        dct["LOWER"] = np.array(dct["LOWER"])
+    if "UPPER" in dct:
+        dct["UPPER"] = np.array(dct["UPPER"])
+    return dct
+
+
 def load(settings_file):
     global __SETTINGS
     with open(settings_file, "r") as fp:
-        __SETTINGS = json.load(fp)
-        for colour in __SETTINGS["COLOURS"]:
-            __SETTINGS["COLOURS"][colour]["LOWER"] = np.array(__SETTINGS["COLOURS"][colour]["LOWER"])
-            __SETTINGS["COLOURS"][colour]["UPPER"] = np.array(__SETTINGS["COLOURS"][colour]["UPPER"])
+        __SETTINGS = json.load(fp, object_hook=__decode_colour_to_np_array)
 
 
 def save(settings_file):
