@@ -25,6 +25,7 @@ class VideoPlayer(Frame):
 
         self.btns_frame = Frame(master=self)
 
+        self.cursor_x_y = Label(master=self.btns_frame, text="X: 0, Y: 0")
         self.video_player_label = Label(
             master=self.btns_frame, text="Video Player Options", font=self.master.master.fonts["h3-bold"])
         self.separator_hori = Separator(
@@ -83,6 +84,7 @@ class VideoPlayer(Frame):
         ])
 
     def grid_children(self):
+        self.cursor_x_y.grid(column=0, row=0)
         self.video_player_label.grid(column=3, row=0, columnspan=4, sticky="e")
         self.separator_hori.grid(
             column=0, row=1, columnspan=7, sticky="ew", pady=(10, 0))
@@ -132,6 +134,8 @@ class VideoPlayer(Frame):
         self.btns_frame.pack_forget()
         self.file_output = Label(master=self)
         self.file_output.bind("<Button 1>", self._update_selected_colour)
+        self.file_output.bind("<Motion>", lambda event: self.cursor_x_y.configure(text=f"X: {event.x}, Y: {event.y}"))
+        self.file_output.bind("<Leave>", lambda event: self.cursor_x_y.configure(text="X: 0, Y: 0"))
         self.file_output.pack(side="top", anchor="ne")
         self.btns_frame.pack(side="top", anchor="ne", pady=(20, 0))
 
