@@ -74,8 +74,11 @@ class GUI(Tk):
         if args.settings_file:
             s.load_settings(args.settings_file)
 
-        self.iconphoto(True, PhotoImage(file=os.path.join(
-            os.path.abspath(os.path.dirname(__file__)), "..", "icon.png")))
+        try:
+            self.iconphoto(True, PhotoImage(file="icon.png"))
+        except TclError:
+            pass
+
         self.iconname("Snooker Ball Tracker")
         self.title("Snooker Ball Tracker - Demo Application")
         self.wm_protocol("WM_DELETE_WINDOW", self.on_close)
@@ -106,10 +109,6 @@ class GUI(Tk):
             "logs": font.Font(size=10)
         }
 
-        # with open(settings_file, "r") as fp:
-        #     self.settings = json.load(fp)
-
-        # validate(self.settings, schema=SETTINGS_SCHEMA)
         self.lock = threading.Lock()
         self.stop_event = threading.Event()
         self.thread = None
