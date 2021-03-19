@@ -21,10 +21,10 @@ class VideoProcessor(threading.Thread):
         self.stream = stream
         self.video_file = video_file
         self.ball_tracker = ball_tracker
-        self.show_threshold = False
-        self.mask_colour = False
-        self.detect_colour = "None"
-        self.crop_frames = False
+        self.show_threshold = self.master.video_player.data["threshold"].get()
+        self.mask_colour = self.master.video_player.data["mask-colour"].get()
+        self.detect_colour = self.master.video_player.data["detect-colour"].get()
+        self.crop_frames = self.master.video_player.data["crop-frames"].get()
         self.__input_frame = None
         self.__input_hsv = None
         self.__input_threshold = None
