@@ -7,6 +7,12 @@ resources/videos/*
 resources/images/*
 !resources/images/image-1.jpg
 !resources/images/image-2.jpg
+resources/config/*
+!resources/config/default_settings.json
+!resources/config/image_1.json
+!resources/config/image_2.json
+!resources/config/live_footage.json
+!resources/config/pre_recorded_footage.json
 src/snooker_ball_tracker.egg-info/
 src/snooker_ball_tracker/__pycache__/
 src/snooker_ball_tracker/config/__pycache__/

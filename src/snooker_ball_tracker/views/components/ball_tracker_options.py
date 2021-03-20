@@ -12,22 +12,23 @@ class BallTrackerOptions(Frame):
     def __init__(self, master=None, logger=None):
         super().__init__(master)
         self.logger = logger
+        self.orig_blob_detector_settings = deepcopy(s.BLOB_DETECTOR)
         self.ball_detection_settings = {
-            'filter_by_convexity': BooleanVar(value=s.FILTER_BY_CONVEXITY),
-            'min_convexity': DoubleVar(value=s.MIN_CONVEXITY),
-            'max_convexity': DoubleVar(value=s.MAX_CONVEXITY),
-            'filter_by_circularity': BooleanVar(value=s.FILTER_BY_CIRCULARITY),
-            'min_circularity': DoubleVar(value=s.MIN_CIRCULARITY),
-            'max_circularity': DoubleVar(value=s.MAX_CIRCULARITY),
-            'filter_by_inertia': BooleanVar(value=s.FILTER_BY_INERTIA),
-            'min_inertia_ratio': DoubleVar(value=s.MIN_INERTIA_RATIO),
-            'max_inertia_ratio': DoubleVar(value=s.MAX_INERTIA_RATIO),
-            'filter_by_area': BooleanVar(value=s.FILTER_BY_AREA),
-            'min_area': DoubleVar(value=s.MIN_AREA),
-            'max_area': DoubleVar(value=s.MAX_AREA),
-            'min_dist_between_blobs': DoubleVar(value=s.MIN_DIST_BETWEEN_BLOBS),
-            'min_threshold': IntVar(value=s.MIN_THRESHOLD),
-            'max_threshold': IntVar(value=s.MAX_THRESHOLD)
+            'filter_by_convexity': BooleanVar(value=self.orig_blob_detector_settings["FILTER_BY_CONVEXITY"]),
+            'min_convexity': DoubleVar(value=self.orig_blob_detector_settings["MIN_CONVEXITY"]),
+            'max_convexity': DoubleVar(value=self.orig_blob_detector_settings["MAX_CONVEXITY"]),
+            'filter_by_circularity': BooleanVar(value=self.orig_blob_detector_settings["FILTER_BY_CIRCULARITY"]),
+            'min_circularity': DoubleVar(value=self.orig_blob_detector_settings["MIN_CIRCULARITY"]),
+            'max_circularity': DoubleVar(value=self.orig_blob_detector_settings["MAX_CIRCULARITY"]),
+            'filter_by_inertia': BooleanVar(value=self.orig_blob_detector_settings["FILTER_BY_INERTIA"]),
+            'min_inertia_ratio': DoubleVar(value=self.orig_blob_detector_settings["MIN_INERTIA_RATIO"]),
+            'max_inertia_ratio': DoubleVar(value=self.orig_blob_detector_settings["MAX_INERTIA_RATIO"]),
+            'filter_by_area': BooleanVar(value=self.orig_blob_detector_settings["FILTER_BY_AREA"]),
+            'min_area': DoubleVar(value=self.orig_blob_detector_settings["MIN_AREA"]),
+            'max_area': DoubleVar(value=self.orig_blob_detector_settings["MAX_AREA"]),
+            'min_dist_between_blobs': DoubleVar(value=self.orig_blob_detector_settings["MIN_DIST_BETWEEN_BLOBS"]),
+            'min_threshold': IntVar(value=self.orig_blob_detector_settings["MIN_THRESHOLD"]),
+            'max_threshold': IntVar(value=self.orig_blob_detector_settings["MAX_THRESHOLD"])
         }
 
         self.convexity_frame = Frame(master=self)
@@ -199,33 +200,36 @@ class BallTrackerOptions(Frame):
 
     def update(self):
         for key in self.ball_detection_settings:
-            self.ball_detection_settings[key].set(s.__getattr__(key.upper()))
+            self.ball_detection_settings[key].set(s.BLOB_DETECTOR[key.upper()])
         
+        self.orig_blob_detector_settings = deepcopy(s.BLOB_DETECTOR)
         self._update_ball_tracker()
 
     def _update_ball_tracker(self, event=None):
-        if self.master.master.thread is not None:
-            ball_detection_settings = {
-                'filter_by_convexity': self.ball_detection_settings['filter_by_convexity'].get(),
-                'min_convexity': self.ball_detection_settings['min_convexity'].get(),
-                'max_convexity': self.ball_detection_settings['max_convexity'].get(),
-                'filter_by_circularity': self.ball_detection_settings['filter_by_circularity'].get(),
-                'min_circularity': self.ball_detection_settings['min_circularity'].get(),
-                'max_circularity': self.ball_detection_settings['max_circularity'].get(),
-                'filter_by_inertia': self.ball_detection_settings['filter_by_inertia'].get(),
-                'min_inertia_ratio': self.ball_detection_settings['min_inertia_ratio'].get(),
-                'max_inertia_ratio': self.ball_detection_settings['max_inertia_ratio'].get(),
-                'filter_by_area': self.ball_detection_settings['filter_by_area'].get(),
-                'min_area': self.ball_detection_settings['min_area'].get(),
-                'max_area': self.ball_detection_settings['max_area'].get(),
-                'min_dist_between_blobs': self.ball_detection_settings['min_dist_between_blobs'].get(),
-                'min_threshold': self.ball_detection_settings['min_threshold'].get(),
-                'max_threshold': self.ball_detection_settings['max_threshold'].get()
-            }
-            self.master.master.thread.ball_tracker.setup_blob_detector(**ball_detection_settings)
+        ball_detection_settings = {
+            'filter_by_convexity': self.ball_detection_settings['filter_by_convexity'].get(),
+            'min_convexity': self.ball_detection_settings['min_convexity'].get(),
+            'max_convexity': self.ball_detection_settings['max_convexity'].get(),
+            'filter_by_circularity': self.ball_detection_settings['filter_by_circularity'].get(),
+            'min_circularity': self.ball_detection_settings['min_circularity'].get(),
+            'max_circularity': self.ball_detection_settings['max_circularity'].get(),
+            'filter_by_inertia': self.ball_detection_settings['filter_by_inertia'].get(),
+            'min_inertia_ratio': self.ball_detection_settings['min_inertia_ratio'].get(),
+            'max_inertia_ratio': self.ball_detection_settings['max_inertia_ratio'].get(),
+            'filter_by_area': self.ball_detection_settings['filter_by_area'].get(),
+            'min_area': self.ball_detection_settings['min_area'].get(),
+            'max_area': self.ball_detection_settings['max_area'].get(),
+            'min_dist_between_blobs': self.ball_detection_settings['min_dist_between_blobs'].get(),
+            'min_threshold': self.ball_detection_settings['min_threshold'].get(),
+            'max_threshold': self.ball_detection_settings['max_threshold'].get()
+        }
+        self.master.master.ball_tracker.setup_blob_detector(**ball_detection_settings)
+        for key in self.ball_detection_settings:
+            s.BLOB_DETECTOR[key.upper()] = self.ball_detection_settings[key].get()
 
 
     def _reset_tracker_options(self):
-        self.update()
+        for key in self.ball_detection_settings:
+            self.ball_detection_settings[key].set(self.orig_blob_detector_settings[key.upper()])
         self._update_ball_tracker()
         self.logger.info("Ball tracker options reset")

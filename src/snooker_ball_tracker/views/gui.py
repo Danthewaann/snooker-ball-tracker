@@ -191,9 +191,9 @@ class GUI(Tk):
 
     def select_file_onclick(self):
         self.selected_file = filedialog.askopenfilename(title="Select Video File",
-            initialdir="../../../resources/videos")
+            initialdir="resources/videos")
 
-        if self.selected_file is None:
+        if not self.selected_file:
             return
 
         if self.thread is not None:
@@ -233,27 +233,40 @@ class GUI(Tk):
 
     def load_settings(self):
         settings_file = filedialog.askopenfilename(title="Load Settings",
-            filetypes=[("Json File", ".json")])
+            filetypes=[("Json Files", ".json")], initialdir="resources/config")
 
-        if settings_file is None:
+        if not settings_file:
             return
 
         self.settings_file = settings_file
-        s.load(settings_file)
-        self.colour_detection_options.update()
-        self.ball_tracker_options.update()
-        self.program_output.info(f"Loaded \"{os.path.basename(settings_file)}\"")
+        threading.Thread(target=self.__load_settings, args=(settings_file,), daemon=True).start()
+
+    def __load_settings(self, settings_file):
+        success, error = s.load(settings_file)
+        if success:
+            self.colour_detection_options.update()
+            self.ball_tracker_options.update()
+            self.program_output.info(f"Loaded \"{os.path.basename(settings_file)}\"")
+        else:
+            self.program_output.error(f"Failed to load \"{os.path.basename(settings_file)}\"\n{str(error)}")
 
     def save_settings(self):
-        data = [("Json File", ".json")]
+        data = [("Json Files", ".json")]
         name, ext = os.path.splitext(os.path.basename(self.settings_file))
         settings_file = filedialog.asksaveasfilename(title="Save Settings", initialfile=f"{name} copy{ext}",
-            filetypes=data, defaultextension=data)
+            filetypes=data, defaultextension=data, initialdir="resources/config")
 
-        if settings_file is None:
+        if not settings_file:
             return
 
-        s.save(settings_file)
-        self.colour_detection_options.update()
-        self.ball_tracker_options.update()
-        self.program_output.info(f"Saved \"{os.path.basename(settings_file)}\"")
+        self.settings_file = settings_file
+        threading.Thread(target=self.__save_settings, args=(settings_file,), daemon=True).start()
+
+    def __save_settings(self, settings_file):
+        success, error = s.save(settings_file)
+        if success:
+            self.colour_detection_options.update()
+            self.ball_tracker_options.update()
+            self.program_output.info(f"Saved \"{os.path.basename(settings_file)}\"")
+        else:
+            self.program_output.error(f"Failed to save \"{os.path.basename(settings_file)}\"\n{str(error)}")

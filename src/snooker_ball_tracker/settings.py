@@ -20,21 +20,35 @@ def __decode_colour_to_np_array(dct):
 
 def load(settings_file):
     global __SETTINGS
-    with open(settings_file, "r") as fp:
-        __SETTINGS = json.load(fp, object_hook=__decode_colour_to_np_array)
+    try:
+        with open(settings_file, "r") as fp:
+            __SETTINGS = json.load(fp, object_hook=__decode_colour_to_np_array)
+    except OSError as error:
+        return False, error
+    else:
+        return True, None
 
 
 def save(settings_file):
     global __SETTINGS
-    with open(settings_file, "w") as fp:
-        json.dump(__SETTINGS, fp, indent=4, sort_keys=True, cls=__SettingsJSONEncoder)
+    try:
+        with open(settings_file, "w") as fp:
+            json.dump(__SETTINGS, fp, indent=4, sort_keys=True, cls=__SettingsJSONEncoder)
+    except OSError as error:
+        return False, error
+    else:
+        return True, None
 
 
 def __getattr__(key):
     try:
-        return __SETTINGS.get(key, __DEFAULT_SETTINGS.get(key, None)) 
+        return __SETTINGS[key]
     except KeyError:
-        return None
+        value = __DEFAULT_SETTINGS.get(key, None)
+        if value:
+            print(f"Error: could not find key '{key}' in loaded settings, using default")
+            return value
+        raise KeyError(f"Error: could not find key '{key}' in {__DEFAULT_SETTINGS}")
 
 
 #####################
@@ -60,28 +74,30 @@ __DEFAULT_SETTINGS = {
     #############################
     #  BLOB DETECTION SETTINGS  #
     #############################
-    "FILTER_BY_CONVEXITY": False,
-    "MIN_CONVEXITY": 0.5,
-    "MAX_CONVEXITY": 1,
+    "BLOB_DETECTOR": {
+        "FILTER_BY_CONVEXITY": False,
+        "MIN_CONVEXITY": 0.5,
+        "MAX_CONVEXITY": 1,
 
-    "FILTER_BY_CIRCULARITY": True,
-    "MIN_CIRCULARITY": 0.3,
-    "MAX_CIRCULARITY": 1,
+        "FILTER_BY_CIRCULARITY": True,
+        "MIN_CIRCULARITY": 0.3,
+        "MAX_CIRCULARITY": 1,
 
-    "FILTER_BY_INERTIA": False,
-    "MIN_INERTIA_RATIO": 0.2,
-    "MAX_INERTIA_RATIO": 1,
+        "FILTER_BY_INERTIA": False,
+        "MIN_INERTIA_RATIO": 0.2,
+        "MAX_INERTIA_RATIO": 1,
 
-    "FILTER_BY_AREA": True,
-    "MIN_AREA": 200,
-    "MAX_AREA": 2000,
+        "FILTER_BY_AREA": True,
+        "MIN_AREA": 200,
+        "MAX_AREA": 2000,
 
-    "FILTER_BY_COLOUR": True,
-    "BLOB_COLOUR": 255,
+        "FILTER_BY_COLOUR": True,
+        "BLOB_COLOUR": 255,
 
-    "MIN_DIST_BETWEEN_BLOBS": 10,
-    "MIN_THRESHOLD": 170,
-    "MAX_THRESHOLD": 255,
+        "MIN_DIST_BETWEEN_BLOBS": 10,
+        "MIN_THRESHOLD": 170,
+        "MAX_THRESHOLD": 255,
+    },
 
     ###############################
     #  HSV COLOUR RANGE SETTINGS  #
