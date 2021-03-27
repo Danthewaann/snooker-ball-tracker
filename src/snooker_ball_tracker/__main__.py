@@ -4,7 +4,7 @@ from snooker_ball_tracker.views import MainWindow
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-import test
+from snooker_ball_tracker.test import Ui_MainWindow
 # from PySide2.QtCore import (QCoreApplication, QMetaObject, QObject, QPoint,
 #     QRect, QSize, QUrl, Qt)
 # from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
@@ -12,7 +12,7 @@ import test
 #     QRadialGradient)
 # from PySide2.QtWidgets import *
 
-class ExampleApp(QMainWindow, test.Ui_MainWindow):
+class ExampleApp(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(ExampleApp, self).__init__(parent)
         self.setupUi(self)

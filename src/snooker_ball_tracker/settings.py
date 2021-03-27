@@ -49,7 +49,8 @@ def __getattr__(key):
             print(f"Error: could not find key '{key}' in loaded settings, using default")
             return default_value
         except KeyError:
-            raise KeyError(f"Error: could not find key '{key}' in {__DEFAULT_SETTINGS}")
+            return getattr(__file__, key)
+            # raise KeyError(f"Error: could not find key '{key}' in {__DEFAULT_SETTINGS}")
 
 
 #####################
