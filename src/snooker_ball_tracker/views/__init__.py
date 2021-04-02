@@ -1,24 +1,18 @@
-# from tkinter import *
-# from tkinter.ttk import *
 import cv2
 import os
 import numpy as np
 import threading
-# from .navbar import Navbar
-# from .ball_tracker_options import BallTrackerOptions
-# from .colour_detection_options import ColourDetectionOptions
-# from .program_output import ProgramOutput
-# from .video_player import VideoPlayer
 from snooker_ball_tracker.ball_tracker import BallTracker
 from snooker_ball_tracker.video_processor import VideoProcessor
 from snooker_ball_tracker.video_file_stream import VideoFileStream
 import snooker_ball_tracker.settings as s
 from collections import OrderedDict
-# from tkinter import font
-# from tkinter import filedialog
-# from PIL import Image, ImageTk
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+import PyQt5.QtWidgets as QtWidgets
+import PyQt5.QtCore as QtCore
+import PyQt5.QtGui as QtGui
+from .settings import Ui_Settings
+from .video_player import Ui_VideoPlayer
+from .logging import Ui_Logging
 
 
 class SplashScreen:
@@ -69,7 +63,7 @@ class SplashScreen:
         self.root.destroy()
 
 
-class MainWindow(QMainWindow):
+class Ui_MainWindow(QtWidgets.QMainWindow):
     def __init__(self, args):
         super().__init__()
 
@@ -77,6 +71,58 @@ class MainWindow(QMainWindow):
 
         if self.settings_file:
             s.load(self.settings_file)
+
+        self.setWindowTitle("Snooker Ball Tracker Demo")
+        self.resize(1269, 877)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(1)
+        sizePolicy.setVerticalStretch(1)
+        self.setSizePolicy(sizePolicy)
+        self.central_widget = QtWidgets.QWidget(self)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        self.central_widget.setSizePolicy(sizePolicy)
+        self.central_widget.setObjectName("central_widget")
+        self.central_widget_layout = QtWidgets.QGridLayout(self.central_widget)
+        self.central_widget_layout.setContentsMargins(15, 15, 15, 15)
+        self.central_widget_layout.setSpacing(15)
+        self.central_widget_layout.setObjectName("central_widget_layout")
+
+        self.central_widget_layout.addWidget(Ui_Settings(), 0, 0, 1, 1)
+        self.central_widget_layout.addWidget(Ui_Logging(), 1, 0, 1, 1)
+        self.central_widget_layout.addWidget(Ui_VideoPlayer(), 0, 1, 2, 1)
+        self.central_widget_layout.setColumnStretch(0, 3)
+        self.central_widget_layout.setColumnStretch(1, 5)
+
+        self.setCentralWidget(self.central_widget)
+
+        self.menubar = QtWidgets.QMenuBar(self)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1269, 22))
+        self.menubar.setObjectName("menubar")
+        self.menuSettings = QtWidgets.QMenu(self.menubar)
+        self.menuSettings.setObjectName("menuSettings")
+        self.menuExit = QtWidgets.QMenu(self.menubar)
+        self.menuExit.setObjectName("menuExit")
+        self.menuExit_2 = QtWidgets.QMenu(self.menubar)
+        self.menuExit_2.setObjectName("menuExit_2")
+        self.setMenuBar(self.menubar)
+        self.statusBar = QtWidgets.QStatusBar(self)
+        self.statusBar.setEnabled(True)
+        self.statusBar.setObjectName("statusBar")
+        self.setStatusBar(self.statusBar)
+        self.actionLoad = QtWidgets.QAction(self)
+        self.actionLoad.setObjectName("actionLoad")
+        self.actionSave = QtWidgets.QAction(self)
+        self.actionSave.setObjectName("actionSave")
+        self.actionSelect_Video_File = QtWidgets.QAction(self)
+        self.actionSelect_Video_File.setObjectName("actionSelect_Video_File")
+        self.menuSettings.addAction(self.actionLoad)
+        self.menuSettings.addAction(self.actionSave)
+        self.menuExit.addAction(self.actionSelect_Video_File)
+        self.menubar.addAction(self.menuExit.menuAction())
+        self.menubar.addAction(self.menuSettings.menuAction())
+        self.menubar.addAction(self.menuExit_2.menuAction())
 
     #     try:
     #         self.iconphoto(True, PhotoImage(file="icon.png"))

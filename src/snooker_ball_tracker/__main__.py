@@ -1,21 +1,9 @@
 import argparse
 import sys
-from snooker_ball_tracker.views import MainWindow
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-from snooker_ball_tracker.test import Ui_MainWindow
-# from PySide2.QtCore import (QCoreApplication, QMetaObject, QObject, QPoint,
-#     QRect, QSize, QUrl, Qt)
-# from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
-#     QFontDatabase, QIcon, QLinearGradient, QPalette, QPainter, QPixmap,
-#     QRadialGradient)
-# from PySide2.QtWidgets import *
-
-class ExampleApp(QMainWindow, Ui_MainWindow):
-    def __init__(self, parent=None):
-        super(ExampleApp, self).__init__(parent)
-        self.setupUi(self)
+from snooker_ball_tracker.views import Ui_MainWindow
 
 if __name__ == "__main__":
 
@@ -27,8 +15,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     app = QApplication([])
-    window = ExampleApp()
+    window = Ui_MainWindow(args)
     window.show()
-    # window.show()
 
     sys.exit(app.exec())

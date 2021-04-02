@@ -86,8 +86,8 @@ __DEFAULT_SETTINGS = {
         "MAX_CIRCULARITY": 1,
 
         "FILTER_BY_INERTIA": False,
-        "MIN_INERTIA_RATIO": 0.2,
-        "MAX_INERTIA_RATIO": 1,
+        "MIN_INERTIA": 0.2,
+        "MAX_INERTIA": 1,
 
         "FILTER_BY_AREA": True,
         "MIN_AREA": 200,

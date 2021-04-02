@@ -31,6 +31,9 @@
             "request": "launch",
             "program": "src/snooker_ball_tracker/__main__.py",
             "console": "integratedTerminal",
+            "environment": [
+                { "name": "PYTHONDONTWRITEBYTECODE", "value": "1" }
+            ],
             "args": [ 
                 "--settings", "${workspaceFolder}/resources/config/pre_recorded_footage.json",
                 "--no-splash"

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1269</width>
+    <width>1453</width>
     <height>877</height>
    </rect>
   </property>
@@ -96,7 +96,7 @@
           <cursorShape>ArrowCursor</cursorShape>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <property name="movable">
           <bool>false</bool>
@@ -112,32 +112,6 @@
            <property name="horizontalSpacing">
             <number>15</number>
            </property>
-           <item row="0" column="0" colspan="7">
-            <widget class="Line" name="detectColour_horz_line1">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="detectColour_label">
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="layoutDirection">
-              <enum>Qt::LeftToRight</enum>
-             </property>
-             <property name="text">
-              <string>Detect Colour</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
            <item row="1" column="1" colspan="2">
             <widget class="QComboBox" name="detectColour_combobox">
              <property name="sizePolicy">
@@ -160,23 +134,10 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="3">
-            <widget class="QLabel" name="showMask_label">
+           <item row="4" column="2" colspan="2">
+            <widget class="QSlider" name="lHue_slider">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Show Mask</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="4">
-            <widget class="QRadioButton" name="showMask_yradio">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -184,75 +145,20 @@
              <property name="cursor">
               <cursorShape>PointingHandCursor</cursorShape>
              </property>
-             <property name="text">
-              <string>Yes</string>
+             <property name="maximum">
+              <number>255</number>
              </property>
-            </widget>
-           </item>
-           <item row="1" column="5">
-            <widget class="QRadioButton" name="showMask_nradio">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+             <property name="value">
+              <number>0</number>
              </property>
-             <property name="cursor">
-              <cursorShape>PointingHandCursor</cursorShape>
+             <property name="sliderPosition">
+              <number>0</number>
              </property>
-             <property name="text">
-              <string>No</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="6">
-            <widget class="QPushButton" name="reset_btn">
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="cursor">
-              <cursorShape>PointingHandCursor</cursorShape>
-             </property>
-             <property name="layoutDirection">
-              <enum>Qt::LeftToRight</enum>
-             </property>
-             <property name="autoFillBackground">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Reset</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0" colspan="7">
-            <widget class="Line" name="detectColour_horz_line2">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
-            </widget>
-           </item>
-           <item row="3" column="2" colspan="2">
-            <widget class="QLabel" name="lRange_label">
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="layoutDirection">
-              <enum>Qt::LeftToRight</enum>
-             </property>
-             <property name="text">
-              <string>Lower Range</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <property name="margin">
-              <number>0</number>
+             <property name="tickPosition">
+              <enum>QSlider::NoTicks</enum>
              </property>
             </widget>
            </item>
@@ -272,6 +178,84 @@
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="4">
+            <widget class="QLabel" name="uVal_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="5" colspan="2">
+            <widget class="QSlider" name="uSat_slider">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="maximum">
+              <number>255</number>
+             </property>
+             <property name="value">
+              <number>0</number>
+             </property>
+             <property name="sliderPosition">
+              <number>0</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="tickPosition">
+              <enum>QSlider::NoTicks</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="2" colspan="2">
+            <widget class="QSlider" name="lval_slider">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="maximum">
+              <number>255</number>
+             </property>
+             <property name="value">
+              <number>0</number>
+             </property>
+             <property name="sliderPosition">
+              <number>0</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="tickPosition">
+              <enum>QSlider::NoTicks</enum>
              </property>
             </widget>
            </item>
@@ -319,8 +303,59 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="2" colspan="2">
-            <widget class="QSlider" name="lHue_slider">
+           <item row="1" column="3">
+            <widget class="QLabel" name="showMask_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Show Mask</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="5">
+            <widget class="QRadioButton" name="showMask_nradio">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="text">
+              <string>No</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="4">
+            <widget class="QLabel" name="uSat_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="2" colspan="2">
+            <widget class="QSlider" name="lSat_slider">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -344,28 +379,6 @@
              </property>
              <property name="tickPosition">
               <enum>QSlider::NoTicks</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="4">
-            <widget class="QLabel" name="uHue_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>0</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -394,6 +407,13 @@
              </property>
              <property name="tickPosition">
               <enum>QSlider::NoTicks</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="7">
+            <widget class="Line" name="detectColour_horz_line1">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
@@ -453,100 +473,22 @@
              </property>
             </widget>
            </item>
-           <item row="5" column="2" colspan="2">
-            <widget class="QSlider" name="lSat_slider">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="cursor">
-              <cursorShape>PointingHandCursor</cursorShape>
-             </property>
-             <property name="maximum">
-              <number>255</number>
-             </property>
-             <property name="value">
-              <number>0</number>
-             </property>
-             <property name="sliderPosition">
-              <number>0</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="tickPosition">
-              <enum>QSlider::NoTicks</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="4">
-            <widget class="QLabel" name="uSat_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
+           <item row="3" column="2" colspan="2">
+            <widget class="QLabel" name="lRange_label">
+             <property name="maximumSize">
               <size>
-               <width>20</width>
-               <height>0</height>
+               <width>16777215</width>
+               <height>30</height>
               </size>
-             </property>
-             <property name="text">
-              <string>0</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="5" colspan="2">
-            <widget class="QSlider" name="uSat_slider">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="cursor">
-              <cursorShape>PointingHandCursor</cursorShape>
-             </property>
-             <property name="maximum">
-              <number>255</number>
-             </property>
-             <property name="value">
-              <number>0</number>
-             </property>
-             <property name="sliderPosition">
-              <number>0</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="tickPosition">
-              <enum>QSlider::NoTicks</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0">
-            <widget class="QLabel" name="val_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
              </property>
              <property name="layoutDirection">
               <enum>Qt::LeftToRight</enum>
              </property>
              <property name="text">
-              <string>Value</string>
+              <string>Lower Range</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <set>Qt::AlignCenter</set>
              </property>
              <property name="margin">
               <number>0</number>
@@ -575,10 +517,36 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="2" colspan="2">
-            <widget class="QSlider" name="lval_slider">
+           <item row="1" column="0">
+            <widget class="QLabel" name="detectColour_label">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="layoutDirection">
+              <enum>Qt::LeftToRight</enum>
+             </property>
+             <property name="text">
+              <string>Detect Colour</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" colspan="7">
+            <widget class="Line" name="detectColour_horz_line2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="4">
+            <widget class="QRadioButton" name="showMask_yradio">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -586,25 +554,13 @@
              <property name="cursor">
               <cursorShape>PointingHandCursor</cursorShape>
              </property>
-             <property name="maximum">
-              <number>255</number>
-             </property>
-             <property name="value">
-              <number>0</number>
-             </property>
-             <property name="sliderPosition">
-              <number>0</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="tickPosition">
-              <enum>QSlider::NoTicks</enum>
+             <property name="text">
+              <string>Yes</string>
              </property>
             </widget>
            </item>
-           <item row="6" column="4">
-            <widget class="QLabel" name="uVal_label">
+           <item row="4" column="4">
+            <widget class="QLabel" name="uHue_label">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -613,7 +569,7 @@
              </property>
              <property name="minimumSize">
               <size>
-               <width>20</width>
+               <width>0</width>
                <height>0</height>
               </size>
              </property>
@@ -625,8 +581,52 @@
              </property>
             </widget>
            </item>
+           <item row="6" column="0">
+            <widget class="QLabel" name="val_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="layoutDirection">
+              <enum>Qt::LeftToRight</enum>
+             </property>
+             <property name="text">
+              <string>Value</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+             <property name="margin">
+              <number>0</number>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="6">
+            <widget class="QPushButton" name="reset_btn">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="layoutDirection">
+              <enum>Qt::LeftToRight</enum>
+             </property>
+             <property name="autoFillBackground">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Reset</string>
+             </property>
+            </widget>
+           </item>
            <item row="6" column="5" colspan="2">
-            <widget class="QSlider" name="rVal_slider">
+            <widget class="QSlider" name="uVal_slider">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -1399,199 +1399,192 @@
            <height>16777215</height>
           </size>
          </property>
-         <layout class="QHBoxLayout" name="videoPlayer_widget_layout">
-          <item>
-           <layout class="QGridLayout" name="videoPlayer_options_layout">
-            <property name="horizontalSpacing">
-             <number>10</number>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="2" column="6">
+           <widget class="QPushButton" name="restart_btn">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
-            <item row="0" column="3">
-             <widget class="QPushButton" name="play_btn">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>150</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="baseSize">
-               <size>
-                <width>0</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="cursor">
-               <cursorShape>PointingHandCursor</cursorShape>
-              </property>
-              <property name="layoutDirection">
-               <enum>Qt::LeftToRight</enum>
-              </property>
-              <property name="text">
-               <string>Play</string>
-              </property>
-              <property name="autoDefault">
-               <bool>false</bool>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="3">
-             <widget class="QPushButton" name="restart_btn">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>150</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="baseSize">
-               <size>
-                <width>0</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="cursor">
-               <cursorShape>PointingHandCursor</cursorShape>
-              </property>
-              <property name="layoutDirection">
-               <enum>Qt::LeftToRight</enum>
-              </property>
-              <property name="text">
-               <string>Restart</string>
-              </property>
-              <property name="autoDefault">
-               <bool>false</bool>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="2">
-             <widget class="QLabel" name="cropFrames_label">
-              <property name="text">
-               <string>Crop Frames</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="margin">
-               <number>0</number>
-              </property>
-              <property name="indent">
-               <number>5</number>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="3">
-             <widget class="QPushButton" name="detectTable_btn">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>150</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="baseSize">
-               <size>
-                <width>0</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="cursor">
-               <cursorShape>PointingHandCursor</cursorShape>
-              </property>
-              <property name="layoutDirection">
-               <enum>Qt::LeftToRight</enum>
-              </property>
-              <property name="text">
-               <string>Detect Table</string>
-              </property>
-              <property name="default">
-               <bool>false</bool>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QRadioButton" name="showThreshold_yradio">
-              <property name="cursor">
-               <cursorShape>PointingHandCursor</cursorShape>
-              </property>
-              <property name="text">
-               <string>Yes</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="showThreshold_label">
-              <property name="text">
-               <string>Show Threshold</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="margin">
-               <number>0</number>
-              </property>
-              <property name="indent">
-               <number>5</number>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="showThreshold_nradio">
-              <property name="cursor">
-               <cursorShape>PointingHandCursor</cursorShape>
-              </property>
-              <property name="text">
-               <string>No</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QRadioButton" name="cropFrames_yradio">
-              <property name="cursor">
-               <cursorShape>PointingHandCursor</cursorShape>
-              </property>
-              <property name="text">
-               <string>Yes</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QRadioButton" name="cropFrames_nradio">
-              <property name="cursor">
-               <cursorShape>PointingHandCursor</cursorShape>
-              </property>
-              <property name="text">
-               <string>No</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
+            <property name="maximumSize">
+             <size>
+              <width>150</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="baseSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
+            </property>
+            <property name="text">
+             <string>Restart</string>
+            </property>
+            <property name="autoDefault">
+             <bool>false</bool>
+            </property>
+            <property name="flat">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="6">
+           <widget class="QPushButton" name="detectTable_btn">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>150</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="baseSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
+            </property>
+            <property name="text">
+             <string>Detect Table</string>
+            </property>
+            <property name="default">
+             <bool>false</bool>
+            </property>
+            <property name="flat">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="5">
+           <widget class="QLabel" name="showThreshold_label">
+            <property name="text">
+             <string>Show Threshold</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
+            <property name="indent">
+             <number>5</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="6">
+           <widget class="QPushButton" name="play_btn">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>150</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="baseSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
+            </property>
+            <property name="text">
+             <string>Play</string>
+            </property>
+            <property name="autoDefault">
+             <bool>false</bool>
+            </property>
+            <property name="flat">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="5">
+           <widget class="QLabel" name="cropFrames_label">
+            <property name="text">
+             <string>Crop Frames</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
+            <property name="indent">
+             <number>5</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QRadioButton" name="showThreshold_nradio">
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="text">
+             <string>No</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QRadioButton" name="cropFrames_nradio">
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="text">
+             <string>No</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="QRadioButton" name="showThreshold_yradio">
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="text">
+             <string>Yes</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="4">
+           <widget class="QRadioButton" name="cropFrames_yradio">
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="text">
+             <string>Yes</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -2172,7 +2165,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1269</width>
+     <width>1453</width>
      <height>22</height>
     </rect>
    </property>

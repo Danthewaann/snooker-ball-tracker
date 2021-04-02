@@ -8,5 +8,5 @@ setup(
     author_email='danielcrblack@gmail.com',
     package_dir={'': 'src'},
     packages=find_packages('src'),
-    install_requires=['numpy>=1.18.0', 'imutils>=0.5.3', 'requests', 'opencv-python==4.1.2.30', 'Pillow']
+    install_requires=['numpy', 'imutils', 'opencv-python', 'Pillow', 'pyqt5']
 )
