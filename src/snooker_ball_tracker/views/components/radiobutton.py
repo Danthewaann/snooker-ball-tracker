@@ -6,6 +6,7 @@ import PyQt5.QtGui as QtGui
 class Ui_RadioButton(QtWidgets.QRadioButton):
 
     # clicked = QtCore.pyqtSignal(bool, name="clicked")
+    stateChanged = QtCore.pyqtSignal(bool)
 
     def __init__(self, name, value, checked=False, parent=None, 
                  objectName=None, width=None, height=None, 
@@ -24,13 +25,25 @@ class Ui_RadioButton(QtWidgets.QRadioButton):
         self.setSizePolicy(QtWidgets.QSizePolicy(sizePolicy[0], sizePolicy[1]))
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.setChecked(checked)
-        # self.toggled.connect(self.onToggle)
+        self.toggled.connect(self.onToggle)
 
-    # @QtCore.pyqtSlot(bool)
-    # def onToggle(self, selected):
+    @QtCore.pyqtSlot(bool)
+    def onToggle(self, selected):
+        if selected:
+            self.setChecked(selected)
+            self.stateChanged.emit(self._value)
+
+    # def toggled(self, selected):
     #     if selected:
-    #         self.clicked.emit(self._value)
+    #         self.value = selected
+    #     super().toggled(selected)
 
-    def setValue(self, value):
+    @property
+    def state(self):
+        return self.isChecked()
+
+    @state.setter
+    def state(self, value):
         if value == self._value:
             self.setChecked(True)
+            self.stateChanged.emit(value)

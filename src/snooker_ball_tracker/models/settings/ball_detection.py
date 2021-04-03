@@ -17,7 +17,7 @@ class BallDetectionSettingGroupModel(QtCore.QObject):
 
     min_valueChanged = QtCore.pyqtSignal(int, name="min_valueChanged")
     max_valueChanged = QtCore.pyqtSignal(int, name="max_valueChanged")
-    filterBy_valueChanged = QtCore.pyqtSignal(bool, name="filterBy_valueChanged")
+    filter_byChanged = QtCore.pyqtSignal(bool, name="filter_byChanged")
 
     @property
     def name(self):
@@ -27,31 +27,33 @@ class BallDetectionSettingGroupModel(QtCore.QObject):
     def multiplier(self):
         return self._multiplier
 
-    @QtCore.pyqtProperty(int, notify=min_valueChanged)
+    @property
     def min_value(self):
         return self._min_value
 
-    def setMinValue(self, value):
+    @min_value.setter
+    def min_value(self, value):
         self._min_value = value
         self.min_valueChanged.emit(self._min_value)
 
-    @QtCore.pyqtProperty(int, notify=max_valueChanged)
+    @property
     def max_value(self):
         return self._max_value
 
-    def setMaxValue(self, value):
+    @max_value.setter
+    def max_value(self, value):
         self._max_value = value
         self.max_valueChanged.emit(self._max_value)
 
-    @QtCore.pyqtProperty(bool, notify=filterBy_valueChanged)
+    @property
     def filter_by(self):
         return self._filter_by
 
-    @QtCore.pyqtSlot(bool)
-    def setFilterBy(self, value):
+    @filter_by.setter
+    def filter_by(self, value):
         """ C++: int setFilterBy(int) """
         self._filter_by = value
-        self.filterBy_valueChanged.emit(self._filter_by)
+        self.filter_byChanged.emit(self._filter_by)
 
     def reset(self):
         self.setMinValue(s.BLOB_DETECTOR["MIN_" + self._name.upper()] * self._multiplier)

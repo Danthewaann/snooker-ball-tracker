@@ -5,6 +5,7 @@ import snooker_ball_tracker.settings as s
 
 from collections import OrderedDict
 from snooker_ball_tracker.models.settings.ball_detection import BallDetectionTabModel, BallDetectionSettingGroupModel
+from snooker_ball_tracker.models.observer import Observer
 from .components.radiobutton import Ui_RadioButton
 from .components.slider import Ui_Slider
 from .components.label import Ui_Label
@@ -41,8 +42,8 @@ class Ui_BallDetectionSettingGroupBox(QtWidgets.QGroupBox):
         self.layout.setSpacing(10)
 
         self.filterBy_label = Ui_Label("Filter By", self, width=(120, 120), alignment=QtCore.Qt.AlignCenter)
-        self.filterBy_yradio = Ui_RadioButton("Yes", value=True, parent=self, objectName="filterBy_yradio", width=(50, 50))
-        self.filterBy_nradio = Ui_RadioButton("No", value=False, checked=True, parent=self, objectName="filterBy_nradio", width=(50, 50))
+        self.filterBy_yradio = Ui_RadioButton("Yes", value=True, parent=self, width=(50, 50))
+        self.filterBy_nradio = Ui_RadioButton("No", value=False, checked=True, parent=self, width=(50, 50))
 
         self.minVal_label = Ui_Label("Minimum Value", self, width=(120, 120), alignment=QtCore.Qt.AlignCenter, 
                                      sizePolicy=(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred))
@@ -69,16 +70,20 @@ class Ui_BallDetectionSettingGroupBox(QtWidgets.QGroupBox):
         self.layout.addWidget(self.maxVal_slider,   2, 2, 1, 2)
         self.layout.addWidget(self.reset_btn,       3, 3, 1, 1, alignment=QtCore.Qt.AlignRight)
 
-        self.model.filterBy_valueChanged.connect(self.filterBy_yradio.setValue)
-        self.model.filterBy_valueChanged.connect(self.filterBy_nradio.setValue)
-        self.model.min_valueChanged.connect(self.minVal_slider.setValue)
-        self.model.max_valueChanged.connect(self.maxVal_slider.setValue)
-        
-        QtCore.QMetaObject.connectSlotsByName(self)
+        self.group_observers = [
+            Observer([(self.filterBy_yradio, "state"), (self.filterBy_nradio, "state"), (self.model, "filter_by")])
+        ]
 
-        self.model.setMinValue(s.BLOB_DETECTOR["MIN_" + self.model.name.upper()] * self.model.multiplier)
-        self.model.setMaxValue(s.BLOB_DETECTOR["MAX_" + self.model.name.upper()] * self.model.multiplier)
-        self.model.setFilterBy(s.BLOB_DETECTOR["FILTER_BY_" + self.model.name.upper()])
+        # self.model.filterBy_valueChanged.connect(self.filterBy_yradio.setValue)
+        # self.model.filterBy_valueChanged.connect(self.filterBy_nradio.setValue)
+        # self.model.min_valueChanged.connect(self.minVal_slider.setValue)
+        # self.model.max_valueChanged.connect(self.maxVal_slider.setValue)
+        
+        # QtCore.QMetaObject.connectSlotsByName(self)
+
+        # self.model.setMinValue(s.BLOB_DETECTOR["MIN_" + self.model.name.upper()] * self.model.multiplier)
+        # self.model.setMaxValue(s.BLOB_DETECTOR["MAX_" + self.model.name.upper()] * self.model.multiplier)
+        # self.model.setFilterBy(s.BLOB_DETECTOR["FILTER_BY_" + self.model.name.upper()])
 
     @QtCore.pyqtSlot(bool)
     def on_filterBy_yradio_toggled(self, checked):

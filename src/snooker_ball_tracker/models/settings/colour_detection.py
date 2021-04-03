@@ -127,28 +127,6 @@ class ColourDetectionTabModel(QtCore.QObject):
         self._selected_colour = value
         self.selected_colourChanged.emit(self._selected_colour)
 
-    # def setSelectedColour(self, colour):
-    #     colour = colour.upper()
-    #     if self._selected_colour != "NONE":
-    #         self._colours[self._selected_colour]["LOWER"][0] = self._colour_model.l_Hue
-    #         self._colours[self._selected_colour]["LOWER"][1] = self._colour_model.l_Saturation
-    #         self._colours[self._selected_colour]["LOWER"][2] = self._colour_model.l_Value
-    #         self._colours[self._selected_colour]["UPPER"][0] = self._colour_model.u_Hue
-    #         self._colours[self._selected_colour]["UPPER"][1] = self._colour_model.u_Saturation
-    #         self._colours[self._selected_colour]["UPPER"][2] = self._colour_model.u_Value
-
-    #     if colour != "NONE":
-    #         self._colour_model.l_Hue = self._colours[colour]["LOWER"][0]
-    #         self._colour_model.l_Saturation = self._colours[colour]["LOWER"][1]
-    #         self._colour_model.l_Value = self._colours[colour]["LOWER"][2]
-    #         self._colour_model.u_Hue = self._colours[colour]["UPPER"][0]
-    #         self._colour_model.u_Saturation = self._colours[colour]["UPPER"][1]
-    #         self._colour_model.u_Value = self._colours[colour]["UPPER"][2]
-    #     else:
-    #         self.reset(colour)
-
-    #     self._selected_colour = colour
-
     def reset(self):
         self._colours[self._selected_colour]["LOWER"][0] = s.COLOURS[self._selected_colour]["LOWER"][0]
         self._colours[self._selected_colour]["LOWER"][1] = s.COLOURS[self._selected_colour]["LOWER"][1]
