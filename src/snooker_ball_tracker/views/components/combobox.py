@@ -20,3 +20,4 @@ class Ui_Combobox(QtWidgets.QComboBox):
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.setMinimumWidth(100)
         self.setSizePolicy(QtWidgets.QSizePolicy(sizePolicy[0], sizePolicy[1]))
+

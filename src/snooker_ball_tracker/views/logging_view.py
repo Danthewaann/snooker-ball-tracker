@@ -2,14 +2,17 @@ import PyQt5.QtWidgets as QtWidgets
 import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 
-from .Ui_snapshot_info import Ui_SnapshotInfo
-from .Ui_balls_potted import Ui_BallsPotted
+from .components.label import Ui_Label
+from .components.pushbutton import Ui_PushButton
+from .components.line import Ui_Line
+from .logging_balls_potted import Ui_BallsPotted
+from .logging_snapshot_info import Ui_SnapshotInfo
 
 
-class Ui_Logging(QtWidgets.QGroupBox):
+class LoggingView(QtWidgets.QGroupBox):
     def __init__(self):
         super().__init__("Logging")
-        font = QtGui.QFont("Logging", pointSize=11)
+        # font = QtGui.QFont("Logging", pointSize=11)
 
         self.layout = QtWidgets.QHBoxLayout(self)
         self.layout.setContentsMargins(15, 15, 15, 15)

@@ -10,9 +10,9 @@ from collections import OrderedDict
 import PyQt5.QtWidgets as QtWidgets
 import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
-from .settings import Ui_Settings
-from .video_player import Ui_VideoPlayer
-from .logging import Ui_Logging
+from .settings_view import SettingsView
+from .video_player_view import VideoPlayerView
+from .logging_view import LoggingView
 
 
 class SplashScreen:
@@ -73,7 +73,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             s.load(self.settings_file)
 
         self.setWindowTitle("Snooker Ball Tracker Demo")
-        self.resize(1269, 877)
+        # self.resize(1269, 877)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(1)
         sizePolicy.setVerticalStretch(1)
@@ -89,9 +89,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.central_widget_layout.setSpacing(15)
         self.central_widget_layout.setObjectName("central_widget_layout")
 
-        self.central_widget_layout.addWidget(Ui_Settings(), 0, 0, 1, 1)
-        self.central_widget_layout.addWidget(Ui_Logging(), 1, 0, 1, 1)
-        self.central_widget_layout.addWidget(Ui_VideoPlayer(), 0, 1, 2, 1)
+        self.settings_view = SettingsView()
+        self.central_widget_layout.addWidget(self.settings_view, 0, 0, 1, 1)
+        self.central_widget_layout.addWidget(LoggingView(), 1, 0, 1, 1)
+        self.central_widget_layout.addWidget(VideoPlayerView(), 0, 1, 2, 1)
         self.central_widget_layout.setColumnStretch(0, 3)
         self.central_widget_layout.setColumnStretch(1, 5)
 

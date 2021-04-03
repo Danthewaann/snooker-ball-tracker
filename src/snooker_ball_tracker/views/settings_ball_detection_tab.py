@@ -5,10 +5,10 @@ import snooker_ball_tracker.settings as s
 
 from collections import OrderedDict
 from snooker_ball_tracker.models.settings.ball_detection import BallDetectionTabModel, BallDetectionSettingGroupModel
-from snooker_ball_tracker.views.radiobutton import Ui_RadioButton
-from snooker_ball_tracker.views.slider import Ui_Slider
-from snooker_ball_tracker.views.label import Ui_Label
-from snooker_ball_tracker.views.pushbutton import Ui_PushButton
+from .components.radiobutton import Ui_RadioButton
+from .components.slider import Ui_Slider
+from .components.label import Ui_Label
+from .components.pushbutton import Ui_PushButton
 
 
 class Ui_BallDetectionTab(QtWidgets.QWidget):

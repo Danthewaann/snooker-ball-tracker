@@ -7,127 +7,159 @@ from collections import OrderedDict
 from copy import deepcopy
 
 
-class RangeSliderModel(QtCore.QObject):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self._l_value = 0
-        self._u_value = 0
+class HSVColourModel(QtCore.QObject):
 
-    l_valueChanged = QtCore.pyqtSignal(int, name="l_valueChanged")
-    u_valueChanged = QtCore.pyqtSignal(int, name="u_valueChanged")
+    l_HueChanged = QtCore.pyqtSignal(int, name="l_HueChanged")
+    u_HueChanged = QtCore.pyqtSignal(int, name="u_HueChanged")
+    l_SaturationChanged = QtCore.pyqtSignal(int, name="l_SaturationChanged")
+    u_SaturationChanged = QtCore.pyqtSignal(int, name="u_SaturationChanged")
+    l_ValueChanged = QtCore.pyqtSignal(int, name="l_ValueChanged")
+    u_ValueChanged = QtCore.pyqtSignal(int, name="u_ValueChanged")
 
-    @QtCore.pyqtProperty(int, notify=l_valueChanged)
-    def l_value(self):
-        return self._l_value
+    def __init__(self):
+        super().__init__()
+        self._l_Hue = 0
+        self._u_Hue = 0 
+        self._l_Saturation = 0 
+        self._u_Saturation = 0 
+        self._l_Value = 0 
+        self._u_Value = 0
 
-    @QtCore.pyqtProperty(int, notify=u_valueChanged)
-    def u_value(self):
-        return self._u_value
+    @property
+    def l_Hue(self):
+        return self._l_Hue
 
-    def setLValue(self, value):
-        self._l_value = value
-        self.l_valueChanged.emit(self._l_value)
+    @l_Hue.setter
+    def l_Hue(self, value):
+        self._l_Hue = value
+        self.l_HueChanged.emit(self._l_Hue)
 
-    def setUValue(self, value):
-        self._u_value = value
-        self.u_valueChanged.emit(self._u_value)
+    @property
+    def u_Hue(self):
+        return self._u_Hue
 
-    def reset(self, colour, index):
-        self.setLValue(s.COLOURS[colour.upper()]['LOWER'][index])
-        self.setUValue(s.COLOURS[colour.upper()]['UPPER'][index])
+    @u_Hue.setter
+    def u_Hue(self, value):
+        self._u_Hue = value
+        self.u_HueChanged.emit(self._u_Hue)
 
+    @property
+    def l_Saturation(self):
+        return self._l_Saturation
 
-class ColourModel(QtCore.QObject):
-    def __init__(self, colour, parent=None):
-        super().__init__(parent)
-        self._colour = colour
-        self.lower = s.COLOURS[colour]["LOWER"]
-        self.upper = s.COLOURS[colour]["UPPER"]
+    @l_Saturation.setter
+    def l_Saturation(self, value):
+        self._l_Saturation = value
+        self.l_SaturationChanged.emit(self._l_Saturation)
 
+    @property
+    def u_Saturation(self):
+        return self._u_Saturation
 
-# class ColourDetectionTabModel(QtCore.QObject):
+    @u_Saturation.setter
+    def u_Saturation(self, value):
+        self._u_Saturation = value
+        self.u_SaturationChanged.emit(self._u_Saturation)
 
-#     def __init__(self, parent=None):
-#         super().__init__(parent)
-#         self._selected_colour = "None"
-#         self._colours = deepcopy(s.COLOURS)
-        
-#         self.models = OrderedDict([
-#             ("hue", RangeSliderModel()),
-#             ("sat", RangeSliderModel()),
-#             ("val", RangeSliderModel())
-#         ])
+    @property
+    def l_Value(self):
+        return self._l_Value
 
-#         # self.colour_models = {
-#         #     colour: { ColourModel(colour) } for colour in s.COLOURS
-#         # }
+    @l_Value.setter
+    def l_Value(self, value):
+        self._l_Value = value
+        self.l_ValueChanged.emit(self._l_Value)
 
-#     @QtCore.pyqtProperty("QString")
-#     def colour(self):
-#         return self._colour
+    @property
+    def u_Value(self):
+        return self._u_Value
 
-#     def setColour(self, colour):
-#         if self._selected_colour != "None":
-
-
-#         if colour != "None":
-#             for i, model in enumerate(self.models.values()):
-#                 self._colours[self._selected_colour.upper()]["LOWER"][i] = model.l_value
-#                 self._colours[self._selected_colour.upper()]["UPPER"][i] = model.u_value
-#                 model.setLValue(self._colours[colour.upper()]["LOWER"][i])
-#                 model.setUValue(self._colours[colour.upper()]["UPPER"][i])
-#         else:
-#             self.reset(colour)
-
-#         self._selected_colour = colour
-
-#     # def setColour   
-
-#     def reset(self, colour):
-#         for i, model in enumerate(self.models.values()):
-#             model.setLValue(s.COLOURS[colour.upper()]["LOWER"][i])
-#             model.setUValue(s.COLOURS[colour.upper()]["UPPER"][i])
+    @u_Value.setter
+    def u_Value(self, value):
+        self._u_Value = value
+        self.u_ValueChanged.emit(self._u_Value)
 
 
 class ColourDetectionTabModel(QtCore.QObject):
 
+    selected_colourChanged = QtCore.pyqtSignal(str)
+
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._selected_colour = "None"
+        self._selected_colour = "NONE"
         self._colours = deepcopy(s.COLOURS)
-        
-        self.models = OrderedDict([
-            ("hue", RangeSliderModel()),
-            ("sat", RangeSliderModel()),
-            ("val", RangeSliderModel())
-        ])
+        self._colour_model = HSVColourModel()
 
-        # self.colour_models = {
-        #     colour: { ColourModel(colour) } for colour in s.COLOURS
-        # }
+    @property
+    def colour_model(self):
+        return self._colour_model
 
-    @QtCore.pyqtProperty("QString")
-    def colour(self):
-        return self._colour
+    @property
+    def selected_colour(self):
+        return self._selected_colour
 
-    def setColour(self, colour):
-        # if self._selected_colour == "None":
+    @selected_colour.setter
+    def selected_colour(self, value):
+        value = value.upper()
+        if self._selected_colour != "NONE":
+            self._colours[self._selected_colour]["LOWER"][0] = self._colour_model.l_Hue
+            self._colours[self._selected_colour]["LOWER"][1] = self._colour_model.l_Saturation
+            self._colours[self._selected_colour]["LOWER"][2] = self._colour_model.l_Value
+            self._colours[self._selected_colour]["UPPER"][0] = self._colour_model.u_Hue
+            self._colours[self._selected_colour]["UPPER"][1] = self._colour_model.u_Saturation
+            self._colours[self._selected_colour]["UPPER"][2] = self._colour_model.u_Value
 
-
-        if colour != "None":
-            for i, model in enumerate(self.models.values()):
-                self._colours[self._selected_colour.upper()]["LOWER"][i] = model.l_value
-                self._colours[self._selected_colour.upper()]["UPPER"][i] = model.u_value
-                model.setLValue(self._colours[colour.upper()]["LOWER"][i])
-                model.setUValue(self._colours[colour.upper()]["UPPER"][i])
+        if value != "NONE":
+            self._colour_model.l_Hue = self._colours[value]["LOWER"][0]
+            self._colour_model.l_Saturation = self._colours[value]["LOWER"][1]
+            self._colour_model.l_Value = self._colours[value]["LOWER"][2]
+            self._colour_model.u_Hue = self._colours[value]["UPPER"][0]
+            self._colour_model.u_Saturation = self._colours[value]["UPPER"][1]
+            self._colour_model.u_Value = self._colours[value]["UPPER"][2]
         else:
-            self.reset(colour)
+            self._colour_model.l_Hue = 0
+            self._colour_model.l_Saturation = 0
+            self._colour_model.l_Value = 0
+            self._colour_model.u_Hue = 0
+            self._colour_model.u_Saturation = 0
+            self._colour_model.u_Value = 0
 
-        self._selected_colour = colour
+        self._selected_colour = value
+        self.selected_colourChanged.emit(self._selected_colour)
 
-    # def setColour   
+    # def setSelectedColour(self, colour):
+    #     colour = colour.upper()
+    #     if self._selected_colour != "NONE":
+    #         self._colours[self._selected_colour]["LOWER"][0] = self._colour_model.l_Hue
+    #         self._colours[self._selected_colour]["LOWER"][1] = self._colour_model.l_Saturation
+    #         self._colours[self._selected_colour]["LOWER"][2] = self._colour_model.l_Value
+    #         self._colours[self._selected_colour]["UPPER"][0] = self._colour_model.u_Hue
+    #         self._colours[self._selected_colour]["UPPER"][1] = self._colour_model.u_Saturation
+    #         self._colours[self._selected_colour]["UPPER"][2] = self._colour_model.u_Value
 
-    def reset(self, colour):
-        for i, model in enumerate(self.models.values()):
-            model.setLValue(s.COLOURS[colour.upper()]["LOWER"][i])
-            model.setUValue(s.COLOURS[colour.upper()]["UPPER"][i])
+    #     if colour != "NONE":
+    #         self._colour_model.l_Hue = self._colours[colour]["LOWER"][0]
+    #         self._colour_model.l_Saturation = self._colours[colour]["LOWER"][1]
+    #         self._colour_model.l_Value = self._colours[colour]["LOWER"][2]
+    #         self._colour_model.u_Hue = self._colours[colour]["UPPER"][0]
+    #         self._colour_model.u_Saturation = self._colours[colour]["UPPER"][1]
+    #         self._colour_model.u_Value = self._colours[colour]["UPPER"][2]
+    #     else:
+    #         self.reset(colour)
+
+    #     self._selected_colour = colour
+
+    def reset(self):
+        self._colours[self._selected_colour]["LOWER"][0] = s.COLOURS[self._selected_colour]["LOWER"][0]
+        self._colours[self._selected_colour]["LOWER"][1] = s.COLOURS[self._selected_colour]["LOWER"][1]
+        self._colours[self._selected_colour]["LOWER"][2] = s.COLOURS[self._selected_colour]["LOWER"][2]
+        self._colours[self._selected_colour]["UPPER"][0] = s.COLOURS[self._selected_colour]["UPPER"][0]
+        self._colours[self._selected_colour]["UPPER"][1] = s.COLOURS[self._selected_colour]["UPPER"][1]
+        self._colours[self._selected_colour]["UPPER"][2] = s.COLOURS[self._selected_colour]["UPPER"][2]
+
+        self._colour_model.l_Hue = self._colours[self._selected_colour]["LOWER"][0]
+        self._colour_model.l_Saturation = self._colours[self._selected_colour]["LOWER"][1]
+        self._colour_model.l_Value = self._colours[self._selected_colour]["LOWER"][2]
+        self._colour_model.u_Hue = self._colours[self._selected_colour]["UPPER"][0]
+        self._colour_model.u_Saturation = self._colours[self._selected_colour]["UPPER"][1]
+        self._colour_model.u_Value = self._colours[self._selected_colour]["UPPER"][2]

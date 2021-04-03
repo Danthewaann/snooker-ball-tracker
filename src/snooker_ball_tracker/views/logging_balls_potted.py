@@ -2,8 +2,8 @@ import PyQt5.QtWidgets as QtWidgets
 import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 
-from snooker_ball_tracker.views.label import Ui_Label
-from snooker_ball_tracker.views.pushbutton import Ui_PushButton
+from .components.label import Ui_Label
+from .components.pushbutton import Ui_PushButton
 
 class Ui_BallsPotted(QtWidgets.QVBoxLayout):
     def __init__(self, parent):

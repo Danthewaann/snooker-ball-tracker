@@ -4,6 +4,9 @@ import PyQt5.QtGui as QtGui
 
 
 class Ui_Label(QtWidgets.QLabel):
+
+    textChanged = QtCore.pyqtSignal(str)
+    
     def __init__(self, name, parent=None, objectName=None, width=None, 
                  height=None, alignment=None, 
                  sizePolicy=(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)):
@@ -19,3 +22,8 @@ class Ui_Label(QtWidgets.QLabel):
 
         self.setSizePolicy(QtWidgets.QSizePolicy(sizePolicy[0], sizePolicy[1]))
 
+    def setText(self, text):
+        if not isinstance(text, str):
+            text = str(text)
+        super().setText(text)
+        self.textChanged.emit(text)

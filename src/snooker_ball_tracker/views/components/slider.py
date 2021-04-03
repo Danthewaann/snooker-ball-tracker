@@ -4,7 +4,7 @@ import PyQt5.QtGui as QtGui
 
 
 class Ui_Slider(QtWidgets.QSlider):
-    def __init__(self, max_range=100, parent=None, 
+    def __init__(self, max_range=100, parent=None, name=None,
                  objectName=None, width=None, height=None, orientation=QtCore.Qt.Horizontal,
                  sizePolicy=(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)):
         super().__init__(parent)
@@ -15,6 +15,7 @@ class Ui_Slider(QtWidgets.QSlider):
             self.setMinimumHeight(height[0])
             self.setMaximumHeight(height[1])
         if objectName: self.setObjectName(objectName)
+        self.name = name
 
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.setMaximum(max_range)

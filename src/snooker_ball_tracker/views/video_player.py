@@ -3,7 +3,7 @@ import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 
 
-class Ui_Player(QtWidgets.QFrame):
+class Ui_VideoPlayer(QtWidgets.QFrame):
     def __init__(self):
         super().__init__()
         self.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))

@@ -2,7 +2,7 @@ import PyQt5.QtWidgets as QtWidgets
 import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 
-class Ui_Options(QtWidgets.QWidget):
+class Ui_VideoPlayerOptions(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
 
