@@ -1,25 +1,28 @@
-import PyQt5.QtWidgets as QtWidgets
 import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
+import PyQt5.QtWidgets as QtWidgets
 import snooker_ball_tracker.settings as s
+from snooker_ball_tracker.models.ball_detection_model import \
+    BallDetectionTabModel
+from snooker_ball_tracker.models.colour_detection_model import \
+    ColourDetectionTabModel
+from snooker_ball_tracker.models.settings_model import SettingsModel
 
-from .settings_colour_detection_tab import Ui_ColourDetectionTab
-from .settings_ball_detection_tab import Ui_BallDetectionTab
-from snooker_ball_tracker.models.settings.ball_detection import BallDetectionTabModel
-from snooker_ball_tracker.models.settings.colour_detection import ColourDetectionTabModel
+from .settings_ball_detection_tab import BallDetectionTabView
+from .settings_colour_detection_tab import ColourDetectionTabView
 
 
 class SettingsView(QtWidgets.QGroupBox):
-    def __init__(self):
+    def __init__(self, model: SettingsModel):
         super().__init__("Settings")
+        self.model = model
+
         self.layout = QtWidgets.QHBoxLayout(self)
-        self.layout.setContentsMargins(15, 15, 15, 15)
+        self.layout.setContentsMargins(30, 30, 30, 30)
+
         self.settings_tabs = QtWidgets.QTabWidget(self)
         self.settings_tabs.setMaximumWidth(700)
 
-        self.colour_detection_tab = Ui_ColourDetectionTab(ColourDetectionTabModel())
-        self.ball_detection_tab = Ui_BallDetectionTab(BallDetectionTabModel())
-
-        self.settings_tabs.addTab(self.colour_detection_tab, "Colour Detection")
-        self.settings_tabs.addTab(self.ball_detection_tab, "Ball Detection")
+        self.settings_tabs.addTab(ColourDetectionTabView(self.model.models["colour_detection"]), "Colour Detection")
+        self.settings_tabs.addTab(BallDetectionTabView(self.model.models["ball_detection"]), "Ball Detection")
         self.layout.addWidget(self.settings_tabs)

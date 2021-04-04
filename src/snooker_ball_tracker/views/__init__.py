@@ -1,18 +1,24 @@
-import cv2
 import os
-import numpy as np
 import threading
-from snooker_ball_tracker.ball_tracker import BallTracker
-from snooker_ball_tracker.video_processor import VideoProcessor
-from snooker_ball_tracker.video_file_stream import VideoFileStream
-import snooker_ball_tracker.settings as s
 from collections import OrderedDict
-import PyQt5.QtWidgets as QtWidgets
+
+import cv2
+import numpy as np
 import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
+import PyQt5.QtWidgets as QtWidgets
+import snooker_ball_tracker.settings as s
+from snooker_ball_tracker.ball_tracker import BallTracker
+from snooker_ball_tracker.video_file_stream import VideoFileStream
+from snooker_ball_tracker.video_processor import VideoProcessor
+
+from snooker_ball_tracker.models.settings_model import SettingsModel
+from snooker_ball_tracker.models.logging_model import LoggingModel
+from snooker_ball_tracker.models.video_player_model import VideoPlayerModel
+
+from .logging_view import LoggingView
 from .settings_view import SettingsView
 from .video_player_view import VideoPlayerView
-from .logging_view import LoggingView
 
 
 class SplashScreen:
@@ -73,28 +79,25 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             s.load(self.settings_file)
 
         self.setWindowTitle("Snooker Ball Tracker Demo")
-        # self.resize(1269, 877)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(1)
-        sizePolicy.setVerticalStretch(1)
-        self.setSizePolicy(sizePolicy)
-        self.central_widget = QtWidgets.QWidget(self)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        self.central_widget.setSizePolicy(sizePolicy)
-        self.central_widget.setObjectName("central_widget")
-        self.central_widget_layout = QtWidgets.QGridLayout(self.central_widget)
-        self.central_widget_layout.setContentsMargins(15, 15, 15, 15)
-        self.central_widget_layout.setSpacing(15)
-        self.central_widget_layout.setObjectName("central_widget_layout")
 
-        self.settings_view = SettingsView()
+        self.central_widget = QtWidgets.QWidget(self)
+        self.central_widget_layout = QtWidgets.QGridLayout(self.central_widget)
+        self.central_widget_layout.setContentsMargins(30, 30, 30, 30)
+        self.central_widget_layout.setSpacing(30)
+
+        self.settings_model = SettingsModel()
+        self.settings_view = SettingsView(self.settings_model)
+
+        self.logging_model = LoggingModel()
+        self.logging_view = LoggingView(self.logging_model)
+
+        self.video_player_model = VideoPlayerModel()
+        self.video_player_view = VideoPlayerView(self.video_player_model)
+
         self.central_widget_layout.addWidget(self.settings_view, 0, 0, 1, 1)
-        self.central_widget_layout.addWidget(LoggingView(), 1, 0, 1, 1)
-        self.central_widget_layout.addWidget(VideoPlayerView(), 0, 1, 2, 1)
-        self.central_widget_layout.setColumnStretch(0, 3)
-        self.central_widget_layout.setColumnStretch(1, 5)
+        self.central_widget_layout.addWidget(self.logging_view, 1, 0, 1, 1)
+        self.central_widget_layout.addWidget(self.video_player_view, 0, 1, 2, 1)
+        self.central_widget_layout.setColumnStretch(1, 2)
 
         self.setCentralWidget(self.central_widget)
 

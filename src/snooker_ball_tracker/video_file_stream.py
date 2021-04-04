@@ -1,4 +1,4 @@
-import imutils
+from imutils.video import FileVideoStream
 import cv2
 import numpy as np
 import snooker_ball_tracker.settings as s
@@ -6,7 +6,7 @@ from threading import Thread
 from random import randint
 
 
-class VideoFileStream(imutils.video.FileVideoStream):
+class VideoFileStream(FileVideoStream):
     def __init__(self, path, crop=False, morph=False, queue_size=128):
         super().__init__(path, transform=self.transform_frame, queue_size=queue_size)
         self.crop_frames = crop

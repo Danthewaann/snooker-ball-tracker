@@ -1,17 +1,21 @@
-import PyQt5.QtWidgets as QtWidgets
 import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
+import PyQt5.QtWidgets as QtWidgets
 
+from snooker_ball_tracker.models.video_player_model import VideoPlayerModel
 
 class Ui_VideoPlayer(QtWidgets.QFrame):
-    def __init__(self):
+    def __init__(self, model: VideoPlayerModel):
         super().__init__()
+        self.model = model
+
         self.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
-        self.setMaximumSize(QtCore.QSize(800, 16777215))
         self.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.setFrameShadow(QtWidgets.QFrame.Raised)
+
         self.layout = QtWidgets.QHBoxLayout(self)
-        self.layout.setContentsMargins(15, 15, 15, 15)
+        self.layout.setContentsMargins(30, 30, 30, 30)
+        
         self.selectVideoFile_btn = QtWidgets.QPushButton("Select Video File", self)
         self.selectVideoFile_btn.setMaximumSize(QtCore.QSize(200, 16777215))
         self.selectVideoFile_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))

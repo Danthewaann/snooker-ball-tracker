@@ -1,12 +1,10 @@
-import PyQt5.QtWidgets as QtWidgets
-import PyQt5.QtCore as QtCore
-import PyQt5.QtGui as QtGui
-import snooker_ball_tracker.settings as s
-
 from collections import OrderedDict
 
+import PyQt5.QtCore as QtCore
+import snooker_ball_tracker.settings as s
 
-class BallDetectionSettingGroupModel(QtCore.QObject):
+
+class BallDetectionSettingModel(QtCore.QObject):
     def __init__(self, name, parent=None, multiplier=100):
         super().__init__(parent)
         self._name = name
@@ -14,10 +12,6 @@ class BallDetectionSettingGroupModel(QtCore.QObject):
         self._min_value = 0
         self._max_value = 0
         self._filter_by = False
-
-    min_valueChanged = QtCore.pyqtSignal(int, name="min_valueChanged")
-    max_valueChanged = QtCore.pyqtSignal(int, name="max_valueChanged")
-    filter_byChanged = QtCore.pyqtSignal(bool, name="filter_byChanged")
 
     @property
     def name(self):
@@ -31,6 +25,8 @@ class BallDetectionSettingGroupModel(QtCore.QObject):
     def min_value(self):
         return self._min_value
 
+    min_valueChanged = QtCore.pyqtSignal(int, name="min_valueChanged")
+
     @min_value.setter
     def min_value(self, value):
         self._min_value = value
@@ -39,6 +35,8 @@ class BallDetectionSettingGroupModel(QtCore.QObject):
     @property
     def max_value(self):
         return self._max_value
+
+    max_valueChanged = QtCore.pyqtSignal(int, name="max_valueChanged")
 
     @max_value.setter
     def max_value(self, value):
@@ -49,26 +47,27 @@ class BallDetectionSettingGroupModel(QtCore.QObject):
     def filter_by(self):
         return self._filter_by
 
+    filter_byChanged = QtCore.pyqtSignal(bool, name="filter_byChanged")
+
     @filter_by.setter
     def filter_by(self, value):
-        """ C++: int setFilterBy(int) """
         self._filter_by = value
         self.filter_byChanged.emit(self._filter_by)
 
     def reset(self):
-        self.setMinValue(s.BLOB_DETECTOR["MIN_" + self._name.upper()] * self._multiplier)
-        self.setMaxValue(s.BLOB_DETECTOR["MAX_" + self._name.upper()] * self._multiplier)
-        self.setFilterBy(s.BLOB_DETECTOR["FILTER_BY_" + self._name.upper()])
+        self.min_value = (s.BLOB_DETECTOR["MIN_" + self._name.upper()] * self._multiplier)
+        self.max_value = (s.BLOB_DETECTOR["MAX_" + self._name.upper()] * self._multiplier)
+        self.filter_by = (s.BLOB_DETECTOR["FILTER_BY_" + self._name.upper()])
 
 
 class BallDetectionTabModel(QtCore.QObject):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.models = OrderedDict([
-            ("convexity", BallDetectionSettingGroupModel("convexity", multiplier=100)),
-            ("inertia", BallDetectionSettingGroupModel("inertia", multiplier=100)),
-            ("circularity", BallDetectionSettingGroupModel("circularity", multiplier=100)),
-            ("area", BallDetectionSettingGroupModel("area"))
+            ("convexity", BallDetectionSettingModel("convexity")),
+            ("inertia", BallDetectionSettingModel("inertia")),
+            ("circularity", BallDetectionSettingModel("circularity")),
+            ("area", BallDetectionSettingModel("area", multiplier=1))
         ])
 
     def reset_model(self, model):

@@ -4,7 +4,7 @@ import PyQt5.QtGui as QtGui
 
 
 class Ui_PushButton(QtWidgets.QPushButton):
-    def __init__(self, name, parent=None, objectName=None, width=None, height=None, alignment=None):
+    def __init__(self, name, parent=None, objectName=None, width=None, height=None):
         super().__init__(name, parent)
         if width:
             self.setMinimumWidth(width[0])
@@ -12,7 +12,6 @@ class Ui_PushButton(QtWidgets.QPushButton):
         if height:
             self.setMinimumHeight(height[0])
             self.setMaximumHeight(height[1])
-        if alignment: self.setAlignment(alignment)
         if objectName: self.setObjectName(objectName)
 
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
