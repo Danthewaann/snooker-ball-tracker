@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 import PyQt5.QtCore as QtCore
 import snooker_ball_tracker.settings as s
 
@@ -58,17 +56,3 @@ class BallDetectionSettingModel(QtCore.QObject):
         self.min_value = (s.BLOB_DETECTOR["MIN_" + self._name.upper()] * self._multiplier)
         self.max_value = (s.BLOB_DETECTOR["MAX_" + self._name.upper()] * self._multiplier)
         self.filter_by = (s.BLOB_DETECTOR["FILTER_BY_" + self._name.upper()])
-
-
-class BallDetectionTabModel(QtCore.QObject):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.models = OrderedDict([
-            ("convexity", BallDetectionSettingModel("convexity")),
-            ("inertia", BallDetectionSettingModel("inertia")),
-            ("circularity", BallDetectionSettingModel("circularity")),
-            ("area", BallDetectionSettingModel("area", multiplier=1))
-        ])
-
-    def reset_model(self, model):
-        self.models[model].reset()

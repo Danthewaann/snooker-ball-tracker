@@ -2,14 +2,9 @@ import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
 import snooker_ball_tracker.settings as s
-from snooker_ball_tracker.models.ball_detection_model import \
-    BallDetectionTabModel
-from snooker_ball_tracker.models.colour_detection_model import \
-    ColourDetectionTabModel
-from snooker_ball_tracker.models.settings_model import SettingsModel
+from snooker_ball_tracker.models import SettingsModel
 
-from .settings_ball_detection_tab import BallDetectionTabView
-from .settings_colour_detection_tab import ColourDetectionTabView
+from .settings import BallDetectionTabView, ColourDetectionTabView
 
 
 class SettingsView(QtWidgets.QGroupBox):

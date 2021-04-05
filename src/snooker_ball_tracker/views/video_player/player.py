@@ -2,7 +2,7 @@ import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
 
-from snooker_ball_tracker.models.video_player_model import VideoPlayerModel
+from snooker_ball_tracker.models import VideoPlayerModel
 
 class Ui_VideoPlayer(QtWidgets.QFrame):
     def __init__(self, model: VideoPlayerModel):

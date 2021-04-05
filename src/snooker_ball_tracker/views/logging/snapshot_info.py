@@ -2,11 +2,9 @@ import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
 import snooker_ball_tracker.settings as s
+from snooker_ball_tracker.models import LoggingModel, Observer
 
-from .components.label import Ui_Label
-from .components.line import Ui_Line
-from snooker_ball_tracker.models.observer import Observer
-from snooker_ball_tracker.models.logging_model import LoggingModel
+from ..components import Ui_Label, Ui_Line
 
 
 class Ui_SnapshotInfo(QtWidgets.QGridLayout):

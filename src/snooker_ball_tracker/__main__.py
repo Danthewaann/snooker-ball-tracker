@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-from snooker_ball_tracker.views import Ui_MainWindow
+from snooker_ball_tracker.views import MainView
 
 if __name__ == "__main__":
 
@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     app = QApplication([])
-    window = Ui_MainWindow(args)
+    window = MainView(args)
     window.show()
 
     sys.exit(app.exec())

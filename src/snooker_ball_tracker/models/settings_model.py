@@ -1,8 +1,7 @@
-from .ball_detection_model import BallDetectionTabModel
-from .colour_detection_model import ColourDetectionTabModel
-
 import PyQt5.QtCore as QtCore
 import snooker_ball_tracker.settings as s
+
+from .settings import BallDetectionTabModel, ColourDetectionTabModel
 
 
 class SettingsModel(QtCore.QObject):
@@ -12,6 +11,3 @@ class SettingsModel(QtCore.QObject):
             "colour_detection": ColourDetectionTabModel(),
             "ball_detection": BallDetectionTabModel()
         }
-
-
-

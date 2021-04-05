@@ -1,7 +1,6 @@
 import PyQt5.QtWidgets as QtWidgets
 import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
-import snooker_ball_tracker.settings as s
 
 
 class Ui_Combobox(QtWidgets.QComboBox):

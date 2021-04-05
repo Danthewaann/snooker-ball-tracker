@@ -1,12 +1,4 @@
-import PyQt5.QtWidgets as QtWidgets
-import PyQt5.QtCore as QtCore
-import PyQt5.QtGui as QtGui
-
-# from .colour import ColourModel
-
-# class SettingsModel(QtCore.QObject):
-#     def __init__(self):
-#         super().__init__()
-
-#         self.
-
+from .settings_model import SettingsModel
+from .logging_model import LoggingModel
+from .video_player_model import VideoPlayerModel
+from .observer import Observer

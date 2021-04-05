@@ -4,14 +4,11 @@ import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
 import snooker_ball_tracker.settings as s
-from snooker_ball_tracker.models.ball_detection_model import \
-    BallDetectionTabModel, BallDetectionSettingModel
-from snooker_ball_tracker.models.observer import Observer
+from snooker_ball_tracker.models import Observer
+from snooker_ball_tracker.models.settings import (BallDetectionSettingModel,
+                                                  BallDetectionTabModel)
 
-from .components.label import Ui_Label
-from .components.pushbutton import Ui_PushButton
-from .components.radiobutton import Ui_RadioButton
-from .components.slider import Ui_Slider
+from ..components import Ui_Label, Ui_PushButton, Ui_RadioButton, Ui_Slider
 
 
 class BallDetectionTabView(QtWidgets.QWidget):

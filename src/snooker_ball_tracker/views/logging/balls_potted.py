@@ -1,11 +1,9 @@
 import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
+from snooker_ball_tracker.models import LoggingModel, Observer
 
-from .components.label import Ui_Label
-from .components.pushbutton import Ui_PushButton
-from snooker_ball_tracker.models.logging_model import LoggingModel
-from snooker_ball_tracker.models.observer import Observer
+from ..components import Ui_Label, Ui_PushButton
 
 
 class Ui_BallsPotted(QtWidgets.QVBoxLayout):
