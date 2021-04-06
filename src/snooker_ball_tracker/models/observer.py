@@ -44,7 +44,6 @@ class Observer(QtCore.QObject):
             setter -- the value setter method
             valueChangedSignal -- the pyqtSignal that is emitted with the value changes
         """
-
         endpoint = BindingEndpoint(instance,getter,setter,valueChangedSignal)
         self.bindToEndPoint(endpoint)
 
