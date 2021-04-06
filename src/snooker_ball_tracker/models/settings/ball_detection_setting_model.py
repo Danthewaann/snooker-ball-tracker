@@ -4,7 +4,7 @@ import snooker_ball_tracker.settings as s
 
 class BallDetectionSettingModel(QtCore.QObject):
     def __init__(self, name: str, multiplier: int=100):
-        """Creates an instance of this class than contains properties for a specific 
+        """Creates an instance of this class that contains properties for a specific 
         setting group that is used for ball detection by the ball tracker
 
         :param name: name of ball detection setting group

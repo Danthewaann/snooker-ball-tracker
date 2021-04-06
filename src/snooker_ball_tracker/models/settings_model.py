@@ -6,7 +6,7 @@ from .settings import BallDetectionTabModel, ColourDetectionTabModel
 
 class SettingsModel(QtCore.QObject):
     def __init__(self):
-        """Creates an instance of this class than contains all of the settings
+        """Creates an instance of this class that contains all of the settings
         used by the ball tracker"""
         super().__init__()
         self.models = {
