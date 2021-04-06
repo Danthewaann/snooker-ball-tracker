@@ -42,6 +42,7 @@ class MainView(QtWidgets.QMainWindow):
         self.logging_view = LoggingView(self.logging_model)
 
         self.video_player_model = VideoPlayerModel()
+        self.video_player_model.restart_videoChanged.connect(self.restart_video_processor)
         self.video_player_view = VideoPlayerView(self.video_player_model)
 
         self.central_widget_layout.addWidget(self.settings_view, 0, 0, 1, 1)
@@ -51,192 +52,70 @@ class MainView(QtWidgets.QMainWindow):
 
         self.setCentralWidget(self.central_widget)
 
-        self.menubar = QtWidgets.QMenuBar(self)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1269, 22))
-        self.menubar.setObjectName("menubar")
-        self.menuSettings = QtWidgets.QMenu(self.menubar)
-        self.menuSettings.setObjectName("menuSettings")
-        self.menuExit = QtWidgets.QMenu(self.menubar)
-        self.menuExit.setObjectName("menuExit")
-        self.menuExit_2 = QtWidgets.QMenu(self.menubar)
-        self.menuExit_2.setObjectName("menuExit_2")
-        self.setMenuBar(self.menubar)
-        self.statusBar = QtWidgets.QStatusBar(self)
-        self.statusBar.setEnabled(True)
-        self.statusBar.setObjectName("statusBar")
-        self.setStatusBar(self.statusBar)
-        self.actionLoad = QtWidgets.QAction(self)
-        self.actionLoad.setObjectName("actionLoad")
-        self.actionSave = QtWidgets.QAction(self)
-        self.actionSave.setObjectName("actionSave")
-        self.actionSelect_Video_File = QtWidgets.QAction(self)
-        self.actionSelect_Video_File.setObjectName("actionSelect_Video_File")
-        self.menuSettings.addAction(self.actionLoad)
-        self.menuSettings.addAction(self.actionSave)
-        self.menuExit.addAction(self.actionSelect_Video_File)
-        self.menubar.addAction(self.menuExit.menuAction())
-        self.menubar.addAction(self.menuSettings.menuAction())
-        self.menubar.addAction(self.menuExit_2.menuAction())
+        menu = self.menuBar().addMenu("File")
+        action = menu.addAction("Select Video File")
+        action.triggered.connect(self.select_file_onclick)
 
-    #     try:
-    #         self.iconphoto(True, PhotoImage(file="icon.png"))
-    #     except TclError:
-    #         pass
+        menu = self.menuBar().addMenu("Settings")
+        action = menu.addAction("Load")
+        action = menu.addAction("Save")
 
-    #     self.iconname("Snooker Ball Tracker")
-    #     self.title("Snooker Ball Tracker - Demo Application")
-    #     self.wm_protocol("WM_DELETE_WINDOW", self.on_close)
+        action = self.menuBar().addAction("Exit")
 
-    #     try:
-    #         self.attributes('-zoomed', True)
-    #     except TclError:
-    #         self.state("zoomed")
+        self.menuBar().setNativeMenuBar(False)
 
-    #     if args.splash:
-    #         self.withdraw()
+        self.video_processor_lock = threading.Lock()
+        self.video_processor_stop_event = threading.Event()
+        self.video_processor = None
+        self.video_file_stream = None
+        self.video_file = None
+        self.ball_tracker = BallTracker()
 
-    #     try:
-    #         Style().theme_use("vista")
-    #     except TclError:
-    #         Style().theme_use("default")
+    def closeEvent(self, event):
+        if self.video_file_stream is not None:
+            self.video_file_stream.stop()
+        event.accept()
 
-    #     font.nametofont("TkDefaultFont").configure(size=10)
-    #     font.nametofont("TkTextFont").configure(size=10)
+    def select_file_onclick(self):
+        self.video_file, _ = QtWidgets.QFileDialog().getOpenFileName(self, "Select Video File", "")
 
-    #     self.fonts = {
-    #         "h1": font.Font(size=24, weight="bold"),
-    #         "h2-bold": font.Font(size=22, weight="bold"),
-    #         "h2": font.Font(size=22),
-    #         "h3-bold": font.Font(size=20, weight="bold"),
-    #         "h3": font.Font(size=16),
-    #         "h4": font.Font(size=14),
-    #         "h5": font.Font(size=12),
-    #         "logs": font.Font(size=10)
-    #     }
+        if not self.video_file:
+            return
 
-    #     self.lock = threading.Lock()
-    #     self.stop_event = threading.Event()
-    #     self.thread = None
-    #     self.stream = None
-    #     self.selected_file = None
-    #     self.ball_tracker = BallTracker()
+        if self.video_processor is not None:
+            self.video_processor.stop_event.set()
 
-    #     self.styles = [
-    #         Style().configure("Left.TFrame", background="red"),
-    #         Style().configure("Middle.TFrame", background="blue"),
-    #         Style().configure("Right.TFrame", background="green"),
-    #         Style().configure("NavBar.TFrame", background="light gray"),
-    #         Style().configure("TButton", padding=6, cursor="hand2"),
-    #         Style().configure("TMenubutton", padding=6, relief="raised"),
-    #         Style().configure("TRadiobutton", relief="raised")
-    #     ]
+        try:
+            self.video_file_stream = cv2.VideoCapture(self.video_file)
+            if not self.video_file_stream.isOpened():
+                raise TypeError
+        except:
+            error = QtWidgets.QMessageBox(self)
+            error.setWindowTitle("Invalid Video File!")
+            error.setText('Invalid file, please select a video file!')
+            error.exec_()
+            return
 
-    #     threading.Thread(target=self.__setup_widgets).start()
-    #     if args.splash:
-    #         SplashScreen(self)
+        self.start_video_processor()
 
-    # def __setup_widgets(self):
-    #     self.left = Frame(master=self)
-    #     self.middle = Frame(master=self)
-    #     self.right = Frame(master=self)
-    #     self.bottom = Frame(master=self)
-    #     self.separator_vert_1 = Separator(master=self, orient="vertical")
-    #     self.separator_vert_2 = Separator(master=self, orient="vertical")
+    def start_video_processor(self):
+        self.video_file_stream = VideoFileStream(self.video_file, model=self.video_player_model, queue_size=1)
 
-    #     self.program_output = ProgramOutput(master=self.middle)
-    #     self.ball_tracker_options = BallTrackerOptions(master=self.left, logger=self.program_output)
-    #     self.colour_detection_options = ColourDetectionOptions(master=self.left, logger=self.program_output)
-    #     self.video_player = VideoPlayer(master=self.right, logger=self.program_output)
+        self.video_processor_stop_event = threading.Event()
+        self.video_processor = VideoProcessor(
+            video_stream=self.video_file_stream, 
+            logger=self.logging_model, video_player=self.video_player_model, settings=self.settings_model,
+            ball_tracker=self.ball_tracker, lock=self.video_processor_lock, stop_event=self.video_processor_stop_event)
+        self.video_processor.start()
 
-    #     self.nav_bar = Navbar(master=self.bottom)
-    #     self.nav_bar.pack(side="bottom", fill="x", anchor="s")
-
-    #     self.bottom.pack(side="bottom", fill="x", anchor="s")
-
-    #     self.__setup_left_column()
-    #     self.__setup_middle_column()
-    #     self.__setup_right_column()
-    #     self.__setup_window()
-
-    # def __setup_window(self):
-    #     self.left.pack(side="left", fill="both", expand=True,
-    #                    anchor="w", ipadx=10, ipady=10)
-    #     self.separator_vert_1.pack(side="left", fill="both")
-    #     self.middle.pack(side="left", fill="both",
-    #                      expand=True, anchor="center", ipady=20)
-    #     self.separator_vert_2.pack(side="left", fill="both")
-    #     self.right.pack(side="left", fill="both", expand=True,
-    #                     anchor="e", ipadx=10, ipady=10)
-
-    # def __setup_left_column(self):
-    #     self.ball_tracker_options.pack(
-    #         side="top", fill="both", expand=True, padx=(20, 0), pady=(20, 10))
-    #     self.ball_tracker_options.grid_children()
-    #     self.colour_detection_options.pack(
-    #         side="top", fill="both", expand=True, padx=(20, 0), pady=(0, 20))
-    #     self.colour_detection_options.grid_children()
-
-    # def __setup_middle_column(self):
-    #     self.program_output.pack(
-    #         side="top", fill="both", expand=True, padx=20, pady=(20, 10))
-    #     self.program_output.grid_children()
-
-    # def __setup_right_column(self):
-    #     self.video_player.pack(side="top", fill="both",
-    #                            expand=True, padx=(0, 20), pady=(20, 10))
-    #     self.video_player.grid_children()
-
-    # def on_close(self):
-    #     if self.stream is not None:
-    #         self.stream.stop()
-    #     self.quit()
-
-    # def select_file_onclick(self):
-    #     self.selected_file = filedialog.askopenfilename(title="Select Video File",
-    #         initialdir="resources/videos")
-
-    #     if not self.selected_file:
-    #         return
-
-    #     if self.thread is not None:
-    #         self.thread.stop_event.set()
-
-    #     try:
-    #         self.stream = cv2.VideoCapture(self.selected_file)
-    #         if not self.stream.isOpened():
-    #             self.program_output.error(
-    #                 'Invalid file, please select a video file!')
-    #             return
-    #     except TypeError:
-    #         self.program_output.error(
-    #             'Invalid file, please select a video file!')
-    #         return
-
-    #     self.video_player.load_video_player()
-    #     self.video_player.reset_video_options()
-    #     self.video_player.btns['toggle'].configure(text="Play")
-    #     self.start_video_processor()
-
-    # def start_video_processor(self):
-    #     self.program_output.info("Starting video processor...")
-    #     self.stream = VideoFileStream(self.selected_file, queue_size=1)
-
-    #     self.stop_event = threading.Event()
-    #     self.thread = VideoProcessor(master=self, stream=self.stream,
-    #                                  video_file=self.selected_file, ball_tracker=self.ball_tracker,
-    #                                  lock=self.lock, stop_event=self.stop_event)
-    #     self.thread.start()
-
-    # def restart_video_processor(self):
-    #     if self.thread is not None:
-    #         self.thread.stop_event.set()
-
-    #     self.start_video_processor()
+    def restart_video_processor(self, restart):
+        if restart:
+            if self.video_processor is not None:
+                self.video_processor.stop_event.set()
+            self.start_video_processor()
 
     # def load_settings(self):
-    #     settings_file = filedialog.askopenfilename(title="Load Settings",
-    #         filetypes=[("Json Files", ".json")], initialdir="resources/config")
-
+    #     settings_file, _ = QtWidgets.QFileDialog().getOpenFileName(self, "Load Settings", "")
     #     if not settings_file:
     #         return
 
@@ -248,9 +127,6 @@ class MainView(QtWidgets.QMainWindow):
     #     if success:
     #         self.colour_detection_options.update()
     #         self.ball_tracker_options.update()
-    #         self.program_output.info(f"Loaded \"{os.path.basename(settings_file)}\"")
-    #     else:
-    #         self.program_output.error(f"Failed to load \"{os.path.basename(settings_file)}\"\n{str(error)}")
 
     # def save_settings(self):
     #     data = [("Json Files", ".json")]

@@ -14,7 +14,7 @@ class BallsPottedListModel(QtCore.QAbstractListModel):
         super().__init__()
         self._balls_potted = balls_potted or []
 
-    def data(self, index: QtCore.QModelIndex, role: QtCore.Qt.DisplayRole) -> str:
+    def data(self, index: QtCore.QModelIndex, role=QtCore.Qt.DisplayRole) -> str:
         """Get ball potted for index row
 
         :param index: model index
@@ -29,7 +29,7 @@ class BallsPottedListModel(QtCore.QAbstractListModel):
             return text
         return None
 
-    def rowCount(self, index: QtCore.QModelIndex) -> int:
+    def rowCount(self, parent=QtCore.QModelIndex()) -> int:
         """Get count of items in balls potted list
 
         :param index: model index
@@ -39,13 +39,15 @@ class BallsPottedListModel(QtCore.QAbstractListModel):
         """
         return len(self._balls_potted)
 
-    def appendData(self, data: str):
-        """Append data to balls potted list
+    def addPottedBall(self, potted_ball: str):
+        """Append potted ball to balls potted list
 
-        :param data: ball potted
-        :type data: str
+        :param potted_ball: ball potted
+        :type potted_ball: str
         """
-        self._balls_potted.append(data)
+        self.beginInsertRows(QtCore.QModelIndex(), self.rowCount(), self.rowCount())
+        self._balls_potted.append(potted_ball)
+        self.endInsertRows()
         self.layoutChanged.emit()
 
     def clear(self):

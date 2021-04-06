@@ -3,7 +3,7 @@ import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
 from snooker_ball_tracker.models import VideoPlayerModel
 
-from .video_player import Ui_VideoPlayer, Ui_VideoPlayerOptions
+from .video_player import Player, Options
 
 
 class VideoPlayerView(QtWidgets.QGroupBox):
@@ -14,5 +14,5 @@ class VideoPlayerView(QtWidgets.QGroupBox):
         self.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.layout = QtWidgets.QGridLayout(self)
         self.layout.setContentsMargins(15, 15, 15, 15)
-        self.layout.addWidget(Ui_VideoPlayer(self.model), 0, 0, 1, 1)
-        self.layout.addWidget(Ui_VideoPlayerOptions(self.model), 1, 0, 1, 1)
+        self.layout.addWidget(Player(self.model), 0, 0, 1, 1)
+        self.layout.addWidget(Options(self.model), 1, 0, 1, 1)

@@ -1,2 +1,2 @@
-from .options import Ui_VideoPlayerOptions
-from .player import Ui_VideoPlayer
+from .options import Options
+from .player import Player

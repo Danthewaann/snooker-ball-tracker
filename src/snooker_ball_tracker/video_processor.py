@@ -1,125 +1,115 @@
-import cv2
 import threading
-import snooker_ball_tracker.settings as s
-import time
-from PIL import Image, ImageTk
-from tkinter import END
-from imutils.video import FPS
-from snooker_ball_tracker.video_file_stream import VideoFileStream
-from queue import Queue
-from random import randint
 from copy import copy
+from queue import Queue
+
+import cv2
+from imutils.video import FPS
+
+import settings as s
+
+from .ball_tracker import BallTracker
+from .models import LoggingModel, SettingsModel, VideoPlayerModel
+from .video_file_stream import VideoFileStream
 
 
 class VideoProcessor(threading.Thread):
-    def __init__(self, master, stream, video_file, ball_tracker, lock, stop_event):
-        super().__init__(name="VideoProcessor{}".format(randint(0, 100)), daemon=True)
-        self.master = master
+    def __init__(self, video_stream: VideoFileStream, 
+                 logger: LoggingModel, video_player: VideoPlayerModel, settings: SettingsModel,
+                 ball_tracker: BallTracker, lock: threading.Lock, stop_event: threading.Event):
+        super().__init__(name=self.__class__.__name__, daemon=True)
+        self.logger = logger
+        self.video_player = video_player
+        self.settings = settings
+        self.ball_tracker = ball_tracker
+
         self.stream_lock = lock
         self.stop_event = stop_event
-        self.play_stream = True
-        self.stream = stream
-        self.video_file = video_file
-        self.ball_tracker = ball_tracker
-        self.show_threshold = self.master.video_player.data["threshold"].get()
-        self.mask_colour = self.master.video_player.data["mask-colour"].get()
-        self.detect_colour = self.master.video_player.data["detect-colour"].get()
-        self.crop_frames = self.master.video_player.data["crop-frames"].get()
+        self.video_stream = video_stream
         self.__input_frame = None
         self.__input_hsv = None
         self.__input_threshold = None
-        self.__output_frame = None
         self.__fps = FPS()
+
+        for model in self.settings.models["ball_detection"].models.values():
+            model.filter_byChanged.connect(self.update_ball_tracker)
+            model.min_valueChanged.connect(self.update_ball_tracker)
+            model.max_valueChanged.connect(self.update_ball_tracker)
+
+    def update_ball_tracker(self):
+        kwargs = {}
+        for model in self.settings.models["ball_detection"].models.values():
+            kwargs["filter_by_" + model.name.lower()] = model.filter_by
+            kwargs["min_" + model.name.lower()] = model.min_value / model.multiplier
+            kwargs["max_" + model.name.lower()] = model.max_value / model.multiplier
+
+        self.ball_tracker.setup_blob_detector(**kwargs)
 
     def get_hsv(self):
         return self.__input_hsv
 
     def run(self):
-        self.stream.start()
+        self.video_player.play_video = True
+        self.video_stream.start()
         self.__fps.start()
         self._process_next_frame()
-        self.play_stream = False
-        self.stream.Q = Queue(maxsize=8)
+        self.video_player.play_video = False
+        self.video_stream.Q = Queue(maxsize=16)
 
         while not self.stop_event.is_set():
-            if self.play_stream and self.stream.running():
+            if self.video_player.play_video and self.video_stream.running():
                 if not self._process_next_frame():
                     continue
             else:
                 self._process_frame()
         with self.stream_lock:
-            self.stream.stop()
+            self.video_stream.stop()
 
     def _process_next_frame(self):
         with self.stream_lock:
-            input_frame, input_threshold, input_hsv = self.stream.read()
+            input_frame, input_threshold, input_hsv = self.video_stream.read()
 
         if input_frame is not None:
             self.__input_frame, self.__input_threshold, self.__input_hsv = input_frame, input_threshold, input_hsv
             self._process_frame()
 
-        if self.stream.running():
+        if self.video_stream.running():
             return True
 
         return False
 
     def _process_frame(self):
-        self.stream.detect_colour = self.detect_colour
-        self.stream.crop_frames = self.crop_frames
-        ball_potted = None
-        count = None
+        self.video_stream.detect_colour = self.settings.models["colour_detection"].selected_colour
+        self.video_stream.crop_frames = self.video_player.crop_frames
 
-        self.__output_frame, ball_potted, count = self.ball_tracker.run(
-            (copy(self.__input_frame), copy(self.__input_threshold), copy(self.__input_hsv)), width=800, crop=self.stream.crop_frames, show_threshold=self.show_threshold)
+        output_frame, ball_potted, count = self.ball_tracker.run(
+            (copy(self.__input_frame), copy(self.__input_threshold), copy(self.__input_hsv)), width=800, 
+            crop=self.video_stream.crop_frames, show_threshold=self.video_player.show_threshold
+        )
 
-        if self.stream.detect_colour != "None":
+        if self.video_stream.detect_colour != "NONE":
             colour_mask, contours = self.ball_tracker.detect_colour(
-                self.__input_hsv, s.COLOURS[self.stream.detect_colour]['LOWER'], s.COLOURS[self.stream.detect_colour]['UPPER']
+                self.__input_hsv, s.COLOURS[self.video_stream.detect_colour]['LOWER'], s.COLOURS[self.video_stream.detect_colour]['UPPER']
             )
-            if self.show_threshold:
-                self.__output_frame = copy(self.__input_threshold)
+            if self.video_player.show_threshold:
+                output_frame = copy(self.__input_threshold)
             else:
-                if self.mask_colour:
-                    self.__output_frame = cv2.bitwise_and(
-                        self.__output_frame, self.__output_frame, mask=colour_mask)
+                if self.settings.models["colour_detection"].colour_mask:
+                    output_frame = cv2.bitwise_and(
+                        output_frame, output_frame, mask=colour_mask)
 
-            cv2.drawContours(self.__output_frame, contours, -1, (0, 255, 0), 2)
+            cv2.drawContours(output_frame, contours, -1, (0, 255, 0), 2)
 
-        if self.play_stream:
+        if self.video_player.play_video:
             self.__fps.update()
             self.__fps.stop()
 
-        cv2.putText(self.__output_frame, "Queue Size: {}".format(self.stream.Q.qsize()),
+        cv2.putText(output_frame, "Queue Size: {}".format(self.video_stream.Q.qsize()),
                     (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
-        cv2.putText(self.__output_frame, "FPS: {:.2f}".format(self.__fps.fps()),
+        cv2.putText(output_frame, "FPS: {:.2f}".format(self.__fps.fps()),
                     (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
-        self.__output_frame = ImageTk.PhotoImage(image=Image.fromarray(
-            cv2.cvtColor(self.__output_frame, cv2.COLOR_BGR2RGB)))
-
-        self.display_frame()
+        self.video_player.frame = output_frame
 
         if ball_potted is not None:
-            self.master.program_output.balls_potted_list.insert(
-                END, 'Potted {} {}/s...'.format(count, ball_potted.lower()))
-            self.master.program_output.balls_potted_list.see(END)
-
-    def display_frame(self):
-        self.master.video_player.file_output.configure(
-            image=self.__output_frame)
-        self.master.video_player.file_output.image = self.__output_frame
-
-        self.master.program_output.current_ball_count['text'] = self.ball_tracker.get_snapshot_status(
-        )
-        self.master.program_output.last_ball_count['text'] = self.ball_tracker.get_snapshot_status(
-            False)
-        self.master.program_output.white_ball_status['text'] = self.ball_tracker.get_white_ball_status(
-        )
-
-    def update_bounds(self):
-        self.stream.update_boundary = True
-
-    def crop_frames_around_boundary(self, crop):
-        self.ball_tracker.reset_snapshots()
-        self.crop_frames = crop
+            self.logger.balls_potted.addPottedBall(f'Potted {count} {ball_potted.lower()}/s...')

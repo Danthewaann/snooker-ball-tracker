@@ -4,21 +4,8 @@ import snooker_ball_tracker.settings as s
 import numpy as np
 import time
 
-
-def dist_between_two_balls(ball_1, ball_2):
-    """
-    Obtains the distance between two balls in millimetres
-
-    :param ball_1: first ball
-    :param ball_2: second ball
-    :returns: distance between `ball_1` and `ball_2` in millimetres
-    """
-    # create numpy array with keypoint positions
-    arr = np.array([ball_1.pt, ball_2.pt])
-    # scale array to mm
-    arr = arr * 40 / 1280
-    # return distance, calculated by pythagoras
-    return np.sqrt(np.sum((arr[0] - arr[1]) ** 2))
+from .snapshot import SnapShot
+from .util import dist_between_two_balls
 
 
 def get_snapshot_report(prev_snapshot, cur_snapshot):
@@ -70,8 +57,8 @@ class BallTracker:
         params.minCircularity = kwargs.get('min_circularity', s.BLOB_DETECTOR["MIN_CIRCULARITY"])
         params.maxCircularity = kwargs.get('max_circularity', s.BLOB_DETECTOR["MAX_CIRCULARITY"])
         params.filterByInertia = kwargs.get('filter_by_inertia', s.BLOB_DETECTOR["FILTER_BY_INERTIA"])
-        params.minInertiaRatio = kwargs.get('min_inertia_ratio', s.BLOB_DETECTOR["MIN_INERTIA_RATIO"])
-        params.maxInertiaRatio = kwargs.get('max_inertia_ratio', s.BLOB_DETECTOR["MAX_INERTIA_RATIO"])
+        params.minInertiaRatio = kwargs.get('min_inertia_ratio', s.BLOB_DETECTOR["MIN_INERTIA"])
+        params.maxInertiaRatio = kwargs.get('max_inertia_ratio', s.BLOB_DETECTOR["MAX_INERTIA"])
         params.filterByArea = kwargs.get('filter_by_area', s.BLOB_DETECTOR["FILTER_BY_AREA"])
         params.minArea = kwargs.get('min_area', s.BLOB_DETECTOR["MIN_AREA"])
         params.maxArea = kwargs.get('max_area', s.BLOB_DETECTOR["MAX_AREA"])
@@ -418,162 +405,3 @@ class BallTracker:
         :returns: current frame counter
         """
         return self.__frame_counter
-
-
-class SnapShot:
-    def __init__(self, balls=None):
-        """
-        Creates a instance of SnapShot using `balls`
-
-        :param balls: list of balls to store in the snapshot
-        """
-        if balls is None:
-            self.balls = {
-                'WHITE': [],
-                'RED': [],
-                'YELLOW': [],
-                'GREEN': [],
-                'BROWN': [],
-                'BLUE': [],
-                'PINK': [],
-                'BLACK': []
-            }
-        else:
-            self.balls = balls
-        if self.balls['WHITE']:
-            self.white_pt = self.balls['WHITE'][0]
-        else:
-            self.white_pt = None
-        self.white_is_moving = False
-
-    def get_snapshot_info(self, title='SNAPSHOT INFO'):
-        """
-        Output the snapshot ball info
-
-        :param title: title for snapshot info
-        :returns: snapshot ball info
-        """
-        snapshot_info = ''
-        for ball_colour in s.DETECT_COLOURS:
-            if s.DETECT_COLOURS[ball_colour]:
-                snapshot_info += '{}s: {}\n'.format(
-                    ball_colour.lower(), len(self.balls[ball_colour]))
-        return snapshot_info
-
-    def compare_ball_diff(self, ball_colour, snapshot):
-        """
-        Compares the ball difference with `snapshot` for `ball_colour`
-
-        :param ball_colour: colour of ball to compare with `snapshot`
-        :param snapshot: other snapshot to compare with
-        :returns: `ball_colour` and the ball difference of `ball_colour`
-        """
-        prev_totals = len(self.balls[ball_colour])
-        new_total = len(snapshot.balls[ball_colour])
-        diff = prev_totals - new_total
-        return ball_colour, diff
-
-    def __ne__(self, other):
-        """
-        Determine if the snapshot is not equal to `other`
-
-        :param other: other snapshot to compare with
-        :returns: True if the ball count if different both snapshots, else False
-        """
-        if isinstance(other, SnapShot):
-            is_not_equal = False
-
-            if len(self.balls['RED']) != len(other.balls['RED']):
-                is_not_equal = True
-
-            if len(self.balls['YELLOW']) != len(other.balls['YELLOW']):
-                is_not_equal = True
-
-            if len(self.balls['GREEN']) != len(other.balls['GREEN']):
-                is_not_equal = True
-
-            if len(self.balls['BROWN']) != len(other.balls['BROWN']):
-                is_not_equal = True
-
-            if len(self.balls['BLUE']) != len(other.balls['BLUE']):
-                is_not_equal = True
-
-            if len(self.balls['PINK']) != len(other.balls['PINK']):
-                is_not_equal = True
-
-            if len(self.balls['BLACK']) != len(other.balls['BLACK']):
-                is_not_equal = True
-
-            return is_not_equal
-
-    def has_shot_started(self, snapshot):
-        """
-        Determine if the shot has started by comparing `snapshot` white ball
-        with own white ball
-
-        :param snapshot: snapshot to compare with
-        :returns: True if the shot has started, else False
-        """
-        if len(self.balls['WHITE']) > 0:
-            if len(snapshot.balls['WHITE']) == len(self.balls['WHITE']):
-                if self.white_pt and snapshot.white_pt:
-                    if self.has_ball_moved(self.white_pt, snapshot.white_pt):
-                        print('===========================================')
-                        print('WHITE STATUS: moving...')
-                        self.white_is_moving = True
-                        return True
-                return False
-        return False
-
-    def has_shot_finished(self, snapshot):
-        """
-        Determine if the shot has finished by comparing `snapshot` white ball
-        with own white ball
-
-        :param snapshot: snapshot to compare with
-        :returns: True if the shot has finished, else False
-        """
-        if len(self.balls['WHITE']) > 0:
-            if len(snapshot.balls['WHITE']) == len(self.balls['WHITE']):
-                if self.white_pt and snapshot.white_pt:
-                    if self.has_ball_stopped(self.white_pt, snapshot.white_pt):
-                        print('WHITE STATUS: stopped...\n')
-                        self.white_is_moving = False
-                        return True
-                else:
-                    return True
-        return False
-
-    def has_ball_stopped(self, ball_1, ball_2):
-        """
-        Determine if a specific ball has stopped
-
-        :param ball_1: first ball
-        :param ball_2: second ball
-        :returns: True if the ball has stopped, else False
-        """
-        dist = dist_between_two_balls(ball_1, ball_2)
-        if self.white_is_moving:
-            if dist <= 0.1:
-                return True
-            else:
-                return False
-        else:
-            return False
-
-    def has_ball_moved(self, ball_1, ball_2):
-        """
-        Determine if a specific ball has moved
-
-        :param ball_1: first ball
-        :param ball_2: second ball
-        :returns: True if the ball has moved, else False
-        """
-        dist = dist_between_two_balls(ball_1, ball_2)
-        if not self.white_is_moving:
-            if dist > 0.1:
-                return True
-            else:
-                return False
-        else:
-            return False
