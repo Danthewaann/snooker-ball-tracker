@@ -8,8 +8,10 @@ from .hsv_colour_model import HSVColourModel
 
 
 class ColourDetectionTabModel(QtCore.QObject):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self):
+        """Creates and instance of this class that contains colour detection
+        properties used by the ball tracker"""
+        super().__init__()
         self._colours = deepcopy(s.COLOURS)
         self._colour_model = HSVColourModel()
         self._colour_mask = False

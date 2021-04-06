@@ -4,6 +4,8 @@ import snooker_ball_tracker.settings as s
 
 class VideoPlayerModel(QtCore.QObject):
     def __init__(self):
+        """Creates an instance of this class that contains properties used by the
+        video player to display frames processed by the ball tracker"""
         super().__init__()
         self._crop_frames = False
         self._show_threshold = False

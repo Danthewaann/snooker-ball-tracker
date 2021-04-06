@@ -2,8 +2,10 @@ import PyQt5.QtCore as QtCore
 
 
 class BallCountModel(QtCore.QObject):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self):
+        """Creates an instance of this class that keeps track of the count of balls
+        for a specific colour"""
+        super().__init__()
         self._count = 0
 
     @property

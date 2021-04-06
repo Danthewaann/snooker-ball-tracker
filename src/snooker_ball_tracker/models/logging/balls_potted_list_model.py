@@ -1,8 +1,16 @@
+from typing import List
+
 import PyQt5.QtCore as QtCore
 
 
 class BallsPottedListModel(QtCore.QAbstractListModel):
-    def __init__(self, balls_potted=None):
+    def __init__(self, balls_potted: List[str]=None):
+        """Creates an instance of this class that stores the balls potted,
+        as reported from the ball tracker
+
+        :param balls_potted: list of balls potted, defaults to None
+        :type balls_potted: List[str], optional
+        """
         super().__init__()
         self._balls_potted = balls_potted or []
 

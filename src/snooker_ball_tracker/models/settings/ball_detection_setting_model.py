@@ -3,8 +3,16 @@ import snooker_ball_tracker.settings as s
 
 
 class BallDetectionSettingModel(QtCore.QObject):
-    def __init__(self, name, parent=None, multiplier=100):
-        super().__init__(parent)
+    def __init__(self, name: str, multiplier: int=100):
+        """Creates an instance of this class than contains properties for a specific 
+        setting group that is used for ball detection by the ball tracker
+
+        :param name: name of ball detection setting group
+        :type name: str
+        :param multiplier: multiplier used to scale min/max values for sliders, defaults to 100
+        :type multiplier: int, optional
+        """
+        super().__init__()
         self._name = name
         self._multiplier = multiplier
         self._min_value = 0

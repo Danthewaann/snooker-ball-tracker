@@ -3,6 +3,8 @@ import PyQt5.QtCore as QtCore
 
 class HSVColourModel(QtCore.QObject):
     def __init__(self):
+        """Creates instance of this class that contains 
+        hue, saturation and value properties that make up a specific colour"""
         super().__init__()
         self._l_Hue = 0
         self._u_Hue = 0 

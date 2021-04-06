@@ -4,8 +4,10 @@ from .logging import BallsPottedListModel, SnapshotModel
 
 
 class LoggingModel(QtCore.QObject):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self):
+        """Creates an instance of this class that contains properties for logging
+        output from the ball tracker"""
+        super().__init__()
         self._balls_potted = BallsPottedListModel()
         self._white_status = "stopped..."
         self._last_shot_snapshot = SnapshotModel()

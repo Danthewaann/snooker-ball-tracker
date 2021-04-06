@@ -4,8 +4,10 @@ from .ball_count_model import BallCountModel
 
 
 class SnapshotModel(QtCore.QObject):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self):
+        """Creates an instance of this class that contains ball counts for all
+        possible ball colours"""
+        super().__init__()
         self._whites = BallCountModel()
         self._reds = BallCountModel()
         self._yellows = BallCountModel()

@@ -6,8 +6,10 @@ from .ball_detection_setting_model import BallDetectionSettingModel
 
 
 class BallDetectionTabModel(QtCore.QObject):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self):
+        """Creates and instance of this class that contains ball detection 
+        properties used by the ball tracker"""
+        super().__init__()
         self.models = OrderedDict([
             ("convexity", BallDetectionSettingModel("convexity")),
             ("inertia", BallDetectionSettingModel("inertia")),
