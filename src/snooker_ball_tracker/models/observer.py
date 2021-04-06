@@ -1,5 +1,4 @@
-from collections.abc import Callable
-from typing import Any, List, Tuple
+from typing import Any, Callable, List, Tuple
 
 import PyQt5.QtCore as QtCore
 
@@ -57,7 +56,7 @@ class Observer(QtCore.QObject):
                                    underlined property has changed
         :type valueChangedSignal: QtCore.pyqtSignal
         """
-        endpoint = BindingEndpoint(instance,getter,setter,valueChangedSignal)
+        endpoint = BindingEndpoint(instance, getter, setter, valueChangedSignal)
         self.bind_to_endpoint(endpoint)
 
     def bind_to_endpoint(self, bindingEndpoint: BindingEndpoint):
@@ -69,7 +68,7 @@ class Observer(QtCore.QObject):
         self.bindings[bindingEndpoint.instance_id] = bindingEndpoint
         bindingEndpoint.valueChangedSignal.connect(self._updateEndpoints)
         
-    def bind_to_property(self, instance:object, propertyName: str):
+    def bind_to_property(self, instance: object, propertyName: str):
         """2-way binds to an instance property according to one of the following naming conventions:
 
         @property, propertyName.setter and pyqtSignal

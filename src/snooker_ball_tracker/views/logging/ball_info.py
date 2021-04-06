@@ -7,7 +7,7 @@ from snooker_ball_tracker.models import LoggingModel, Observer
 from ..components import Ui_Label, Ui_Line
 
 
-class Ui_SnapshotInfo(QtWidgets.QGridLayout):
+class BallInfo(QtWidgets.QGridLayout):
     def __init__(self, model: LoggingModel, parent=None):
         super().__init__(parent)
         self.model = model

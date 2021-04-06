@@ -4,7 +4,7 @@ import PyQt5.QtWidgets as QtWidgets
 import snooker_ball_tracker.settings as s
 from snooker_ball_tracker.models import SettingsModel
 
-from .settings import BallDetectionTabView, ColourDetectionTabView
+from .settings import BallDetectionTab, ColourDetectionTab
 
 
 class SettingsView(QtWidgets.QGroupBox):
@@ -18,6 +18,6 @@ class SettingsView(QtWidgets.QGroupBox):
         self.settings_tabs = QtWidgets.QTabWidget(self)
         self.settings_tabs.setMaximumWidth(700)
 
-        self.settings_tabs.addTab(ColourDetectionTabView(self.model.models["colour_detection"]), "Colour Detection")
-        self.settings_tabs.addTab(BallDetectionTabView(self.model.models["ball_detection"]), "Ball Detection")
+        self.settings_tabs.addTab(ColourDetectionTab(self.model.models["colour_detection"]), "Colour Detection")
+        self.settings_tabs.addTab(BallDetectionTab(self.model.models["ball_detection"]), "Ball Detection")
         self.layout.addWidget(self.settings_tabs)

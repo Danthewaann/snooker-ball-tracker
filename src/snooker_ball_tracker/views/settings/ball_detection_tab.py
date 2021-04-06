@@ -11,7 +11,7 @@ from snooker_ball_tracker.models.settings import (BallDetectionSettingModel,
 from ..components import Ui_Label, Ui_PushButton, Ui_RadioButton, Ui_Slider
 
 
-class BallDetectionTabView(QtWidgets.QWidget):
+class BallDetectionTab(QtWidgets.QWidget):
     def __init__(self, model: BallDetectionTabModel):
         super().__init__()
         self.model = model

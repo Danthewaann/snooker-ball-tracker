@@ -6,7 +6,7 @@ from snooker_ball_tracker.models import LoggingModel, Observer
 from ..components import Ui_Label, Ui_PushButton
 
 
-class Ui_BallsPotted(QtWidgets.QVBoxLayout):
+class BallsPottedList(QtWidgets.QVBoxLayout):
     def __init__(self, model: LoggingModel, parent=None):
         super().__init__(parent)
         self.model = model

@@ -1,2 +1,2 @@
-from .ball_detection_tab_view import BallDetectionTabView
-from .colour_detection_tab_view import ColourDetectionTabView
+from .ball_detection_tab import BallDetectionTab
+from .colour_detection_tab import ColourDetectionTab

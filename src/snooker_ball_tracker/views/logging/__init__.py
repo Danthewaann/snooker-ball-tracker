@@ -1,2 +1,2 @@
-from .balls_potted import Ui_BallsPotted
-from .snapshot_info import Ui_SnapshotInfo
+from .balls_potted_list import BallsPottedList
+from .ball_info import BallInfo

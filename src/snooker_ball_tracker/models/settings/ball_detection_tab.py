@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 import PyQt5.QtCore as QtCore
 
-from .ball_detection_setting_model import BallDetectionSettingModel
+from .ball_detection_setting import BallDetectionSettingModel
 
 
 class BallDetectionTabModel(QtCore.QObject):

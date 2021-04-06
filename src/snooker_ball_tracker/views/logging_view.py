@@ -4,7 +4,7 @@ import PyQt5.QtWidgets as QtWidgets
 from snooker_ball_tracker.models import LoggingModel
 
 from .components import Ui_Label, Ui_Line, Ui_PushButton
-from .logging import Ui_BallsPotted, Ui_SnapshotInfo
+from .logging import BallsPottedList, BallInfo
 
 
 class LoggingView(QtWidgets.QGroupBox):
@@ -21,6 +21,6 @@ class LoggingView(QtWidgets.QGroupBox):
         self.widget_layout = QtWidgets.QHBoxLayout(self.widget)
         self.widget_layout.setSpacing(15)
 
-        self.widget_layout.addLayout(Ui_BallsPotted(self.model))
-        self.widget_layout.addLayout(Ui_SnapshotInfo(self.model))
+        self.widget_layout.addLayout(BallsPottedList(self.model))
+        self.widget_layout.addLayout(BallInfo(self.model))
         self.layout.addWidget(self.widget)

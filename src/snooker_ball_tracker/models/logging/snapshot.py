@@ -1,6 +1,6 @@
 import PyQt5.QtCore as QtCore
 
-from .ball_count_model import BallCountModel
+from .ball_count import BallCountModel
 
 
 class SnapshotModel(QtCore.QObject):

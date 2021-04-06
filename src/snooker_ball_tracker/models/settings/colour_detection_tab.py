@@ -4,7 +4,7 @@ from copy import deepcopy
 import PyQt5.QtCore as QtCore
 import snooker_ball_tracker.settings as s
 
-from .hsv_colour_model import HSVColourModel
+from .hsv_colour import HSVColourModel
 
 
 class ColourDetectionTabModel(QtCore.QObject):

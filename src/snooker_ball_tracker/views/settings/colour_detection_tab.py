@@ -11,7 +11,7 @@ from ..components import (Ui_Combobox, Ui_Label, Ui_Line, Ui_PushButton,
                           Ui_RadioButton, Ui_Slider)
 
 
-class ColourDetectionTabView(QtWidgets.QWidget):
+class ColourDetectionTab(QtWidgets.QWidget):
     def __init__(self, model: ColourDetectionTabModel):
         super().__init__()
         self.model = model
