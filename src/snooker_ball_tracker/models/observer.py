@@ -104,5 +104,3 @@ class Observer(QtCore.QObject):
                 binding.setter(*args,**kwargs)
 
             self.ignoreEvents = False
-
-        
