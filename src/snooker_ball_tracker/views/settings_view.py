@@ -2,13 +2,13 @@ import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
 import snooker_ball_tracker.settings as s
-from snooker_ball_tracker.models import SettingsModel
+from snooker_ball_tracker.ball_tracker import Settings
 
 from .settings import BallDetectionTab, ColourDetectionTab
 
 
 class SettingsView(QtWidgets.QGroupBox):
-    def __init__(self, model: SettingsModel):
+    def __init__(self, model: Settings):
         super().__init__("Settings")
         self.model = model
 

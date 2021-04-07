@@ -3,7 +3,7 @@ import PyQt5.QtCore as QtCore
 import snooker_ball_tracker.settings as s
 
 
-class VideoPlayerModel(QtCore.QObject):
+class VideoPlayer(QtCore.QObject):
     def __init__(self):
         """Creates an instance of this class that contains properties used by the
         video player to display frames processed by the ball tracker"""

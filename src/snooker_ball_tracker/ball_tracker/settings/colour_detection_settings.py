@@ -4,16 +4,16 @@ from copy import deepcopy
 import PyQt5.QtCore as QtCore
 import snooker_ball_tracker.settings as s
 
-from .hsv_colour import HSVColourModel
+from .hsv_colour import HSVColour
 
 
-class ColourDetectionTabModel(QtCore.QObject):
+class ColourDetectionSettings(QtCore.QObject):
     def __init__(self):
         """Creates and instance of this class that contains colour detection
         properties used by the ball tracker"""
         super().__init__()
         self._colours = deepcopy(s.COLOURS)
-        self._colour_model = HSVColourModel()
+        self._colour_model = HSVColour()
         self._colour_mask = False
         self._selected_colour = "NONE"
 
@@ -38,7 +38,7 @@ class ColourDetectionTabModel(QtCore.QObject):
             self.colour_model.update(self._colours[self._selected_colour])
 
     @property
-    def colour_model(self) -> HSVColourModel:
+    def colour_model(self) -> HSVColour:
         """Colour model used to store temporary values in sliders
 
         :return: colour model

@@ -1,13 +1,13 @@
 import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
-from snooker_ball_tracker.models import VideoPlayerModel
+from snooker_ball_tracker.ball_tracker import VideoPlayer
 
 from .video_player import Player, Options
 
 
 class VideoPlayerView(QtWidgets.QGroupBox):
-    def __init__(self, model: VideoPlayerModel):
+    def __init__(self, model: VideoPlayer):
         super().__init__("Video Player")
         self.model = model
 

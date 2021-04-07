@@ -1,3 +1,0 @@
-from .ball_detection_tab import BallDetectionTabModel
-from .colour_detection_tab import ColourDetectionTabModel
-from .ball_detection_setting import BallDetectionSettingModel

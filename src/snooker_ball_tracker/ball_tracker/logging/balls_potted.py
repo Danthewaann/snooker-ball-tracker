@@ -3,7 +3,7 @@ from typing import List
 import PyQt5.QtCore as QtCore
 
 
-class BallsPottedListModel(QtCore.QAbstractListModel):
+class BallsPotted(QtCore.QAbstractListModel):
     def __init__(self, balls_potted: List[str]=None):
         """Creates an instance of this class that stores the balls potted,
         as reported from the ball tracker

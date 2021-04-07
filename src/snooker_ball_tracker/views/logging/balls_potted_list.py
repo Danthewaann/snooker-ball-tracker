@@ -1,13 +1,13 @@
 import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
-from snooker_ball_tracker.models import LoggingModel, Observer
+from snooker_ball_tracker.ball_tracker import Logger, Observer
 
 from ..components import Ui_Label, Ui_PushButton
 
 
 class BallsPottedList(QtWidgets.QVBoxLayout):
-    def __init__(self, model: LoggingModel, parent=None):
+    def __init__(self, model: Logger, parent=None):
         super().__init__(parent)
         self.model = model
 

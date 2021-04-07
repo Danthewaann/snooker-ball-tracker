@@ -2,13 +2,13 @@ import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
 import snooker_ball_tracker.settings as s
-from snooker_ball_tracker.models import LoggingModel, Observer
+from snooker_ball_tracker.ball_tracker import Logger, Observer
 
 from ..components import Ui_Label, Ui_Line
 
 
 class BallInfo(QtWidgets.QGridLayout):
-    def __init__(self, model: LoggingModel, parent=None):
+    def __init__(self, model: Logger, parent=None):
         super().__init__(parent)
         self.model = model
 

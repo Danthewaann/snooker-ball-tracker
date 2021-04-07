@@ -1,24 +1,24 @@
 import PyQt5.QtCore as QtCore
 
-from .ball_count import BallCountModel
+from .ball_count import BallCount
 
 
-class SnapshotModel(QtCore.QObject):
+class Snapshot(QtCore.QObject):
     def __init__(self):
         """Creates an instance of this class that contains ball counts for all
         possible ball colours"""
         super().__init__()
-        self._whites = BallCountModel()
-        self._reds = BallCountModel()
-        self._yellows = BallCountModel()
-        self._greens = BallCountModel()
-        self._browns = BallCountModel()
-        self._blues = BallCountModel()
-        self._pinks = BallCountModel()
-        self._blacks = BallCountModel()
+        self._whites = BallCount()
+        self._reds = BallCount()
+        self._yellows = BallCount()
+        self._greens = BallCount()
+        self._browns = BallCount()
+        self._blues = BallCount()
+        self._pinks = BallCount()
+        self._blacks = BallCount()
 
     @property
-    def whites(self) -> BallCountModel:
+    def whites(self) -> BallCount:
         """Whites property
 
         :return: whites
@@ -27,7 +27,7 @@ class SnapshotModel(QtCore.QObject):
         return self._whites
 
     @property
-    def reds(self) -> BallCountModel:
+    def reds(self) -> BallCount:
         """Reds property
 
         :return: reds
@@ -36,7 +36,7 @@ class SnapshotModel(QtCore.QObject):
         return self._reds
 
     @property
-    def yellows(self) -> BallCountModel:
+    def yellows(self) -> BallCount:
         """Yellows property
 
         :return: yellows
@@ -45,7 +45,7 @@ class SnapshotModel(QtCore.QObject):
         return self._yellows
 
     @property
-    def greens(self) -> BallCountModel:
+    def greens(self) -> BallCount:
         """Greens property
 
         :return: greens
@@ -54,7 +54,7 @@ class SnapshotModel(QtCore.QObject):
         return self._greens
 
     @property
-    def browns(self) -> BallCountModel:
+    def browns(self) -> BallCount:
         """Browns property
 
         :return: browns
@@ -63,7 +63,7 @@ class SnapshotModel(QtCore.QObject):
         return self._browns
 
     @property
-    def blues(self) -> BallCountModel:
+    def blues(self) -> BallCount:
         """Blues property
 
         :return: blues
@@ -72,7 +72,7 @@ class SnapshotModel(QtCore.QObject):
         return self._blues
 
     @property
-    def pinks(self) -> BallCountModel:
+    def pinks(self) -> BallCount:
         """Pinks property
 
         :return: pinks
@@ -81,7 +81,7 @@ class SnapshotModel(QtCore.QObject):
         return self._pinks
 
     @property
-    def blacks(self) -> BallCountModel:
+    def blacks(self) -> BallCount:
         """Blacks property
 
         :return: blacks

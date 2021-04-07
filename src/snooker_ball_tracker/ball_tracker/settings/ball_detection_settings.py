@@ -4,20 +4,20 @@ from copy import deepcopy
 import PyQt5.QtCore as QtCore
 import snooker_ball_tracker.settings as s
 
-from .ball_detection_setting import BallDetectionSettingModel
+from .ball_detection_setting_group import BallDetectionSettingGroup
 
 
-class BallDetectionTabModel(QtCore.QObject):
+class BallDetectionSettings(QtCore.QObject):
     def __init__(self):
         """Creates and instance of this class that contains ball detection 
         properties used by the ball tracker"""
         super().__init__()
         self._blob_detector = deepcopy(s.BLOB_DETECTOR)
         self.models = OrderedDict([
-            ("convexity", BallDetectionSettingModel("convexity")),
-            ("inertia", BallDetectionSettingModel("inertia")),
-            ("circularity", BallDetectionSettingModel("circularity")),
-            ("area", BallDetectionSettingModel("area", multiplier=1))
+            ("convexity", BallDetectionSettingGroup("convexity")),
+            ("inertia", BallDetectionSettingGroup("inertia")),
+            ("circularity", BallDetectionSettingGroup("circularity")),
+            ("area", BallDetectionSettingGroup("area", multiplier=1))
         ])
 
     @property

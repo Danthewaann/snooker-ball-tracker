@@ -9,9 +9,8 @@ import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
 import snooker_ball_tracker.settings as s
-from snooker_ball_tracker.ball_tracker import BallTracker
-from snooker_ball_tracker.models import (LoggingModel, SettingsModel,
-                                         VideoPlayerModel)
+from snooker_ball_tracker.ball_tracker import (BallTracker, Logger, Settings,
+                                               VideoPlayer)
 from snooker_ball_tracker.video_file_stream import VideoFileStream
 from snooker_ball_tracker.video_processor import VideoProcessor
 
@@ -36,13 +35,13 @@ class MainView(QtWidgets.QMainWindow):
         self.central_widget_layout.setContentsMargins(30, 30, 30, 30)
         self.central_widget_layout.setSpacing(30)
 
-        self.settings_model = SettingsModel()
+        self.settings_model = Settings()
         self.settings_view = SettingsView(self.settings_model)
 
-        self.logging_model = LoggingModel()
+        self.logging_model = Logger()
         self.logging_view = LoggingView(self.logging_model)
 
-        self.video_player_model = VideoPlayerModel()
+        self.video_player_model = VideoPlayer()
         self.video_player_model.restart_videoChanged.connect(self.restart_video_processor)
         self.video_player_view = VideoPlayerView(self.video_player_model)
 
@@ -107,7 +106,7 @@ class MainView(QtWidgets.QMainWindow):
         self.video_processor_stop_event = threading.Event()
         self.video_processor = VideoProcessor(
             video_stream=self.video_file_stream, 
-            logger=self.logging_model, video_player=self.video_player_model, settings=self.settings_model,
+            logger=self.logging_model, VideoPlayer=self.video_player_model, settings=self.settings_model,
             ball_tracker=self.ball_tracker, lock=self.video_processor_lock, stop_event=self.video_processor_stop_event)
         self.video_processor.start()
 

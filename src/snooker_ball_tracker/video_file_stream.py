@@ -6,11 +6,11 @@ import numpy as np
 from imutils.video import FileVideoStream
 
 import snooker_ball_tracker.settings as s
-from .models import VideoPlayerModel
+from .ball_tracker import video_player
 
 
 class VideoFileStream(FileVideoStream):
-    def __init__(self, path: str, model: VideoPlayerModel, queue_size: int=128):
+    def __init__(self, path: str, video_player: video_player, queue_size: int=128):
         """Create instance of VideoFileStream that loads frames from a file in a
         separate thread and performs some basic transformations
 
@@ -24,7 +24,7 @@ class VideoFileStream(FileVideoStream):
         :type queue_size: int, optional
         """
         super().__init__(path, transform=self.transform_frame, queue_size=queue_size)
-        self.model = model
+        self.video_player = video_player
         self.__table_bounds = None
         self.__table_bounds_mask = None
         self.thread = Thread(
@@ -45,7 +45,7 @@ class VideoFileStream(FileVideoStream):
         """
         if frame is not None:
             # resize the frame if width is provided
-            frame = imutils.resize(frame, width=self.model.player_width)
+            frame = imutils.resize(frame, width=self.video_player.player_width)
 
             # convert frame into HSV colour space
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -57,23 +57,23 @@ class VideoFileStream(FileVideoStream):
             threshold = cv2.bitwise_not(threshold)
 
             # perform closing morphology if `morph` is True
-            if self.model.perform_morph:
+            if self.video_player.perform_morph:
                 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
                 threshold = cv2.morphologyEx(threshold, cv2.MORPH_OPEN, kernel)
 
             # get the bounds of the table
-            if self.model.detect_table:
+            if self.video_player.detect_table:
                 print("Drawing table boundary...")
                 self.create_table_boundary(frame, contours)
-                self.model.detect_table = False
+                self.video_player.detect_table = False
 
             # draw the bounds of the table if we have it
-            if self.__table_bounds is not None and not self.model.crop_frames:
+            if self.__table_bounds is not None and not self.video_player.crop_frames:
                 cv2.drawContours(
                     frame, [self.__table_bounds], -1, (255, 255, 255), 3)
 
             # crop frame, hsv and threshold
-            if self.model.crop_frames and self.__table_bounds is not None:
+            if self.video_player.crop_frames and self.__table_bounds is not None:
                 frame = self.crop(frame)
                 hsv = self.crop(hsv)
                 threshold = self.crop(threshold)

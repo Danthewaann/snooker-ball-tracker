@@ -1,20 +1,20 @@
 import PyQt5.QtCore as QtCore
 
-from .logging import BallsPottedListModel, SnapshotModel
+from .logging import BallsPotted, Snapshot
 
 
-class LoggingModel(QtCore.QObject):
+class Logger(QtCore.QObject):
     def __init__(self):
         """Creates an instance of this class that contains properties for logging
         output from the ball tracker"""
         super().__init__()
-        self._balls_potted = BallsPottedListModel()
+        self._balls_potted = BallsPotted()
         self._white_status = "stopped..."
-        self._last_shot_snapshot = SnapshotModel()
-        self._cur_shot_snapshot = SnapshotModel()
+        self._last_shot_snapshot = Snapshot()
+        self._cur_shot_snapshot = Snapshot()
 
     @property
-    def balls_potted(self) -> BallsPottedListModel:
+    def balls_potted(self) -> BallsPotted:
         """Balls potted property
 
         :return: balls potted list model
@@ -44,7 +44,7 @@ class LoggingModel(QtCore.QObject):
         self.white_statusChanged.emit(self._white_status)
 
     @property
-    def last_shot_snapshot(self) -> SnapshotModel:
+    def last_shot_snapshot(self) -> Snapshot:
         """Last shot snapshot property
 
         :return: last shot snapshot model
@@ -53,7 +53,7 @@ class LoggingModel(QtCore.QObject):
         return self._last_shot_snapshot
 
     @property
-    def cur_shot_snapshot(self) -> SnapshotModel:
+    def cur_shot_snapshot(self) -> Snapshot:
         """Current shot snapshot property
 
         :return: current shot snapshot model

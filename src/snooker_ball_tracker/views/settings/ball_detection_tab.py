@@ -4,15 +4,15 @@ import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
 import snooker_ball_tracker.settings as s
-from snooker_ball_tracker.models import Observer
-from snooker_ball_tracker.models.settings import (BallDetectionSettingModel,
-                                                  BallDetectionTabModel)
+from snooker_ball_tracker.ball_tracker import Observer
+from snooker_ball_tracker.ball_tracker.settings import (
+    BallDetectionSettingGroup, BallDetectionSettings)
 
 from ..components import Ui_Label, Ui_PushButton, Ui_RadioButton, Ui_Slider
 
 
 class BallDetectionTab(QtWidgets.QWidget):
-    def __init__(self, model: BallDetectionTabModel):
+    def __init__(self, model: BallDetectionSettings):
         super().__init__()
         self.model = model
 
@@ -32,7 +32,7 @@ class BallDetectionTab(QtWidgets.QWidget):
 
 
 class BallDetectionSettingView(QtWidgets.QGroupBox):
-    def __init__(self, name, model: BallDetectionSettingModel, max_range=100):
+    def __init__(self, name, model: BallDetectionSettingGroup, max_range=100):
         super().__init__(name)
         self.model = model
 

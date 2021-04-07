@@ -1,13 +1,13 @@
 import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
-from snooker_ball_tracker.models import Observer, VideoPlayerModel
+from snooker_ball_tracker.ball_tracker import Observer, VideoPlayer
 
 from ..components import Ui_Label, Ui_PushButton, Ui_RadioButton
 
 
 class Options(QtWidgets.QWidget):
-    def __init__(self, model: VideoPlayerModel):
+    def __init__(self, model: VideoPlayer):
         super().__init__()
         self.model = model
 
