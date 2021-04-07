@@ -100,8 +100,18 @@ class BallDetectionSettingModel(QtCore.QObject):
         self._filter_by = value
         self.filter_byChanged.emit(self._filter_by)
 
+    def update(self, settings: dict):
+        """Update properties with values in `settings`
+
+        :param settings: settings to obtain values from
+        :type settings: dict
+        """
+        self.min_value = settings["MIN_" + self._name.upper()] * self._multiplier
+        self.max_value = settings["MAX_" + self._name.upper()] * self._multiplier
+        self.filter_by = settings["FILTER_BY_" + self._name.upper()]
+
     def reset(self):
         """Reset properties to their previous values from settings"""
-        self.min_value = (s.BLOB_DETECTOR["MIN_" + self._name.upper()] * self._multiplier)
-        self.max_value = (s.BLOB_DETECTOR["MAX_" + self._name.upper()] * self._multiplier)
-        self.filter_by = (s.BLOB_DETECTOR["FILTER_BY_" + self._name.upper()])
+        self.min_value = s.BLOB_DETECTOR["MIN_" + self._name.upper()] * self._multiplier
+        self.max_value = s.BLOB_DETECTOR["MAX_" + self._name.upper()] * self._multiplier
+        self.filter_by = s.BLOB_DETECTOR["FILTER_BY_" + self._name.upper()]

@@ -19,12 +19,23 @@ class ColourDetectionTabModel(QtCore.QObject):
 
     @property
     def colours(self) -> dict:
-        """Copy of colours loaded from settings file
+        """Copy of colour values loaded from settings
 
         :return: colours
         :rtype: dict
         """
         return self._colours
+
+    @colours.setter
+    def colours(self, value: dict):
+        """Colours setter
+
+        :param value: value to set
+        :type value: dict
+        """
+        self._colours = value
+        if self._selected_colour != "NONE":
+            self.colour_model.update(self._colours[self._selected_colour])
 
     @property
     def colour_model(self) -> HSVColourModel:

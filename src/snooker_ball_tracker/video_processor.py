@@ -88,7 +88,8 @@ class VideoProcessor(threading.Thread):
 
         if self.video_stream.detect_colour != "NONE":
             colour_mask, contours = self.ball_tracker.detect_colour(
-                self.__input_hsv, s.COLOURS[self.video_stream.detect_colour]['LOWER'], s.COLOURS[self.video_stream.detect_colour]['UPPER']
+                self.__input_hsv, self.settings.models["colour_detection"].colour_model.lower_range(), 
+                self.settings.models["colour_detection"].colour_model.upper_range()
             )
             if self.video_player.show_threshold:
                 output_frame = copy(self.__input_threshold)

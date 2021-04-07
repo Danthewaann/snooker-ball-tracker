@@ -1,6 +1,7 @@
 import os
 import threading
 from collections import OrderedDict
+from copy import deepcopy
 
 import cv2
 import numpy as np
@@ -58,7 +59,9 @@ class MainView(QtWidgets.QMainWindow):
 
         menu = self.menuBar().addMenu("Settings")
         action = menu.addAction("Load")
+        action.triggered.connect(self.load_settings)
         action = menu.addAction("Save")
+        action.triggered.connect(self.save_settings)
 
         action = self.menuBar().addAction("Exit")
 
@@ -114,37 +117,32 @@ class MainView(QtWidgets.QMainWindow):
                 self.video_processor.stop_event.set()
             self.start_video_processor()
 
-    # def load_settings(self):
-    #     settings_file, _ = QtWidgets.QFileDialog().getOpenFileName(self, "Load Settings", "")
-    #     if not settings_file:
-    #         return
+    def load_settings(self):
+        settings_file, _ = QtWidgets.QFileDialog().getOpenFileName(self, "Load Settings", "")
+        if not settings_file:
+            return
 
-    #     self.settings_file = settings_file
-    #     threading.Thread(target=self.__load_settings, args=(settings_file,), daemon=True).start()
+        self.settings_file = settings_file
+        threading.Thread(target=self.__load_settings, args=(settings_file,), daemon=True).start()
 
-    # def __load_settings(self, settings_file):
-    #     success, error = s.load(settings_file)
-    #     if success:
-    #         self.colour_detection_options.update()
-    #         self.ball_tracker_options.update()
+    def __load_settings(self, settings_file):
+        success, error = s.load(settings_file)
+        if success:
+            self.settings_model.models["colour_detection"].colours = deepcopy(s.COLOURS)
+            self.settings_model.models["ball_detection"].blob_detector = deepcopy(s.BLOB_DETECTOR)
 
-    # def save_settings(self):
-    #     data = [("Json Files", ".json")]
-    #     name, ext = os.path.splitext(os.path.basename(self.settings_file))
-    #     settings_file = filedialog.asksaveasfilename(title="Save Settings", initialfile=f"{name} copy{ext}",
-    #         filetypes=data, defaultextension=data, initialdir="resources/config")
+    def save_settings(self):
+        data = [("Json Files", ".json")]
+        name, ext = os.path.splitext(os.path.basename(self.settings_file))
+        settings_file, _ = QtWidgets.QFileDialog().getSaveFileName(self, "Save Settings", self.settings_file)
 
-    #     if not settings_file:
-    #         return
+        if not settings_file:
+            return
 
-    #     self.settings_file = settings_file
-    #     threading.Thread(target=self.__save_settings, args=(settings_file,), daemon=True).start()
+        self.settings_file = settings_file
+        threading.Thread(target=self.__save_settings, args=(settings_file,), daemon=True).start()
 
-    # def __save_settings(self, settings_file):
-    #     success, error = s.save(settings_file)
-    #     if success:
-    #         self.colour_detection_options.update()
-    #         self.ball_tracker_options.update()
-    #         self.program_output.info(f"Saved \"{os.path.basename(settings_file)}\"")
-    #     else:
-    #         self.program_output.error(f"Failed to save \"{os.path.basename(settings_file)}\"\n{str(error)}")
+    def __save_settings(self, settings_file):
+        s.COLOURS = self.settings_model.models["colour_detection"].colours
+        s.BLOB_DETECTOR = self.settings_model.models["ball_detection"].blob_detector
+        success, error = s.save(settings_file)

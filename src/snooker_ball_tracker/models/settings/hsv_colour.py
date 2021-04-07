@@ -1,3 +1,4 @@
+import numpy as np
 import PyQt5.QtCore as QtCore
 
 
@@ -12,6 +13,22 @@ class HSVColourModel(QtCore.QObject):
         self._u_Saturation = 0 
         self._l_Value = 0 
         self._u_Value = 0
+
+    def lower_range(self) -> np.ndarray:
+        """Get lower colour values concated into an array
+
+        :return: lower colour values
+        :rtype: np.ndarray
+        """
+        return np.array([self._l_Hue, self._l_Saturation, self._l_Value])
+
+    def upper_range(self) -> np.ndarray:
+        """Get upper colour values concated into an array
+
+        :return: upper colour values
+        :rtype: np.ndarray
+        """
+        return np.array([self._u_Hue, self._u_Saturation, self._u_Value])
 
     @property
     def l_Hue(self) -> int:
