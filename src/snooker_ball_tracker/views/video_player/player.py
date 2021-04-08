@@ -15,7 +15,7 @@ class Player(QtWidgets.QFrame):
         self.model = model
 
         self.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
-        self.setMaximumWidth(self.model.player_width)
+        self.setMaximumWidth(self.model.width)
         self.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.setFrameShadow(QtWidgets.QFrame.Raised)
 

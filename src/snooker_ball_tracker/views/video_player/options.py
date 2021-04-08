@@ -61,7 +61,7 @@ class Options(QtWidgets.QWidget):
         self.layout.addWidget(self.performMorph_yradio,  2, 1, 1, 1)
         self.layout.addWidget(self.performMorph_nradio,  2, 0, 1, 1)
 
-        self.model.play_videoChanged.connect(lambda value: self.play_btn.setText("Pause") if value else self.play_btn.setText("Play"))
+        self.model.playChanged.connect(lambda value: self.play_btn.setText("Pause") if value else self.play_btn.setText("Play"))
         QtCore.QMetaObject.connectSlotsByName(self)
 
     @QtCore.pyqtSlot()
@@ -75,7 +75,7 @@ class Options(QtWidgets.QWidget):
 
     @QtCore.pyqtSlot()
     def on_restart_btn_pressed(self):
-        self.model.restart_video = True
+        self.model.restart = True
 
     @QtCore.pyqtSlot()
     def on_detectTable_btn_pressed(self):

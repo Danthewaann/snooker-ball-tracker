@@ -13,11 +13,11 @@ from .video_file_stream import VideoFileStream
 
 class VideoProcessor(threading.Thread):
     def __init__(self, video_stream: VideoFileStream, 
-                 logger: Logger, VideoPlayer: VideoPlayer, settings: Settings,
+                 logger: Logger, video_player: VideoPlayer, settings: Settings,
                  ball_tracker: BallTracker, lock: threading.Lock, stop_event: threading.Event):
         super().__init__(name=self.__class__.__name__, daemon=True)
         self.logger = logger
-        self.VideoPlayer = VideoPlayer
+        self.video_player = video_player
         self.settings = settings
         self.ball_tracker = ball_tracker
 
@@ -47,15 +47,15 @@ class VideoProcessor(threading.Thread):
         return self.__input_hsv
 
     def run(self):
-        self.VideoPlayer.play_video = True
+        self.video_player.play_video = True
         self.video_stream.start()
         self.__fps.start()
         self._process_next_frame()
-        self.VideoPlayer.play_video = False
+        self.video_player.play_video = False
         self.video_stream.Q = Queue(maxsize=16)
 
         while not self.stop_event.is_set():
-            if self.VideoPlayer.play_video and self.video_stream.running():
+            if self.video_player.play_video and self.video_stream.running():
                 if not self._process_next_frame():
                     continue
             else:
@@ -78,11 +78,11 @@ class VideoProcessor(threading.Thread):
 
     def _process_frame(self):
         self.video_stream.detect_colour = self.settings.models["colour_detection"].selected_colour
-        self.video_stream.crop_frames = self.VideoPlayer.crop_frames
+        self.video_stream.crop_frames = self.video_player.crop_frames
 
         output_frame, ball_potted, count = self.ball_tracker.run(
             (copy(self.__input_frame), copy(self.__input_threshold), copy(self.__input_hsv)), width=800, 
-            crop=self.video_stream.crop_frames, show_threshold=self.VideoPlayer.show_threshold
+            crop=self.video_stream.crop_frames, show_threshold=self.video_player.show_threshold
         )
 
         if self.video_stream.detect_colour != "NONE":
@@ -90,7 +90,7 @@ class VideoProcessor(threading.Thread):
                 self.__input_hsv, self.settings.models["colour_detection"].colour_model.lower_range(), 
                 self.settings.models["colour_detection"].colour_model.upper_range()
             )
-            if self.VideoPlayer.show_threshold:
+            if self.video_player.show_threshold:
                 output_frame = copy(self.__input_threshold)
             else:
                 if self.settings.models["colour_detection"].colour_mask:
@@ -99,7 +99,7 @@ class VideoProcessor(threading.Thread):
 
             cv2.drawContours(output_frame, contours, -1, (0, 255, 0), 2)
 
-        if self.VideoPlayer.play_video:
+        if self.video_player.play_video:
             self.__fps.update()
             self.__fps.stop()
 
@@ -109,7 +109,7 @@ class VideoProcessor(threading.Thread):
         cv2.putText(output_frame, "FPS: {:.2f}".format(self.__fps.fps()),
                     (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
-        self.VideoPlayer.frame = output_frame
+        self.video_player.frame = output_frame
 
         if ball_potted is not None:
             self.logger.balls_potted.addPottedBall(f'Potted {count} {ball_potted.lower()}/s...')

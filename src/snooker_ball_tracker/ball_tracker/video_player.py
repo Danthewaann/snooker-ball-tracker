@@ -8,9 +8,9 @@ class VideoPlayer(QtCore.QObject):
         """Creates an instance of this class that contains properties used by the
         video player to display frames processed by the ball tracker"""
         super().__init__()
-        self._player_width = 1000
-        self._play_video = False
-        self._restart_video = False
+        self._width = 1000
+        self._play = False
+        self._restart = False
         self._crop_frames = False
         self._show_threshold = False
         self._perform_morph = False
@@ -18,67 +18,68 @@ class VideoPlayer(QtCore.QObject):
         self._frame = np.array([])
 
     @property
-    def player_width(self) -> int:
-        """Player width property
+    def width(self) -> int:
+        """Width property
 
         :return: player width
         :rtype: int
         """
-        return self._player_width
+        return self._width
 
-    player_widthChanged = QtCore.pyqtSignal(int)
+    widthChanged = QtCore.pyqtSignal(int)
 
-    @player_width.setter
-    def player_width(self, value: int):
-        """Player width setter
+    @width.setter
+    def width(self, value: int):
+        """Width setter
 
         :param value: value to set
         :type value: int
         """
-        self._player_width = value
-        self.player_widthChanged.emit(self._player_width)
+        self._width = value
+        self.widthChanged.emit(self._width)
 
     @property
-    def play_video(self) -> bool:
-        """Play video property
+    def play(self) -> bool:
+        """Play property
 
         :return: play video
         :rtype: bool
         """
-        return self._play_video
+        return self._play
 
-    play_videoChanged = QtCore.pyqtSignal(bool)
+    playChanged = QtCore.pyqtSignal(bool)
 
-    @play_video.setter
-    def play_video(self, value: bool):
-        """Play video setter
+    @play.setter
+    def play(self, value: bool):
+        """Play setter
 
         :param value: value to set
         :type value: bool
         """
-        self._play_video = value
-        self.play_videoChanged.emit(self._play_video)
+        self._play = value
+        self.playChanged.emit(self._play)
 
     @property
-    def restart_video(self) -> bool:
-        """Restart video property
+    def restart(self) -> bool:
+        """Restart property
 
         :return: restart video
         :rtype: bool
         """
-        return self._restart_video
+        return self._restart
 
-    restart_videoChanged = QtCore.pyqtSignal(bool)
+    restartChanged = QtCore.pyqtSignal(bool)
 
-    @restart_video.setter
-    def restart_video(self, value: bool):
-        """Restart video setter
+    @restart.setter
+    def restart(self, value: bool):
+        """Restart setter
 
         :param value: value to set
         :type value: bool
         """
-        self._restart_video = value
-        self.restart_videoChanged.emit(self._restart_video)
+        self._restart = value
+        self.play = False
+        self.restartChanged.emit(self._restart)
 
     @property
     def crop_frames(self) -> bool:

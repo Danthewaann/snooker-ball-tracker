@@ -35,6 +35,13 @@ class MainView(QtWidgets.QMainWindow):
         self.central_widget_layout.setContentsMargins(30, 30, 30, 30)
         self.central_widget_layout.setSpacing(30)
 
+        self.video_processor_lock = threading.Lock()
+        self.video_processor_stop_event = threading.Event()
+        self.video_processor = None
+        self.video_file_stream = None
+        self.video_file = None
+        self.ball_tracker = BallTracker()
+
         self.settings = Settings()
         self.settings_view = SettingsView(self.settings)
 
@@ -42,7 +49,7 @@ class MainView(QtWidgets.QMainWindow):
         self.logging_view = LoggingView(self.logger)
 
         self.video_player = VideoPlayer()
-        self.video_player.restart_videoChanged.connect(self.restart_video_processor)
+        self.video_player.restartChanged.connect(self.restart_video_processor)
         self.video_player_view = VideoPlayerView(self.video_player)
 
         self.central_widget_layout.addWidget(self.settings_view, 0, 0, 1, 1)
@@ -65,13 +72,6 @@ class MainView(QtWidgets.QMainWindow):
         action = self.menuBar().addAction("Exit")
 
         self.menuBar().setNativeMenuBar(False)
-
-        self.video_processor_lock = threading.Lock()
-        self.video_processor_stop_event = threading.Event()
-        self.video_processor = None
-        self.video_file_stream = None
-        self.video_file = None
-        self.ball_tracker = BallTracker()
 
     def closeEvent(self, event):
         if self.video_file_stream is not None:
@@ -106,8 +106,7 @@ class MainView(QtWidgets.QMainWindow):
         self.video_processor_stop_event = threading.Event()
         self.video_processor = VideoProcessor(
             video_stream=self.video_file_stream, 
-            logger=self.logger
-, VideoPlayer=self.video_player, settings=self.settings,
+            logger=self.logger, video_player=self.video_player, settings=self.settings,
             ball_tracker=self.ball_tracker, lock=self.video_processor_lock, stop_event=self.video_processor_stop_event)
         self.video_processor.start()
 

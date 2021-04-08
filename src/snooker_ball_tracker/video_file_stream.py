@@ -45,7 +45,7 @@ class VideoFileStream(FileVideoStream):
         """
         if frame is not None:
             # resize the frame if width is provided
-            frame = imutils.resize(frame, width=self.video_player.player_width)
+            frame = imutils.resize(frame, width=self.video_player.width)
 
             # convert frame into HSV colour space
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
