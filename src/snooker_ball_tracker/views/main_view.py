@@ -35,15 +35,15 @@ class MainView(QtWidgets.QMainWindow):
         self.central_widget_layout.setContentsMargins(30, 30, 30, 30)
         self.central_widget_layout.setSpacing(30)
 
-        self.settings_model = Settings()
-        self.settings_view = SettingsView(self.settings_model)
+        self.settings = Settings()
+        self.settings_view = SettingsView(self.settings)
 
-        self.logging_model = Logger()
-        self.logging_view = LoggingView(self.logging_model)
+        self.logger = Logger()
+        self.logging_view = LoggingView(self.logger)
 
-        self.video_player_model = VideoPlayer()
-        self.video_player_model.restart_videoChanged.connect(self.restart_video_processor)
-        self.video_player_view = VideoPlayerView(self.video_player_model)
+        self.video_player = VideoPlayer()
+        self.video_player.restart_videoChanged.connect(self.restart_video_processor)
+        self.video_player_view = VideoPlayerView(self.video_player)
 
         self.central_widget_layout.addWidget(self.settings_view, 0, 0, 1, 1)
         self.central_widget_layout.addWidget(self.logging_view, 1, 0, 1, 1)
@@ -101,12 +101,13 @@ class MainView(QtWidgets.QMainWindow):
         self.start_video_processor()
 
     def start_video_processor(self):
-        self.video_file_stream = VideoFileStream(self.video_file, model=self.video_player_model, queue_size=1)
+        self.video_file_stream = VideoFileStream(self.video_file, video_player=self.video_player, queue_size=1)
 
         self.video_processor_stop_event = threading.Event()
         self.video_processor = VideoProcessor(
             video_stream=self.video_file_stream, 
-            logger=self.logging_model, VideoPlayer=self.video_player_model, settings=self.settings_model,
+            logger=self.logger
+, VideoPlayer=self.video_player, settings=self.settings,
             ball_tracker=self.ball_tracker, lock=self.video_processor_lock, stop_event=self.video_processor_stop_event)
         self.video_processor.start()
 
@@ -127,8 +128,8 @@ class MainView(QtWidgets.QMainWindow):
     def __load_settings(self, settings_file):
         success, error = s.load(settings_file)
         if success:
-            self.settings_model.models["colour_detection"].colours = deepcopy(s.COLOURS)
-            self.settings_model.models["ball_detection"].blob_detector = deepcopy(s.BLOB_DETECTOR)
+            self.settings.models["colour_detection"].colours = deepcopy(s.COLOURS)
+            self.settings.models["ball_detection"].blob_detector = deepcopy(s.BLOB_DETECTOR)
 
     def save_settings(self):
         data = [("Json Files", ".json")]
@@ -142,6 +143,6 @@ class MainView(QtWidgets.QMainWindow):
         threading.Thread(target=self.__save_settings, args=(settings_file,), daemon=True).start()
 
     def __save_settings(self, settings_file):
-        s.COLOURS = self.settings_model.models["colour_detection"].colours
-        s.BLOB_DETECTOR = self.settings_model.models["ball_detection"].blob_detector
+        s.COLOURS = self.settings.models["colour_detection"].colours
+        s.BLOB_DETECTOR = self.settings.models["ball_detection"].blob_detector
         success, error = s.save(settings_file)
