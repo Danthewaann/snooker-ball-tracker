@@ -36,8 +36,8 @@ class BallInfo(QtWidgets.QGridLayout):
                 curBallCount = Ui_Label("0", parent=parent, alignment=QtCore.Qt.AlignCenter)
                 tempBallcount = Ui_Label("0", parent=parent, alignment=QtCore.Qt.AlignCenter)
 
-                self.model.last_shot_snapshot.__getattribute__(colour.lower() + "s").countChanged.connect(lastShot_ballCount.setNum)
-                self.model.cur_shot_snapshot.__getattribute__(colour.lower() + "s").countChanged.connect(curBallCount.setNum)
+                self.model.last_shot_snapshot.colours[colour].countChanged.connect(lastShot_ballCount.setNum)
+                self.model.cur_shot_snapshot.colours[colour].countChanged.connect(curBallCount.setNum)
 
                 self.addWidget(label, start_row, 0, 1, 1)
                 self.addWidget(lastShot_ballCount, start_row, 1, 1, 1)

@@ -10,7 +10,6 @@ class Logger(QtCore.QObject):
         output from the ball tracker"""
         super().__init__()
         self._balls_potted = BallsPotted()
-        self._white_status = "stopped..."
         self._last_shot_snapshot = SnapShot()
         self._cur_shot_snapshot = SnapShot()
         self._temp_snapshot = SnapShot()
@@ -35,8 +34,7 @@ class Logger(QtCore.QObject):
 
     white_statusChanged = QtCore.pyqtSignal(bool)
 
-    @white_status.setter
-    def white_status(self, value: bool):
+    def set_white_status(self, value: bool):
         """White status setter
 
         :param value: value to set

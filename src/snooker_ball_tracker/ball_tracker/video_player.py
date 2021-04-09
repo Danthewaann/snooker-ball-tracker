@@ -136,6 +136,11 @@ class VideoPlayer(QtCore.QObject):
 
     @perform_morph.setter
     def perform_morph(self, value: bool):
+        """Perform morph setter
+
+        :param value: value to set
+        :type value: bool
+        """
         self._perform_morph = value
         self.perform_morphChanged.emit(self._perform_morph)
 

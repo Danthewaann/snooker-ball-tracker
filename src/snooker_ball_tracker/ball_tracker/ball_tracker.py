@@ -1,50 +1,42 @@
+import typing
+
 import cv2
+import numpy as np
 import snooker_ball_tracker.settings as s
 
+from .logger import Logger
 from .logging import BallsPotted
 from .snapshot import SnapShot
 from .util import dist_between_two_balls
 
 
-def get_snapshot_report(prev_snapshot, cur_snapshot):
-    """
-    Creates a report of two snapshots to show the difference between them
-
-    :param prev_snapshot: previous snapshot
-    :param cur_snapshot: current snapshot
-    :returns: table of comparision between `prev_snapshot`, `cur_snapshot` and `temp_snapshot`
-    """
-    report = '--------------------------------------\n'
-    report += 'PREVIOUS SNAPSHOT | CURRENT SNAPSHOT \n'
-    report += '------------------|-------------------\n'
-    for ball in prev_snapshot.balls:
-        prev_ball_status = '{}s: {}'.format(
-            ball.lower(), len(prev_snapshot.balls[ball]))
-        while len(prev_ball_status) < 17:
-            prev_ball_status += ' '
-        cur_ball_status = '{}s: {}'.format(
-            ball.lower(), len(cur_snapshot.balls[ball]))
-        report += prev_ball_status + ' | ' + cur_ball_status + '\n'
-    report += '--------------------------------------\n'
-    return report
-
-
 class BallTracker():
-    def __init__(self, logger=None, **kwargs):
-        """
-        Creates an instance of BallTracker
+    def __init__(self, logger: Logger=None, **kwargs):
+        """Creates an instance of BallTracker
 
+        :param logger: logger that contains snapshot to log to, defaults to None
+        :type logger: Logger, optional
         :param **kwargs: dictionary of options to use to configure
                          the underlying blob detector to detect balls with
         """
-        self.__balls = []
-        self.__logger = logger
+        if logger:
+            self.__last_shot_snapshot = logger.last_shot_snapshot
+            self.__cur_shot_snapshot = logger.cur_shot_snapshot
+            self.__temp_snapshot = logger.temp_snapshot
+            self.__white_status_setter = logger.set_white_status
+        else:
+            self.__last_shot_snapshot = SnapShot()
+            self.__cur_shot_snapshot = SnapShot()
+            self.__temp_snapshot = SnapShot()
+            self.__white_status_setter = lambda value: value
+        self.__keypoints = []
         self.__blob_detector = None
-        self.__frame_counter = 0
+        self.__image_counter = 0
         self.__shot_in_progess = False
         self.setup_blob_detector(**kwargs)
 
     def setup_blob_detector(self, **kwargs):
+        """Setup underlying blob detector with provided kwargs"""
         params = cv2.SimpleBlobDetector_Params()
         params.filterByConvexity = kwargs.get('filter_by_convexity', s.BLOB_DETECTOR["FILTER_BY_CONVEXITY"])
         params.minConvexity = kwargs.get('min_convexity', s.BLOB_DETECTOR["MIN_CONVEXITY"])
@@ -63,15 +55,35 @@ class BallTracker():
         params.minDistBetweenBlobs = kwargs.get('min_dest_between_blobs', s.BLOB_DETECTOR["MIN_DIST_BETWEEN_BLOBS"])
         self.__blob_detector = cv2.SimpleBlobDetector_create(params)
 
-    def draw_balls(self, frame, balls):
-        """
-        Draws each ball from `balls` onto `frame`
+    def get_snapshot_report() -> str:
+        """Creates a report of  snapshots to show the difference between them
 
-        :param frame: image to process
-        :param balls: list of balls to draw onto `frame`
+        :return: table comparision between `last_shot_snapshot` 
+                 and `cur_shot_snapshot` in a string format
+        :rtype: str
         """
-        for ball_colour in balls:
-            for ball in balls[ball_colour]:
+        report = '--------------------------------------\n'
+        report += 'PREVIOUS SNAPSHOT | CURRENT SNAPSHOT \n'
+        report += '------------------|-------------------\n'
+        for colour in self.__last_shot_snapshot.ball_colour:
+            prev_ball_status = f'{colour.lower()}s: {self.__last_shot_snapshot.ball_colour[colour].count}'
+            while len(prev_ball_status) < 17:
+                prev_ball_status += ' '
+            cur_ball_status = f'{colour.lower()}s: {self.__cur_shot_snapshot.ball_colour[colour].count}'
+            report += prev_ball_status + ' | ' + cur_ball_status + '\n'
+        report += '--------------------------------------\n'
+        return report
+
+    def draw_balls(self, frame: np.ndarray, balls: typing.List[cv2.KeyPoint]):
+        """Draws each ball from `balls` onto `frame`
+
+        :param frame: frame to process
+        :type frame: np.ndarray
+        :param balls: list of balls to draw onto `frame`
+        :type balls: typing.List[cv2.KeyPoint]
+        """
+        for ball_colour, ball_list in balls.items():
+            for ball in ball_list:
                 cv2.putText(
                     frame, ball_colour, (int(
                         ball.pt[0] + 10), int(ball.pt[1])),
@@ -80,15 +92,22 @@ class BallTracker():
                 cv2.circle(frame, (int(ball.pt[0]), int(ball.pt[1])),
                            int(ball.size / 2), (0, 255, 0))
 
-    def update_balls(self, balls, cur_balls):
-        """
-        Updates `balls` with previously detected `cur_balls`
+    def update_balls(self, balls: typing.List[cv2.KeyPoint], 
+                     cur_balls: typing.List[cv2.KeyPoint]) -> typing.List[cv2.KeyPoint]:
+        """Updates `balls` with previously detected `cur_balls`
         If a ball from `cur_balls` is close enough to a ball in `balls`,
         it is deemed to be the same ball and the ball in `balls` is updated
         with the ball colour info from `cur_balls`
 
         :param balls: list of detected balls
         :param cur_ball: list of current balls that are were already detected
+
+        :param balls: list of newly detected balls
+        :type balls: typing.List[cv2.KeyPoint]
+        :param cur_balls: list of balls that are were detected previously
+        :type cur_balls: typing.List[cv2.KeyPoint]
+        :return: list of newly detected balls mapped to their appropriate colours
+        :rtype: typing.List[cv2.KeyPoint]
         """
         for cur_ball in cur_balls:
             matched = False
@@ -104,98 +123,72 @@ class BallTracker():
                     break
         return balls
 
-    def get_white_ball_status(self):
-        """
-        Obtain the status of the white ball, either `moving` or `stopped`
-
-        :returns: status of white ball
-        """
-        if self.__logger.last_shot_snapshot is not None:
-            if self.__logger.last_shot_snapshot.white_is_moving:
-                return 'moving...'
-        return 'stopped...'
-
-    def get_snapshot_status(self, current=True):
-        """
-        Obtain the status of either the previous or temporary SnapShot
-
-        :param current: if True return the previous SnapShot info,
-                        otherwise return the temporary SnapShot info
-        :returns: previous or temporary SnapShot info
-        """
-        if current:
-            if self.__logger.last_shot_snapshot is not None:
-                return self.__logger.last_shot_snapshot.get_snapshot_info()
-        if self.__logger.temp_snapshot is not None:
-            return self.__logger.temp_snapshot.get_snapshot_info()
-        return SnapShot().get_snapshot_info()
-
-    def run(self, frame, width=None, crop=True, morph=False, show_threshold=False, show_fps=True):
-        """
-        Process `frame` to detect/track balls, determine if a shot has started/finished
+    def process_image(self, image: typing.Tuple[np.ndarray, np.ndarray, np.ndarray], 
+            show_threshold: bool=False) -> tuple:
+        """Process `image` to detect/track balls, determine if a shot has started/finished
         and determine if a ball was potted
 
-        :param frame: image to process
-        :param width: width to resize `frame` to
-        :param crop: if True crop `frame` around the detected table boundary
-        :param morph: if True perform morph closing morphology to `frame`
-        :param show_threshold: if True return a binary version of `frame`
-        :param show_fps: if True draw the FPS and frame counter onto `frame`
-        :returns: processed image, ball potted if any were and the number of balls potted
-        """
-        # We store 3 different Snapshots:
-        #  - Previous shot SnapShot
-        #  - Current shot SnapShot
-        #  - Temporary shot SnapShot
-        #
-        # The previous shot SnapShot stores info about the state of the table
-        # of the last shot taken
-        #
-        # The Current shot SnapShot stores info about the state of the table
-        # currently in play before the shot is taken
-        #
-        # The Temporary shot SnapShot is used to determine when a shot has
-        # started and finished, which is determined by comparing the
-        # Temporary SnapShot with the Current SnapShot
+        We store 3 different Snapshots:
+        - Previous shot SnapShot
+        - Current shot SnapShot
+        - Temporary shot SnapShot
+                
+        The `Last shot SnapShot` stores info about the state of the table
+        of the last shot taken
+                
+        The `Current shot SnapShot` stores info about the state of the table
+        currently in play before the shot is taken
+                
+        The `Temporary SnapShot` is used to determine when a shot has
+        started and finished, which is determined by comparing the
+        Temporary SnapShot with the Current SnapShot
 
+        :param image: image to process, contains 3 frames (RGB, HSV and binary versions of image)
+        :type image: typing.Tuple[np.ndarray, np.ndarray, np.ndarray]
+        :param show_threshold: if True return a binary version of `image`, defaults to False
+        :type show_threshold: bool, optional
+        :return: processed image, ball potted if any were and the number of balls potted
+        :rtype: tuple
+        """
         ball_potted = None
         pot_count = 0
 
-        frame, threshold, hsv = frame
+        # Unpack image tuple
+        image, binary_frame, hsv_frame = image
 
-        # Every 5 frames run the colour detection phase, otherwise just update ball positions
-        if self.__frame_counter == 0 or self.__frame_counter % 5 == 0:
-            self.__balls = self.__run(threshold, hsv)
+        # Every 5 images run the colour detection phase, otherwise just update ball positions
+        if self.__image_counter == 0 or self.__image_counter % 5 == 0:
+            self.__keypoints = self.perform_colour_detection(binary_frame, hsv_frame)
         else:
-            cur_balls = self.__blob_detector.detect(threshold)
-            self.update_balls(self.__balls, cur_balls)
+            cur_keypoints = self.__blob_detector.detect(binary_frame)
+            self.update_balls(self.__keypoints, cur_keypoints)
 
-        if self.__frame_counter == 0:
-            self.__logger.cur_shot_snapshot.assign(self.__balls)
-            self.__logger.last_shot_snapshot.assign(self.__balls)
+        if self.__image_counter == 0:
+            self.__cur_shot_snapshot.assign_balls_from_dict(self.__keypoints)
+            self.__last_shot_snapshot.assign_balls_from_dict(self.__keypoints)
 
         if show_threshold:
-            frame = threshold
+            image = binary_frame
 
-        self.draw_balls(frame, self.__balls)
+        self.draw_balls(image, self.__keypoints)
 
-        # Every 5 frames run the snapshot comparision/generation phase
-        if self.__frame_counter == 0 or self.__frame_counter % 5 == 0:
+        # Every 5 images run the snapshot comparision/generation phase
+        if self.__image_counter == 0 or self.__image_counter % 5 == 0:
             ball_status = None
 
-            self.__logger.temp_snapshot.assign(self.__balls)
+            self.__temp_snapshot.assign_balls_from_dict(self.__keypoints)
 
             if not self.__shot_in_progess:
-                self.__shot_in_progess = self.has_shot_started(self.__logger.temp_snapshot, self.__logger.cur_shot_snapshot)
+                self.__shot_in_progess = self.has_shot_started(self.__temp_snapshot, self.__cur_shot_snapshot)
 
             if self.__shot_in_progess:
-                if self.has_shot_finished(self.__logger.temp_snapshot, self.__logger.cur_shot_snapshot):
-                    for ball_colour in self.__logger.last_shot_snapshot.ball_colours:
-                        potted, count = self.__logger.last_shot_snapshot.compare_ball_diff(
-                            ball_colour, self.__logger.temp_snapshot
+                if self.has_shot_finished(self.__temp_snapshot, self.__cur_shot_snapshot):
+                    for ball_colour in self.__last_shot_snapshot.colours:
+                        count = self.__last_shot_snapshot.compare_ball_diff(
+                            ball_colour, self.__temp_snapshot
                         )
                         if potted != 'WHITE' and count > 0:
-                            ball_potted = potted
+                            ball_potted = ball_colour
                             pot_count = count
                             ball_status = 'Potted {} {}/s'.format(
                                 pot_count, ball_potted.lower())
@@ -203,27 +196,29 @@ class BallTracker():
                     if ball_status is not None:
                         print(ball_status)
                     print('===========================================\n')
-                    self.__logger.last_shot_snapshot.assign_snapshot(self.__logger.cur_shot_snapshot)
+                    self.__last_shot_snapshot.assign_balls_from_snapshot(self.__cur_shot_snapshot)
                     self.__shot_in_progess = False
         
-                if self.__logger.cur_shot_snapshot.white and self.__logger.temp_snapshot.white:
-                    self.__logger.cur_shot_snapshot.white.is_moving = self.__logger.temp_snapshot.white.is_moving
-            self.__logger.cur_shot_snapshot.assign_snapshot(self.__logger.temp_snapshot)
+                if self.__cur_shot_snapshot.white and self.__temp_snapshot.white:
+                    self.__cur_shot_snapshot.white.is_moving = self.__temp_snapshot.white.is_moving
+            self.__cur_shot_snapshot.assign_balls_from_snapshot(self.__temp_snapshot)
 
-        self.__frame_counter += 1
+        self.__image_counter += 1
 
-        return frame, ball_potted, pot_count
+        return image, ball_potted, pot_count
 
-    def __run(self, threshold, hsv):
-        """
-        Performs the underlying colour detection process
+    def perform_colour_detection(self, binary_frame: np.ndarray, hsv_frame: np.ndarray) -> typing.List[cv2.KeyPoint]:
+        """Performs the colour detection process
 
-        :param threshold: binary image where detected balls are white on a black background
-        :param hsv: HSV colour space image to detect colours with
-        :returns: list of balls mapped to an appropriate colour found in `threshold`
+        :param binary_frame: binary frame where detected balls are white on a black background
+        :type binary_frame: np.ndarray
+        :param hsv_frame: HSV frame to detect colours with
+        :type hsv_frame: np.ndarray
+        :return: list of keypoints mapped to an appropriate colour found in `binary_frame`
+        :rtype: typing.List[cv2.KeyPoint]
         """
         # This function handles the colour detection phase and returns a list of
-        # detected balls in the frame and maps the appropriate colour to each ball
+        # detected balls in the image and maps the appropriate colour to each ball
         balls = {
             'WHITE': [],
             'RED': [],
@@ -236,25 +231,25 @@ class BallTracker():
         }
 
         # Detect balls in the binary image (White circles on a black background)
-        keypoints = self.__blob_detector.detect(threshold)
+        keypoints = self.__blob_detector.detect(binary_frame)
 
-        # Obtain 8 contours for each ball colour from the HSV colour space of the frame
+        # Obtain 8 contours for each ball colour from the HSV colour space of the image
         if s.DETECT_COLOURS['WHITE']:
-            _, whites = self.get_mask_contours_for_colour(hsv, 'WHITE')
+            _, whites = self.get_mask_contours_for_colour(hsv_frame, 'WHITE')
         if s.DETECT_COLOURS['RED']:
-            _, reds = self.get_mask_contours_for_colour(hsv, 'RED')
+            _, reds = self.get_mask_contours_for_colour(hsv_frame, 'RED')
         if s.DETECT_COLOURS['YELLOW']:
-            _, yellows = self.get_mask_contours_for_colour(hsv, 'YELLOW')
+            _, yellows = self.get_mask_contours_for_colour(hsv_frame, 'YELLOW')
         if s.DETECT_COLOURS['GREEN']:
-            _, greens = self.get_mask_contours_for_colour(hsv, 'GREEN')
+            _, greens = self.get_mask_contours_for_colour(hsv_frame, 'GREEN')
         if s.DETECT_COLOURS['BROWN']:
-            _, browns = self.get_mask_contours_for_colour(hsv, 'BROWN')
+            _, browns = self.get_mask_contours_for_colour(hsv_frame, 'BROWN')
         if s.DETECT_COLOURS['BLUE']:
-            _, blues = self.get_mask_contours_for_colour(hsv, 'BLUE')
+            _, blues = self.get_mask_contours_for_colour(hsv_frame, 'BLUE')
         if s.DETECT_COLOURS['PINK']:
-            _, pinks = self.get_mask_contours_for_colour(hsv, 'PINK')
+            _, pinks = self.get_mask_contours_for_colour(hsv_frame, 'PINK')
         if s.DETECT_COLOURS['BLACK']:
-            _, blacks = self.get_mask_contours_for_colour(hsv, 'BLACK')
+            _, blacks = self.get_mask_contours_for_colour(hsv_frame, 'BLACK')
 
         # For each ball found, determine what colour it is and add it to the list of balls
         # If a ball is not mapped to an appropriate colour, it is discarded
@@ -292,17 +287,24 @@ class BallTracker():
                 self.__keypoint_is_ball('BROWN', browns, keypoint, balls)
         return balls
 
-    def __keypoint_is_ball(self, colour, colour_contours, keypoint, balls, biggest_contour=False):
-        """
-        Determine if `keypoint` is a ball of `colour`
+    def __keypoint_is_ball(self, colour: str, colour_contours: typing.List[np.ndarray], 
+                           keypoint: cv2.KeyPoint, balls: typing.Dict[str, typing.List[cv2.KeyPoint]], 
+                           biggest_contour: bool=False) -> bool:
+        """Determine if `keypoint` is a ball of `colour`
 
         :param colour: colour to check `keypoint` against
+        :type colour: str
         :param colour_contours: contours of `colour`
+        :type colour_contours: typing.List[np.ndarray]
         :param keypoint: keypoint to check
+        :type keypoint: cv2.KeyPoint
         :param balls: list of balls already detected
+        :type balls: typing.Dict[str, typing.List[cv2.KeyPoint]]
         :param biggest_contour: use only the biggest contour in `colour_contours` 
-                                to determine if `keypoint` is a ball of `colour`
-        :returns: True if `keypoint` is within `contour`, False otherwise
+                                to determine if `keypoint` is a ball of `colour`, defaults to False
+        :type biggest_contour: bool, optional
+        :return: True if `keypoint` is within `contour`, False otherwise
+        :rtype: bool
         """
         if len(colour_contours) > 1 and biggest_contour:
             colour_contour = max(
@@ -317,26 +319,30 @@ class BallTracker():
                     return True
         return False
 
-    def __keypoint_in_contour(self, keypoint, contour):
-        """
-        Determine if `keypoint` is contained within `contour`
+    def __keypoint_in_contour(self, keypoint: cv2.KeyPoint, contour: np.ndarray) -> bool:
+        """Determine if `keypoint` is contained within `contour`
 
         :param keypoint: keypoint to check
+        :type keypoint: cv2.KeyPoint
         :param contour: contour to check
-        :returns: True if `keypoint` is within `contour`, False otherwise
+        :type contour: np.ndarray
+        :return: True if `keypoint` is within `contour`, False otherwise
+        :rtype: bool
         """
         dist = cv2.pointPolygonTest(contour, keypoint.pt, False)
         if dist == 1:
             return True
         return False
 
-    def get_mask_contours_for_colour(self, frame, colour):
-        """
-        Obtains the colour mask of `colour` from `frame`
+    def get_mask_contours_for_colour(self, frame: np.ndarray, colour: str) -> tuple:
+        """Obtains the colour mask of `colour` from `frame`
 
-        :param frame: image to process
+        :param frame: frame to process
+        :type frame: np.ndarray
         :param colour: colour to extract contours from `frame`
-        :returns: colour mask of `colour` and a list of contours
+        :type colour: str
+        :return: colour mask of `colour` and a list of contours
+        :rtype: tuple
         """
         colour_mask = None
         contours = None
@@ -347,104 +353,107 @@ class BallTracker():
                 colour_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         return colour_mask, contours
 
-    def detect_colour(self, frame, lower, upper):
-        """
-        Detects a colour in `frame` based on the `lower` and `upper` HSV values
+    def detect_colour(self, frame: np.ndarray, lower: np.ndarray, upper: np.ndarray) -> tuple:
+        """Detects a colour in `frame` based on the `lower` and `upper` HSV values
 
-        :param frame: image to process
+        :param frame: frame to process
+        :type frame: np.ndarray
         :param lower: lower range of colour HSV values
+        :type lower: np.ndarray
         :param upper: upper range of colour HSV values
-        :returns: colour mask of `lower` and `upper` HSV values and a list of contours
+        :type upper: np.ndarray
+        :return: colour mask of `lower` and `upper` HSV values and a list of contours
+        :rtype: tuple
         """
         colour_mask = cv2.inRange(frame, lower, upper)
         contours, _ = cv2.findContours(
             colour_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         return colour_mask, contours
 
-    def get_threshold(self, frame, color_space=cv2.COLOR_BGR2GRAY, threshold_type=cv2.THRESH_BINARY_INV):
-        """
-        Converts `frame` into a binary image
+    def get_threshold(self, frame: np.ndarray, color_space: int=cv2.COLOR_BGR2GRAY, 
+                      threshold_type: int=cv2.THRESH_BINARY_INV) -> np.ndarray:
+        """Converts `frame` into a binary frame
 
-        :param frame: image to process
-        :param color_space: colour space to convert `frame` into
-        :param threshold_type: threshold type to use in conversion
+        :param frame: frame to process
+        :type frame: np.ndarray
+        :param color_space: colour space to convert `frame` into, defaults to cv2.COLOR_BGR2GRAY
+        :type color_space: int, optional
+        :param threshold_type: threshold type to use in conversion, defaults to cv2.THRESH_BINARY_INV
+        :type threshold_type: int, optional
+        :return: binary version of `frame`
+        :rtype: np.ndarray
         """
         gray = cv2.cvtColor(frame, color_space)
-        retval, threshold = cv2.threshold(
+        retval, binary_frame = cv2.threshold(
             gray, s.MIN_THRESHOLD, s.MAX_THRESHOLD, threshold_type)
-        return threshold
+        return binary_frame
 
-    def get_frame_counter(self):
-        """
-        Obtain the current frame counter
+    def has_shot_started(self, first_snapshot: SnapShot, second_snapshot: SnapShot) -> bool:
+        """Determine if the shot has started by comparing `first_snapshot` white ball
+        with `second_snapshot` white ball
 
-        :returns: current frame counter
+        :param first_snapshot: first snapshot
+        :type first_snapshot: SnapShot
+        :param second_snapshot: second snapshot
+        :type second_snapshot: SnapShot
+        :return: True if the shot has started, otherwise False
+        :rtype: bool
         """
-        return self.__frame_counter
-
-    def has_shot_started(self, snapshot_1, snapshot_2):
-        """
-        Determine if the shot has started by comparing `snapshot` white ball
-        with own white ball
-
-        :param snapshot: snapshot to compare with
-        :returns: True if the shot has started, else False
-        """
-        if snapshot_1.whites.count > 0:
-            if snapshot_1.whites.count == snapshot_2.whites.count:
-                if snapshot_1.white and snapshot_2.white:
-                    if self.has_ball_moved(snapshot_1.white.keypoint, snapshot_2.white.keypoint):
+        if first_snapshot.colours["WHITE"].count > 0:
+            if first_snapshot.colours["WHITE"].count == second_snapshot.colours["WHITE"].count:
+                if first_snapshot.white and second_snapshot.white:
+                    if self.has_ball_moved(first_snapshot.white.keypoint, second_snapshot.white.keypoint):
                         print('===========================================')
                         print('WHITE STATUS: moving...')
-                        self.__logger.white_status = True
+                        self.__white_status_setter(True)
                         return True
                 return False
         return False
 
-    def has_shot_finished(self, snapshot_1, snapshot_2):
-        """
-        Determine if the shot has finished by comparing `snapshot` white ball
-        with own white ball
+    def has_shot_finished(self, first_snapshot: SnapShot, second_snapshot: SnapShot) -> bool:
+        """Determine if the shot has finished by comparing `first_snapshot` white ball
+        with `second_snapshot` white ball
 
-        :param snapshot: snapshot to compare with
-        :returns: True if the shot has finished, else False
+        :param first_snapshot: first snapshot
+        :type first_snapshot: SnapShot
+        :param second_snapshot: second snapshot
+        :type second_snapshot: SnapShot
+        :return: True if the shot has finished, otherwise False
+        :rtype: bool
         """
-        if snapshot_1.whites.count > 0:
-            if snapshot_1.whites.count == snapshot_2.whites.count:
-                if snapshot_1.white and snapshot_2.white:
-                    if self.has_ball_stopped(snapshot_1.white.keypoint, snapshot_2.white.keypoint):
+        if first_snapshot.colours["WHITE"].count > 0:
+            if first_snapshot.colours["WHITE"].count == second_snapshot.colours["WHITE"].count:
+                if first_snapshot.white and second_snapshot.white:
+                    if self.has_ball_stopped(first_snapshot.white.keypoint, second_snapshot.white.keypoint):
                         print('WHITE STATUS: stopped...\n')
-                        self.__logger.white_status = False
+                        self.__white_status_setter(False)
                         return True
                 else:
                     return True
         return False
 
-    def has_ball_stopped(self, ball_1, ball_2):
-        """
-        Determine if a specific ball has stopped
+    def has_ball_stopped(self, first_ball: cv2.KeyPoint, second_ball: cv2.KeyPoint) -> bool:
+        """Determine if a specific ball has stopped
 
-        :param ball_1: first ball
-        :param ball_2: second ball
-        :returns: True if the ball has stopped, else False
+        :param first_ball: first ball
+        :type first_ball: cv2.KeyPoint
+        :param second_ball: second ball
+        :type second_ball: cv2.KeyPoint
+        :return: True if the ball has stopped, otherwise False
+        :rtype: bool
         """
-        dist = dist_between_two_balls(ball_1, ball_2)
-        if dist <= 0.1:
-            return True
-        else:
-            return False
+        dist = dist_between_two_balls(first_ball, second_ball)
+        return True if dist <= 0.1 else False
 
-    def has_ball_moved(self, ball_1, ball_2):
+    def has_ball_moved(self, first_ball: cv2.KeyPoint, second_ball: cv2.KeyPoint) -> bool:
+        """Determine if a specific ball has moved
+
+        :param first_ball: first ball
+        :type first_ball: cv2.KeyPoint
+        :param second_ball: second ball
+        :type second_ball: cv2.KeyPoint
+        :return: True if the ball has moved, otherwise False
+        :rtype: bool
         """
-        Determine if a specific ball has moved
-
-        :param ball_1: first ball
-        :param ball_2: second ball
-        :returns: True if the ball has moved, else False
-        """
-        dist = dist_between_two_balls(ball_1, ball_2)
-        if dist > 0.1:
-            return True
-        else:
-            return False
-
+        dist = dist_between_two_balls(first_ball, second_ball)
+        return True if dist > 0.1 else False

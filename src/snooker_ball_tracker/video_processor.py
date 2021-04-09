@@ -80,9 +80,9 @@ class VideoProcessor(threading.Thread):
         self.video_stream.detect_colour = self.settings.models["colour_detection"].selected_colour
         self.video_stream.crop_frames = self.video_player.crop_frames
 
-        output_frame, ball_potted, count = self.ball_tracker.run(
-            (copy(self.__input_frame), copy(self.__input_threshold), copy(self.__input_hsv)), width=800, 
-            crop=self.video_stream.crop_frames, show_threshold=self.video_player.show_threshold
+        output_frame, ball_potted, count = self.ball_tracker.process_image(
+            (copy(self.__input_frame), copy(self.__input_threshold), copy(self.__input_hsv)), 
+            show_threshold=self.video_player.show_threshold
         )
 
         if self.video_stream.detect_colour != "NONE":

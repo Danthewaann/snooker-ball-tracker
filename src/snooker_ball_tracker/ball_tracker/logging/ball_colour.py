@@ -1,8 +1,10 @@
+import typing
+from copy import deepcopy
+
 import PyQt5.QtCore as QtCore
 
-from copy import copy, deepcopy
-
 from .ball import Ball
+
 
 class BallColour(QtCore.QObject):
     def __init__(self, keypoints: list=None):
@@ -19,7 +21,12 @@ class BallColour(QtCore.QObject):
             self._balls = []
 
     @property
-    def balls(self) -> list:
+    def balls(self) -> typing.List[Ball]:
+        """Balls property
+
+        :return: balls list
+        :rtype: typing.List[Ball]
+        """
         return self._balls
 
     @property
@@ -33,19 +40,17 @@ class BallColour(QtCore.QObject):
 
     countChanged = QtCore.pyqtSignal(int)
 
-    def append(self, ball: Ball):
-        self._balls.append(ball)
-        self.countChanged.emit(self.count)
-
-    def remove(self, index: int):
-        del self._balls[index]
-        self.countChanged.emit(self.count)
-
     def clear(self):
+        """Clear underlying balls list"""
         self._balls.clear()
         self.countChanged.emit(self.count)
 
-    def assign(self, balls: list):
+    def assign(self, balls: typing.List[Ball]):
+        """Override own Ball list with `balls`
+
+        :param balls: list of Ball instances
+        :type balls: typing.List[Ball]
+        """
         self._balls.clear()
         self._balls = deepcopy(balls)
         self.countChanged.emit(self.count)

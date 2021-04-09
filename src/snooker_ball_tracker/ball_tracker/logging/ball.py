@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import cv2
 import PyQt5.QtCore as QtCore
-from copy import copy
 
 
 class Ball(QtCore.QObject):
@@ -17,7 +18,14 @@ class Ball(QtCore.QObject):
         self._keypoint = keypoint
         self._is_moving = False
 
-    def __deepcopy__(self, memo):
+    def __deepcopy__(self, memo: dict) -> Ball:
+        """Return a deepcopy of self
+
+        :param memo: memo
+        :type memo: dict
+        :return: Ball instance copy of self
+        :rtype: Ball
+        """
         keypoint = cv2.KeyPoint(x = self._keypoint.pt[0], y = self._keypoint.pt[1], 
             _size = self._keypoint.size, _angle = self._keypoint.angle, 
             _response = self._keypoint.response, _octave = self._keypoint.octave, 
@@ -28,6 +36,11 @@ class Ball(QtCore.QObject):
 
     @property
     def keypoint(self) -> cv2.KeyPoint:
+        """Keypoint property
+
+        :return: keypoint
+        :rtype: cv2.KeyPoint
+        """
         return self._keypoint
 
     @property

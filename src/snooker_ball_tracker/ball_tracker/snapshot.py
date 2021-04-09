@@ -1,3 +1,8 @@
+from __future__ import annotations
+
+import typing
+
+import cv2
 import snooker_ball_tracker.settings as s
 
 from .logging import Ball, BallColour
@@ -14,24 +19,21 @@ class SnapShot():
         :type balls: dict, optional
         """
         if balls:
-            self._ball_colours = { colour: BallColour(keypoints) for colour, keypoints in balls.items()}
+            self._colours = { colour: BallColour(keypoints) for colour, keypoints in balls.items()}
         else:
-            self._ball_colours = {
+            self._colours = {
                 colour: BallColour() for colour in s.DETECT_COLOURS if s.DETECT_COLOURS[colour]
             }
 
-    def assign(self, balls: dict):
-        balls = { colour: BallColour(ball_list) for colour, ball_list in balls.items()}
-        for colour in self._ball_colours:
-            self._ball_colours[colour].assign(balls[colour].balls)
-
-    def assign_snapshot(self, snapshot):
-        for colour in self._ball_colours:
-            self._ball_colours[colour].assign(snapshot.ball_colours[colour].balls)
-
     @property
-    def ball_colours(self) -> dict:
-        return self._ball_colours
+    def colours(self) -> typing.Dict[str, BallColour]:
+        """Dict of colours where each key is a ball colour, and each
+        value is a BallColour instance
+
+        :return: colours dict
+        :rtype: typing.Dict[str, BallColour]
+        """
+        return self._colours
 
     @property
     def white(self) -> Ball:
@@ -40,103 +42,37 @@ class SnapShot():
         :return: white ball
         :rtype: Ball
         """
-        return self.whites.balls[0] if self.whites.balls else None
+        return self._colours["WHITE"].balls[0] if self._colours["WHITE"].balls else None
 
-    @property
-    def whites(self) -> BallColour:
-        """Whites property
+    def assign_balls_from_dict(self, balls: typing.Dict[str, typing.List[cv2.KeyPoint]]):
+        """Assign balls to their appropriate ball colour instances from a dict
 
-        :return: whites
-        :rtype: BallColour
+        :param balls: dict of colour and ball list pairs
+        :type balls: typing.Dict[str, typing.List[cv2.KeyPoint]]
         """
-        return self._ball_colours["WHITE"]
+        for colour, keypoints in balls.items():
+            self._colours[colour].assign([Ball(pt) for pt in keypoints])
 
-    @property
-    def reds(self) -> BallColour:
-        """Reds property
+    def assign_balls_from_snapshot(self, snapshot: SnapShot):
+        """Assign balls to their appropriate ball colour instances from a SnapShot
 
-        :return: reds
-        :rtype: BallColour
+        :param snapshot: snapshot to take balls from
+        :type snapshot: SnapShot
         """
-        return self._ball_colours["RED"]
+        for colour, ball_colours in snapshot.colours.items():
+            self._colours[colour].assign(ball_colours.balls)
 
-    @property
-    def yellows(self) -> BallColour:
-        """Yellows property
-
-        :return: yellows
-        :rtype: BallColour
-        """
-        return self._ball_colours["YELLOW"]
-
-    @property
-    def greens(self) -> BallColour:
-        """Greens property
-
-        :return: greens
-        :rtype: BallColour
-        """
-        return self._ball_colours["GREEN"]
-
-    @property
-    def browns(self) -> BallColour:
-        """Browns property
-
-        :return: browns
-        :rtype: BallColour
-        """
-        return self._ball_colours["BROWN"]
-
-    @property
-    def blues(self) -> BallColour:
-        """Blues property
-
-        :return: blues
-        :rtype: BallColour
-        """
-        return self._ball_colours["BLUE"]
-
-    @property
-    def pinks(self) -> BallColour:
-        """Pinks property
-
-        :return: pinks
-        :rtype: BallColour
-        """
-        return self._ball_colours["PINK"]
-
-    @property
-    def blacks(self) -> BallColour:
-        """Blacks property
-
-        :return: blacks
-        :rtype: BallColour
-        """
-        return self._ball_colours["BLACK"]
-
-    def get_snapshot_info(self, title='SNAPSHOT INFO'):
-        """
-        Output the snapshot ball info
-
-        :param title: title for snapshot info
-        :returns: snapshot ball info
-        """
-        snapshot_info = ''
-        for ball_colour in s.DETECT_COLOURS:
-            if s.DETECT_COLOURS[ball_colour]:
-                snapshot_info += '{}s: {}\n'.format(
-                    ball_colour.lower(), self._ball_colours[ball_colour].count)
-        return snapshot_info
-
-    def compare_ball_diff(self, ball_colour, snapshot):
-        """
-        Compares the ball difference with `snapshot` for `ball_colour`
+    def compare_ball_diff(self, ball_colour: str, snapshot: SnapShot) -> int:
+        """Compares the ball difference with `snapshot` for `ball_colour`
 
         :param ball_colour: colour of ball to compare with `snapshot`
-        :param snapshot: other snapshot to compare with
-        :returns: `ball_colour` and the ball difference of `ball_colour`
+        :type ball_colour: str
+        :param snapshot: other snapshot to compare ball difference with
+        :type snapshot: SnapShot
+        :return: the ball difference of provided `ball_colour`
+        :rtype: int
         """
-        prev_totals = self._ball_colours[ball_colour].count
-        new_total = snapshot.ball_colours[ball_colour].count
-        diff = prev_totals - new_total
-        return ball_colour, diff
+        prev_total = self._colours[ball_colour].count
+        new_total = snapshot.colours[ball_colour].count
+        diff = prev_total - new_total
+        return diff
