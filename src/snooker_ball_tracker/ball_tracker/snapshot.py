@@ -36,11 +36,11 @@ class SnapShot():
         return self._colours
 
     @property
-    def white(self) -> Ball:
+    def white(self) -> typing.Optional[Ball]:
         """White ball property
 
         :return: white ball
-        :rtype: Ball
+        :rtype: typing.Optional[Ball]
         """
         return self._colours["WHITE"].balls[0] if self._colours["WHITE"].balls else None
 

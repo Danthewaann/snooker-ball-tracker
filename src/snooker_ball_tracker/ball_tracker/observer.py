@@ -1,4 +1,4 @@
-from typing import Any, Callable, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple
 
 import PyQt5.QtCore as QtCore
 
@@ -36,7 +36,7 @@ class Observer(QtCore.QObject):
         :type bindings: List[Tuple[object, str]], optional
         """
         super().__init__()
-        self.bindings = {}
+        self.bindings: Dict[int, BindingEndpoint] = {}
         self.ignoreEvents = False
         if bindings:
             for instance, property_name in bindings:

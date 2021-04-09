@@ -9,6 +9,8 @@ from .logging import BallsPotted
 from .snapshot import SnapShot
 from .util import dist_between_two_balls
 
+Keypoints = typing.Dict[str, typing.List[cv2.KeyPoint]]
+
 
 class BallTracker():
     def __init__(self, logger: Logger=None, **kwargs):
@@ -29,8 +31,8 @@ class BallTracker():
             self.__cur_shot_snapshot = SnapShot()
             self.__temp_snapshot = SnapShot()
             self.__white_status_setter = lambda value: value
-        self.__keypoints = []
-        self.__blob_detector = None
+        self.__keypoints: Keypoints = {}
+        self.__blob_detector: cv2.SimpleBlobDetector = None
         self.__image_counter = 0
         self.__shot_in_progess = False
         self.setup_blob_detector(**kwargs)
@@ -55,7 +57,7 @@ class BallTracker():
         params.minDistBetweenBlobs = kwargs.get('min_dest_between_blobs', s.BLOB_DETECTOR["MIN_DIST_BETWEEN_BLOBS"])
         self.__blob_detector = cv2.SimpleBlobDetector_create(params)
 
-    def get_snapshot_report() -> str:
+    def get_snapshot_report(self) -> str:
         """Creates a report of  snapshots to show the difference between them
 
         :return: table comparision between `last_shot_snapshot` 
@@ -65,22 +67,22 @@ class BallTracker():
         report = '--------------------------------------\n'
         report += 'PREVIOUS SNAPSHOT | CURRENT SNAPSHOT \n'
         report += '------------------|-------------------\n'
-        for colour in self.__last_shot_snapshot.ball_colour:
-            prev_ball_status = f'{colour.lower()}s: {self.__last_shot_snapshot.ball_colour[colour].count}'
+        for colour in self.__last_shot_snapshot.colours:
+            prev_ball_status = f'{colour.lower()}s: {self.__last_shot_snapshot.colours[colour].count}'
             while len(prev_ball_status) < 17:
                 prev_ball_status += ' '
-            cur_ball_status = f'{colour.lower()}s: {self.__cur_shot_snapshot.ball_colour[colour].count}'
+            cur_ball_status = f'{colour.lower()}s: {self.__cur_shot_snapshot.colours[colour].count}'
             report += prev_ball_status + ' | ' + cur_ball_status + '\n'
         report += '--------------------------------------\n'
         return report
 
-    def draw_balls(self, frame: np.ndarray, balls: typing.List[cv2.KeyPoint]):
+    def draw_balls(self, frame: np.ndarray, balls: Keypoints):
         """Draws each ball from `balls` onto `frame`
 
         :param frame: frame to process
         :type frame: np.ndarray
         :param balls: list of balls to draw onto `frame`
-        :type balls: typing.List[cv2.KeyPoint]
+        :type balls: Keypoints
         """
         for ball_colour, ball_list in balls.items():
             for ball in ball_list:
@@ -92,8 +94,7 @@ class BallTracker():
                 cv2.circle(frame, (int(ball.pt[0]), int(ball.pt[1])),
                            int(ball.size / 2), (0, 255, 0))
 
-    def update_balls(self, balls: typing.List[cv2.KeyPoint], 
-                     cur_balls: typing.List[cv2.KeyPoint]) -> typing.List[cv2.KeyPoint]:
+    def update_balls(self, balls: Keypoints, cur_balls: Keypoints) -> Keypoints:
         """Updates `balls` with previously detected `cur_balls`
         If a ball from `cur_balls` is close enough to a ball in `balls`,
         it is deemed to be the same ball and the ball in `balls` is updated
@@ -103,11 +104,11 @@ class BallTracker():
         :param cur_ball: list of current balls that are were already detected
 
         :param balls: list of newly detected balls
-        :type balls: typing.List[cv2.KeyPoint]
+        :type balls: Keypoints
         :param cur_balls: list of balls that are were detected previously
-        :type cur_balls: typing.List[cv2.KeyPoint]
+        :type cur_balls: Keypoints
         :return: list of newly detected balls mapped to their appropriate colours
-        :rtype: typing.List[cv2.KeyPoint]
+        :rtype: Keypoints
         """
         for cur_ball in cur_balls:
             matched = False
@@ -154,7 +155,7 @@ class BallTracker():
         pot_count = 0
 
         # Unpack image tuple
-        image, binary_frame, hsv_frame = image
+        output_frame, binary_frame, hsv_frame = image
 
         # Every 5 images run the colour detection phase, otherwise just update ball positions
         if self.__image_counter == 0 or self.__image_counter % 5 == 0:
@@ -168,9 +169,9 @@ class BallTracker():
             self.__last_shot_snapshot.assign_balls_from_dict(self.__keypoints)
 
         if show_threshold:
-            image = binary_frame
+            output_frame = binary_frame
 
-        self.draw_balls(image, self.__keypoints)
+        self.draw_balls(output_frame, self.__keypoints)
 
         # Every 5 images run the snapshot comparision/generation phase
         if self.__image_counter == 0 or self.__image_counter % 5 == 0:
@@ -187,7 +188,7 @@ class BallTracker():
                         count = self.__last_shot_snapshot.compare_ball_diff(
                             ball_colour, self.__temp_snapshot
                         )
-                        if potted != 'WHITE' and count > 0:
+                        if ball_colour != 'WHITE' and count > 0:
                             ball_potted = ball_colour
                             pot_count = count
                             ball_status = 'Potted {} {}/s'.format(
@@ -205,21 +206,23 @@ class BallTracker():
 
         self.__image_counter += 1
 
-        return image, ball_potted, pot_count
+        return output_frame, ball_potted, pot_count
 
-    def perform_colour_detection(self, binary_frame: np.ndarray, hsv_frame: np.ndarray) -> typing.List[cv2.KeyPoint]:
+    def perform_colour_detection(self, binary_frame: np.ndarray, hsv_frame: np.ndarray) -> Keypoints:
         """Performs the colour detection process
+
+        This method handles the colour detection phase and returns a list of
+        detected balls in the image and maps the appropriate colour to each ball
 
         :param binary_frame: binary frame where detected balls are white on a black background
         :type binary_frame: np.ndarray
         :param hsv_frame: HSV frame to detect colours with
         :type hsv_frame: np.ndarray
         :return: list of keypoints mapped to an appropriate colour found in `binary_frame`
-        :rtype: typing.List[cv2.KeyPoint]
+        :rtype: Keypoints
         """
-        # This function handles the colour detection phase and returns a list of
-        # detected balls in the image and maps the appropriate colour to each ball
-        balls = {
+
+        balls: Keypoints = {
             'WHITE': [],
             'RED': [],
             'YELLOW': [],
@@ -288,7 +291,7 @@ class BallTracker():
         return balls
 
     def __keypoint_is_ball(self, colour: str, colour_contours: typing.List[np.ndarray], 
-                           keypoint: cv2.KeyPoint, balls: typing.Dict[str, typing.List[cv2.KeyPoint]], 
+                           keypoint: cv2.KeyPoint, balls: Keypoints, 
                            biggest_contour: bool=False) -> bool:
         """Determine if `keypoint` is a ball of `colour`
 
@@ -299,7 +302,7 @@ class BallTracker():
         :param keypoint: keypoint to check
         :type keypoint: cv2.KeyPoint
         :param balls: list of balls already detected
-        :type balls: typing.Dict[str, typing.List[cv2.KeyPoint]]
+        :type balls: Keypoints
         :param biggest_contour: use only the biggest contour in `colour_contours` 
                                 to determine if `keypoint` is a ball of `colour`, defaults to False
         :type biggest_contour: bool, optional
@@ -330,9 +333,7 @@ class BallTracker():
         :rtype: bool
         """
         dist = cv2.pointPolygonTest(contour, keypoint.pt, False)
-        if dist == 1:
-            return True
-        return False
+        return True if dist == 1 else False
 
     def get_mask_contours_for_colour(self, frame: np.ndarray, colour: str) -> tuple:
         """Obtains the colour mask of `colour` from `frame`
