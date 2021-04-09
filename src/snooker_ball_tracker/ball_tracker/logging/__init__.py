@@ -1,3 +1,3 @@
-from .ball_count import BallCount
-from .snapshot import Snapshot
+from .ball_colour import BallColour
+from .ball import Ball
 from .balls_potted import BallsPotted

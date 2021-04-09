@@ -1,9 +1,7 @@
 import cv2
-import imutils
 import snooker_ball_tracker.settings as s
-import numpy as np
-import time
 
+from .logging import BallsPotted
 from .snapshot import SnapShot
 from .util import dist_between_two_balls
 
@@ -31,8 +29,8 @@ def get_snapshot_report(prev_snapshot, cur_snapshot):
     return report
 
 
-class BallTracker:
-    def __init__(self, **kwargs):
+class BallTracker():
+    def __init__(self, logger=None, **kwargs):
         """
         Creates an instance of BallTracker
 
@@ -40,12 +38,10 @@ class BallTracker:
                          the underlying blob detector to detect balls with
         """
         self.__balls = []
+        self.__logger = logger
         self.__blob_detector = None
         self.__frame_counter = 0
-        self.__temp_snapshot = None
-        self.__prev_snapshot = None
-        self.__cur_snapshot = None
-        self.increment_frame_counter = True
+        self.__shot_in_progess = False
         self.setup_blob_detector(**kwargs)
 
     def setup_blob_detector(self, **kwargs):
@@ -57,8 +53,8 @@ class BallTracker:
         params.minCircularity = kwargs.get('min_circularity', s.BLOB_DETECTOR["MIN_CIRCULARITY"])
         params.maxCircularity = kwargs.get('max_circularity', s.BLOB_DETECTOR["MAX_CIRCULARITY"])
         params.filterByInertia = kwargs.get('filter_by_inertia', s.BLOB_DETECTOR["FILTER_BY_INERTIA"])
-        params.minInertiaRatio = kwargs.get('min_inertia_ratio', s.BLOB_DETECTOR["MIN_INERTIA"])
-        params.maxInertiaRatio = kwargs.get('max_inertia_ratio', s.BLOB_DETECTOR["MAX_INERTIA"])
+        params.minInertiaRatio = kwargs.get('min_inertia', s.BLOB_DETECTOR["MIN_INERTIA"])
+        params.maxInertiaRatio = kwargs.get('max_inertia', s.BLOB_DETECTOR["MAX_INERTIA"])
         params.filterByArea = kwargs.get('filter_by_area', s.BLOB_DETECTOR["FILTER_BY_AREA"])
         params.minArea = kwargs.get('min_area', s.BLOB_DETECTOR["MIN_AREA"])
         params.maxArea = kwargs.get('max_area', s.BLOB_DETECTOR["MAX_AREA"])
@@ -66,17 +62,6 @@ class BallTracker:
         params.blobColor = kwargs.get('blob_color', s.BLOB_DETECTOR["BLOB_COLOUR"])
         params.minDistBetweenBlobs = kwargs.get('min_dest_between_blobs', s.BLOB_DETECTOR["MIN_DIST_BETWEEN_BLOBS"])
         self.__blob_detector = cv2.SimpleBlobDetector_create(params)
-
-    def reset_snapshots(self):
-        self.__cur_snapshot = None
-        self.__prev_snapshot = None
-        self.__temp_snapshot = None
-
-    def reset(self):
-        self.__frame_counter = 0
-
-    def detected_table(self):
-        return self.__table_bounds is not None
 
     def draw_balls(self, frame, balls):
         """
@@ -125,8 +110,8 @@ class BallTracker:
 
         :returns: status of white ball
         """
-        if self.__prev_snapshot is not None:
-            if self.__prev_snapshot.white_is_moving:
+        if self.__logger.last_shot_snapshot is not None:
+            if self.__logger.last_shot_snapshot.white_is_moving:
                 return 'moving...'
         return 'stopped...'
 
@@ -139,10 +124,10 @@ class BallTracker:
         :returns: previous or temporary SnapShot info
         """
         if current:
-            if self.__prev_snapshot is not None:
-                return self.__prev_snapshot.get_snapshot_info()
-        if self.__temp_snapshot is not None:
-            return self.__temp_snapshot.get_snapshot_info()
+            if self.__logger.last_shot_snapshot is not None:
+                return self.__logger.last_shot_snapshot.get_snapshot_info()
+        if self.__logger.temp_snapshot is not None:
+            return self.__logger.temp_snapshot.get_snapshot_info()
         return SnapShot().get_snapshot_info()
 
     def run(self, frame, width=None, crop=True, morph=False, show_threshold=False, show_fps=True):
@@ -185,20 +170,30 @@ class BallTracker:
             cur_balls = self.__blob_detector.detect(threshold)
             self.update_balls(self.__balls, cur_balls)
 
+        if self.__frame_counter == 0:
+            self.__logger.cur_shot_snapshot.assign(self.__balls)
+            self.__logger.last_shot_snapshot.assign(self.__balls)
+
+        if show_threshold:
+            frame = threshold
+
+        self.draw_balls(frame, self.__balls)
+
         # Every 5 frames run the snapshot comparision/generation phase
         if self.__frame_counter == 0 or self.__frame_counter % 5 == 0:
             ball_status = None
-            if not self.__prev_snapshot:
-                self.__prev_snapshot = SnapShot(self.__balls)
-                self.__temp_snapshot = self.__prev_snapshot
 
-            self.__cur_snapshot = SnapShot(self.__balls)
+            self.__logger.temp_snapshot.assign(self.__balls)
 
-            if self.__prev_snapshot.has_shot_started(self.__cur_snapshot):
-                if self.__cur_snapshot != self.__temp_snapshot:
-                    for ball_colour in self.__temp_snapshot.balls:
-                        potted, count = self.__temp_snapshot.compare_ball_diff(
-                            ball_colour, self.__cur_snapshot)
+            if not self.__shot_in_progess:
+                self.__shot_in_progess = self.has_shot_started(self.__logger.temp_snapshot, self.__logger.cur_shot_snapshot)
+
+            if self.__shot_in_progess:
+                if self.has_shot_finished(self.__logger.temp_snapshot, self.__logger.cur_shot_snapshot):
+                    for ball_colour in self.__logger.last_shot_snapshot.ball_colours:
+                        potted, count = self.__logger.last_shot_snapshot.compare_ball_diff(
+                            ball_colour, self.__logger.temp_snapshot
+                        )
                         if potted != 'WHITE' and count > 0:
                             ball_potted = potted
                             pot_count = count
@@ -208,33 +203,14 @@ class BallTracker:
                     if ball_status is not None:
                         print(ball_status)
                     print('===========================================\n')
-                    self.__temp_snapshot = self.__cur_snapshot
+                    self.__logger.last_shot_snapshot.assign_snapshot(self.__logger.cur_shot_snapshot)
+                    self.__shot_in_progess = False
+        
+                if self.__logger.cur_shot_snapshot.white and self.__logger.temp_snapshot.white:
+                    self.__logger.cur_shot_snapshot.white.is_moving = self.__logger.temp_snapshot.white.is_moving
+            self.__logger.cur_shot_snapshot.assign_snapshot(self.__logger.temp_snapshot)
 
-            if self.__prev_snapshot.has_shot_finished(self.__cur_snapshot):
-                for ball_colour in self.__temp_snapshot.balls:
-                    potted, count = self.__temp_snapshot.compare_ball_diff(
-                        ball_colour, self.__cur_snapshot)
-                    if potted != 'WHITE' and count > 0:
-                        ball_potted = potted
-                        pot_count = count
-                        ball_status = 'Potted {} {}/s'.format(
-                            pot_count, ball_potted.lower())
-
-                if ball_status is not None:
-                    print(ball_status)
-                print('===========================================\n')
-                self.__temp_snapshot = self.__cur_snapshot
-
-            self.__cur_snapshot.white_is_moving = self.__prev_snapshot.white_is_moving
-            self.__prev_snapshot = self.__cur_snapshot
-
-        if self.increment_frame_counter:
-            self.__frame_counter += 1
-
-        if show_threshold:
-            frame = threshold
-
-        self.draw_balls(frame, self.__balls)
+        self.__frame_counter += 1
 
         return frame, ball_potted, pot_count
 
@@ -405,3 +381,70 @@ class BallTracker:
         :returns: current frame counter
         """
         return self.__frame_counter
+
+    def has_shot_started(self, snapshot_1, snapshot_2):
+        """
+        Determine if the shot has started by comparing `snapshot` white ball
+        with own white ball
+
+        :param snapshot: snapshot to compare with
+        :returns: True if the shot has started, else False
+        """
+        if snapshot_1.whites.count > 0:
+            if snapshot_1.whites.count == snapshot_2.whites.count:
+                if snapshot_1.white and snapshot_2.white:
+                    if self.has_ball_moved(snapshot_1.white.keypoint, snapshot_2.white.keypoint):
+                        print('===========================================')
+                        print('WHITE STATUS: moving...')
+                        self.__logger.white_status = True
+                        return True
+                return False
+        return False
+
+    def has_shot_finished(self, snapshot_1, snapshot_2):
+        """
+        Determine if the shot has finished by comparing `snapshot` white ball
+        with own white ball
+
+        :param snapshot: snapshot to compare with
+        :returns: True if the shot has finished, else False
+        """
+        if snapshot_1.whites.count > 0:
+            if snapshot_1.whites.count == snapshot_2.whites.count:
+                if snapshot_1.white and snapshot_2.white:
+                    if self.has_ball_stopped(snapshot_1.white.keypoint, snapshot_2.white.keypoint):
+                        print('WHITE STATUS: stopped...\n')
+                        self.__logger.white_status = False
+                        return True
+                else:
+                    return True
+        return False
+
+    def has_ball_stopped(self, ball_1, ball_2):
+        """
+        Determine if a specific ball has stopped
+
+        :param ball_1: first ball
+        :param ball_2: second ball
+        :returns: True if the ball has stopped, else False
+        """
+        dist = dist_between_two_balls(ball_1, ball_2)
+        if dist <= 0.1:
+            return True
+        else:
+            return False
+
+    def has_ball_moved(self, ball_1, ball_2):
+        """
+        Determine if a specific ball has moved
+
+        :param ball_1: first ball
+        :param ball_2: second ball
+        :returns: True if the ball has moved, else False
+        """
+        dist = dist_between_two_balls(ball_1, ball_2)
+        if dist > 0.1:
+            return True
+        else:
+            return False
+

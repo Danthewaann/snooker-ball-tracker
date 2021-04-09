@@ -1,6 +1,7 @@
 import PyQt5.QtCore as QtCore
 
-from .logging import BallsPotted, Snapshot
+from .logging import BallsPotted
+from .snapshot import SnapShot
 
 
 class Logger(QtCore.QObject):
@@ -10,8 +11,9 @@ class Logger(QtCore.QObject):
         super().__init__()
         self._balls_potted = BallsPotted()
         self._white_status = "stopped..."
-        self._last_shot_snapshot = Snapshot()
-        self._cur_shot_snapshot = Snapshot()
+        self._last_shot_snapshot = SnapShot()
+        self._cur_shot_snapshot = SnapShot()
+        self._temp_snapshot = SnapShot()
 
     @property
     def balls_potted(self) -> BallsPotted:
@@ -23,40 +25,49 @@ class Logger(QtCore.QObject):
         return self._balls_potted
 
     @property
-    def white_status(self) -> str:
+    def white_status(self) -> bool:
         """White status property
 
         :return: white status
         :rtype: str
         """
-        return self._white_status
+        return self._cur_shot_snapshot.white.is_moving if self._cur_shot_snapshot.white else False
 
-    white_statusChanged = QtCore.pyqtSignal(str)
+    white_statusChanged = QtCore.pyqtSignal(bool)
 
     @white_status.setter
-    def white_status(self, value: str):
+    def white_status(self, value: bool):
         """White status setter
 
         :param value: value to set
         :type value: str
         """
-        self._white_status = value
-        self.white_statusChanged.emit(self._white_status)
+        self._cur_shot_snapshot.white.is_moving = value
+        self.white_statusChanged.emit(value)
 
     @property
-    def last_shot_snapshot(self) -> Snapshot:
+    def last_shot_snapshot(self) -> SnapShot:
         """Last shot snapshot property
 
         :return: last shot snapshot model
-        :rtype: SnapshotModel
+        :rtype: SnapShot
         """
         return self._last_shot_snapshot
 
     @property
-    def cur_shot_snapshot(self) -> Snapshot:
+    def cur_shot_snapshot(self) -> SnapShot:
         """Current shot snapshot property
 
         :return: current shot snapshot model
-        :rtype: SnapshotModel
+        :rtype: SnapShot
         """
         return self._cur_shot_snapshot
+
+    @property
+    def temp_snapshot(self) -> SnapShot:
+        """Temporary snapshot property
+
+        :return: temp shot snapshot model
+        :rtype: SnapShot
+        """
+        return self._temp_snapshot
