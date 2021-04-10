@@ -1,3 +1,4 @@
+import typing
 from collections import OrderedDict
 from copy import deepcopy
 
@@ -20,6 +21,22 @@ class BallDetectionSettings(QtCore.QObject):
             ("area", BallDetectionSettingGroup("area", multiplier=1))
         ])
 
+        for model in self.models.values():
+            model.filter_byChanged[str, bool].connect(self.update_blob_detector)
+            model.min_valueChanged[str, int].connect(self.update_blob_detector)
+            model.max_valueChanged[str, int].connect(self.update_blob_detector)
+
+    def update_blob_detector(self, key: str, value: typing.Any):
+        """Update blob detector key value setting
+
+        :param key: name of setting to update
+        :type key: str
+        :param value: value to apply to setting
+        :type value: typing.Any
+        """
+        self._blob_detector[key] = value
+        self.blob_detectorChanged.emit()
+
     @property
     def blob_detector(self) -> dict:
         """Copy of blob detector values loaded from settings
@@ -29,6 +46,8 @@ class BallDetectionSettings(QtCore.QObject):
         """
         return self._blob_detector
 
+    blob_detectorChanged = QtCore.pyqtSignal()
+
     @blob_detector.setter
     def blob_detector(self, value: dict):
         """Blob detector setter
@@ -36,6 +55,5 @@ class BallDetectionSettings(QtCore.QObject):
         :param value: value to set
         :type value: dict
         """
-        self._blob_detector = value
-        for model in self.models:
-            self.models[model].update(self._blob_detector)
+        for model in self.models.values():
+            model.update(value)

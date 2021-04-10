@@ -46,7 +46,7 @@ class BallDetectionSettingGroup(QtCore.QObject):
         """
         return self._min_value
 
-    min_valueChanged = QtCore.pyqtSignal(int, name="min_valueChanged")
+    min_valueChanged = QtCore.pyqtSignal([str, int], [int])
 
     @min_value.setter
     def min_value(self, value: int):
@@ -56,7 +56,8 @@ class BallDetectionSettingGroup(QtCore.QObject):
         :type value: int
         """
         self._min_value = value
-        self.min_valueChanged.emit(self._min_value)
+        self.min_valueChanged[str, int].emit("MIN_" + self.name.upper(), self._min_value / self.multiplier)
+        self.min_valueChanged[int].emit(self._min_value)
 
     @property
     def max_value(self) -> int:
@@ -67,7 +68,7 @@ class BallDetectionSettingGroup(QtCore.QObject):
         """
         return self._max_value
 
-    max_valueChanged = QtCore.pyqtSignal(int, name="max_valueChanged")
+    max_valueChanged = QtCore.pyqtSignal([str, int], [int])
 
     @max_value.setter
     def max_value(self, value: int):
@@ -77,7 +78,8 @@ class BallDetectionSettingGroup(QtCore.QObject):
         :type value: int
         """
         self._max_value = value
-        self.max_valueChanged.emit(self._max_value)
+        self.max_valueChanged[str, int].emit("MAX_" + self.name.upper(), self._max_value / self.multiplier)
+        self.max_valueChanged[int].emit(self._max_value)
 
     @property
     def filter_by(self) -> bool:
@@ -88,7 +90,7 @@ class BallDetectionSettingGroup(QtCore.QObject):
         """
         return self._filter_by
 
-    filter_byChanged = QtCore.pyqtSignal(bool, name="filter_byChanged")
+    filter_byChanged = QtCore.pyqtSignal([str, bool], [bool])
 
     @filter_by.setter
     def filter_by(self, value: bool):
@@ -98,7 +100,8 @@ class BallDetectionSettingGroup(QtCore.QObject):
         :type value: int
         """
         self._filter_by = value
-        self.filter_byChanged.emit(self._filter_by)
+        self.filter_byChanged[str, bool].emit("FILTER_BY_" + self.name.upper(), self._filter_by)
+        self.filter_byChanged[bool].emit(self._filter_by)
 
     def update(self, settings: dict):
         """Update properties with values in `settings`

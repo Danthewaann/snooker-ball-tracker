@@ -53,11 +53,6 @@ def __getattr__(key):
             # raise KeyError(f"Error: could not find key '{key}' in {__DEFAULT_SETTINGS}")
 
 
-#####################
-#  LOADED SETTINGS  #
-#####################
-__SETTINGS = {}
-
 ######################
 #  DEFAULT SETTINGS  #
 ######################
@@ -143,3 +138,8 @@ __DEFAULT_SETTINGS = {
         }
     }
 }
+
+#####################
+#  LOADED SETTINGS  #
+#####################
+__SETTINGS = __DEFAULT_SETTINGS

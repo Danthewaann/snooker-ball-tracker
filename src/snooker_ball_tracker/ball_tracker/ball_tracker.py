@@ -3,12 +3,13 @@ import typing
 import cv2
 import numpy as np
 import snooker_ball_tracker.settings as s
+from snooker_ball_tracker.video_file_stream import Image
 
 from .logger import Logger
-from .tracker_settings import Settings
 from .logging import BallsPotted
 from .snapshot import SnapShot
-from .util import dist_between_two_balls
+from .tracker_settings import Settings
+from .util import dist_between_two_balls, get_mask_contours_for_colour
 
 Keypoints = typing.Dict[str, typing.List[cv2.KeyPoint]]
 
@@ -36,9 +37,11 @@ class BallTracker():
             self.__white_status_setter = lambda value: value
         if settings:
             self.__colour_settings = settings.models["colour_detection"].colours
-            # self.__ball_settings = settings.models["ball_detection"].
+            self.__ball_settings = settings.models["ball_detection"].blob_detector
+            settings.models["ball_detection"].blob_detectorChanged.connect(self.setup_blob_detector)
         else:
             self.__colour_settings = s.COLOURS
+            self.__ball_settings = s.BLOB_DETECTOR
             
         self.__keypoints: Keypoints = {}
         self.__blob_detector: cv2.SimpleBlobDetector = None
@@ -49,21 +52,21 @@ class BallTracker():
     def setup_blob_detector(self, **kwargs):
         """Setup underlying blob detector with provided kwargs"""
         params = cv2.SimpleBlobDetector_Params()
-        params.filterByConvexity = kwargs.get('filter_by_convexity', s.BLOB_DETECTOR["FILTER_BY_CONVEXITY"])
-        params.minConvexity = kwargs.get('min_convexity', s.BLOB_DETECTOR["MIN_CONVEXITY"])
-        params.maxConvexity = kwargs.get('max_convexity', s.BLOB_DETECTOR["MAX_CONVEXITY"])
-        params.filterByCircularity = kwargs.get('filter_by_circularity', s.BLOB_DETECTOR["FILTER_BY_CIRCULARITY"])
-        params.minCircularity = kwargs.get('min_circularity', s.BLOB_DETECTOR["MIN_CIRCULARITY"])
-        params.maxCircularity = kwargs.get('max_circularity', s.BLOB_DETECTOR["MAX_CIRCULARITY"])
-        params.filterByInertia = kwargs.get('filter_by_inertia', s.BLOB_DETECTOR["FILTER_BY_INERTIA"])
-        params.minInertiaRatio = kwargs.get('min_inertia', s.BLOB_DETECTOR["MIN_INERTIA"])
-        params.maxInertiaRatio = kwargs.get('max_inertia', s.BLOB_DETECTOR["MAX_INERTIA"])
-        params.filterByArea = kwargs.get('filter_by_area', s.BLOB_DETECTOR["FILTER_BY_AREA"])
-        params.minArea = kwargs.get('min_area', s.BLOB_DETECTOR["MIN_AREA"])
-        params.maxArea = kwargs.get('max_area', s.BLOB_DETECTOR["MAX_AREA"])
-        params.filterByColor = kwargs.get('filter_by_colour', s.BLOB_DETECTOR["FILTER_BY_COLOUR"])
-        params.blobColor = kwargs.get('blob_color', s.BLOB_DETECTOR["BLOB_COLOUR"])
-        params.minDistBetweenBlobs = kwargs.get('min_dest_between_blobs', s.BLOB_DETECTOR["MIN_DIST_BETWEEN_BLOBS"])
+        params.filterByConvexity = kwargs.get('FILTER_BY_CONVEXITY', self.__ball_settings["FILTER_BY_CONVEXITY"])
+        params.minConvexity = kwargs.get('MIN_CONVEXITY', self.__ball_settings["MIN_CONVEXITY"])
+        params.maxConvexity = kwargs.get('MAX_CONVEXITY', self.__ball_settings["MAX_CONVEXITY"])
+        params.filterByCircularity = kwargs.get('FILTER_BY_CIRCULARITY', self.__ball_settings["FILTER_BY_CIRCULARITY"])
+        params.minCircularity = kwargs.get('MIN_CIRCULARITY', self.__ball_settings["MIN_CIRCULARITY"])
+        params.maxCircularity = kwargs.get('MAX_CIRCULARITY', self.__ball_settings["MAX_CIRCULARITY"])
+        params.filterByInertia = kwargs.get('FILTER_BY_INERTIA', self.__ball_settings["FILTER_BY_INERTIA"])
+        params.minInertiaRatio = kwargs.get('MIN_INERTIA', self.__ball_settings["MIN_INERTIA"])
+        params.maxInertiaRatio = kwargs.get('MAX_INERTIA', self.__ball_settings["MAX_INERTIA"])
+        params.filterByArea = kwargs.get('FILTER_BY_AREA', self.__ball_settings["FILTER_BY_AREA"])
+        params.minArea = kwargs.get('MIN_AREA', self.__ball_settings["MIN_AREA"])
+        params.maxArea = kwargs.get('MAX_AREA', self.__ball_settings["MAX_AREA"])
+        params.filterByColor = kwargs.get('FILTER_BY_COLOUR', self.__ball_settings["FILTER_BY_COLOUR"])
+        params.blobColor = kwargs.get('BLOB_COLOR', self.__ball_settings["BLOB_COLOUR"])
+        params.minDistBetweenBlobs = kwargs.get('MIN_DEST_BETWEEN_BLOBS', self.__ball_settings["MIN_DIST_BETWEEN_BLOBS"])
         self.__blob_detector = cv2.SimpleBlobDetector_create(params)
 
     def get_snapshot_report(self) -> str:
@@ -133,8 +136,8 @@ class BallTracker():
                     break
         return balls
 
-    def process_image(self, image: typing.Tuple[np.ndarray, np.ndarray, np.ndarray], 
-                      show_threshold: bool=False) -> tuple:
+    def process_image(self, image: Image, show_threshold: bool=False, 
+                      detect_colour: str=None, mask_colour: bool=False) -> tuple:
         """Process `image` to detect/track balls, determine if a shot has started/finished
         and determine if a ball was potted
 
@@ -154,7 +157,7 @@ class BallTracker():
         Temporary SnapShot with the Current SnapShot
 
         :param image: image to process, contains 3 frames (RGB, HSV and binary versions of image)
-        :type image: typing.Tuple[np.ndarray, np.ndarray, np.ndarray]
+        :type image: Image
         :param show_threshold: if True return a binary version of `image`, defaults to False
         :type show_threshold: bool, optional
         :return: processed image, ball potted if any were and the number of balls potted
@@ -177,10 +180,30 @@ class BallTracker():
             self.__cur_shot_snapshot.assign_balls_from_dict(self.__keypoints)
             self.__last_shot_snapshot.assign_balls_from_dict(self.__keypoints)
 
+        # Swap output frame with binary frame if show threshold is True
         if show_threshold:
             output_frame = binary_frame
 
-        self.draw_balls(output_frame, self.__keypoints)
+        # Draw contours around a colour to detect if not None
+        if detect_colour:
+            colour_mask, contours = self.detect_colour(
+                hsv_frame, self.__colour_settings[detect_colour]["LOWER"], 
+                self.__colour_settings[detect_colour]["UPPER"])
+
+            # Show only the detected colour in the output frame
+            if mask_colour:
+                output_frame = cv2.bitwise_and(
+                    output_frame, output_frame, mask=colour_mask)
+
+            cv2.drawContours(output_frame, contours, -1, (0, 255, 0), 2)
+
+        # Draw only the balls for the detected colour 
+        # if we are only showing the detected colour
+        if detect_colour and mask_colour:
+            self.draw_balls(output_frame, { detect_colour: self.__keypoints[detect_colour] })
+        else:
+            # Otherwise just draw all detected balls
+            self.draw_balls(output_frame, self.__keypoints)
 
         # Every 5 images run the snapshot comparision/generation phase
         if self.__image_counter == 0 or self.__image_counter % 5 == 0:
@@ -247,21 +270,21 @@ class BallTracker():
 
         # Obtain 8 contours for each ball colour from the HSV colour space of the image
         if s.DETECT_COLOURS['WHITE']:
-            _, whites = self.get_mask_contours_for_colour(hsv_frame, 'WHITE')
+            _, whites = get_mask_contours_for_colour(hsv_frame, 'WHITE', self.__colour_settings)
         if s.DETECT_COLOURS['RED']:
-            _, reds = self.get_mask_contours_for_colour(hsv_frame, 'RED')
+            _, reds = get_mask_contours_for_colour(hsv_frame, 'RED', self.__colour_settings)
         if s.DETECT_COLOURS['YELLOW']:
-            _, yellows = self.get_mask_contours_for_colour(hsv_frame, 'YELLOW')
+            _, yellows = get_mask_contours_for_colour(hsv_frame, 'YELLOW', self.__colour_settings)
         if s.DETECT_COLOURS['GREEN']:
-            _, greens = self.get_mask_contours_for_colour(hsv_frame, 'GREEN')
+            _, greens = get_mask_contours_for_colour(hsv_frame, 'GREEN', self.__colour_settings)
         if s.DETECT_COLOURS['BROWN']:
-            _, browns = self.get_mask_contours_for_colour(hsv_frame, 'BROWN')
+            _, browns = get_mask_contours_for_colour(hsv_frame, 'BROWN', self.__colour_settings)
         if s.DETECT_COLOURS['BLUE']:
-            _, blues = self.get_mask_contours_for_colour(hsv_frame, 'BLUE')
+            _, blues = get_mask_contours_for_colour(hsv_frame, 'BLUE', self.__colour_settings)
         if s.DETECT_COLOURS['PINK']:
-            _, pinks = self.get_mask_contours_for_colour(hsv_frame, 'PINK')
+            _, pinks = get_mask_contours_for_colour(hsv_frame, 'PINK', self.__colour_settings)
         if s.DETECT_COLOURS['BLACK']:
-            _, blacks = self.get_mask_contours_for_colour(hsv_frame, 'BLACK')
+            _, blacks = get_mask_contours_for_colour(hsv_frame, 'BLACK', self.__colour_settings)
 
         # For each ball found, determine what colour it is and add it to the list of balls
         # If a ball is not mapped to an appropriate colour, it is discarded
@@ -343,25 +366,6 @@ class BallTracker():
         """
         dist = cv2.pointPolygonTest(contour, keypoint.pt, False)
         return True if dist == 1 else False
-
-    def get_mask_contours_for_colour(self, frame: np.ndarray, colour: str) -> tuple:
-        """Obtains the colour mask of `colour` from `frame`
-
-        :param frame: frame to process
-        :type frame: np.ndarray
-        :param colour: colour to extract contours from `frame`
-        :type colour: str
-        :return: colour mask of `colour` and a list of contours
-        :rtype: tuple
-        """
-        colour_mask = None
-        contours = None
-        if colour in self.__colour_settings:
-            colour_mask = cv2.inRange(frame, self.__colour_settings[colour]['LOWER'],
-                                      self.__colour_settings[colour]['UPPER'])
-            contours, _ = cv2.findContours(
-                colour_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-        return colour_mask, contours
 
     def detect_colour(self, frame: np.ndarray, lower: np.ndarray, upper: np.ndarray) -> tuple:
         """Detects a colour in `frame` based on the `lower` and `upper` HSV values

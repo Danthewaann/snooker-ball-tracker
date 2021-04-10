@@ -70,19 +70,19 @@ class BallDetectionSettingView(QtWidgets.QGroupBox):
 
         self.observers = [
             Observer([
-                (self.widgets["filterBy_yradio"], "state"), 
-                (self.widgets["filterBy_nradio"], "state"),
-                (self.model, "filter_by")
+                (self.widgets["filterBy_yradio"], "state", bool), 
+                (self.widgets["filterBy_nradio"], "state", bool),
+                (self.model, "filter_by", bool)
             ]),
             Observer([
-                (self.widgets["minVal_value"], "text"),
-                (self.widgets["minVal_slider"], "value"),
-                (self.model, "min_value")
+                (self.widgets["minVal_value"], "text", str),
+                (self.widgets["minVal_slider"], "value", int),
+                (self.model, "min_value", int)
             ]),
             Observer([
-                (self.widgets["maxVal_value"], "text"),
-                (self.widgets["maxVal_slider"], "value"),
-                (self.model, "max_value")
+                (self.widgets["maxVal_value"], "text", str),
+                (self.widgets["maxVal_slider"], "value", int),
+                (self.model, "max_value", int)
             ])
         ]
         

@@ -75,7 +75,8 @@ class MainView(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         if self.video_file_stream is not None:
-            self.video_file_stream.stop()
+            with self.video_processor_lock:
+                self.video_file_stream.stop()
         event.accept()
 
     def select_file_onclick(self):
@@ -101,19 +102,23 @@ class MainView(QtWidgets.QMainWindow):
         self.start_video_processor()
 
     def start_video_processor(self):
-        self.video_file_stream = VideoFileStream(self.video_file, video_player=self.video_player, queue_size=1)
+        self.video_file_stream = VideoFileStream(
+            self.video_file, video_player=self.video_player,
+            colour_settings=self.settings.models["colour_detection"].colours, queue_size=1)
 
         self.video_processor_stop_event = threading.Event()
         self.video_processor = VideoProcessor(
             video_stream=self.video_file_stream, 
-            logger=self.logger, video_player=self.video_player, settings=self.settings,
-            ball_tracker=self.ball_tracker, lock=self.video_processor_lock, stop_event=self.video_processor_stop_event)
+            logger=self.logger, video_player=self.video_player, 
+            colour_settings=self.settings.models["colour_detection"],
+            ball_tracker=self.ball_tracker, lock=self.video_processor_lock, 
+            stop_event=self.video_processor_stop_event)
         self.video_processor.start()
 
     def restart_video_processor(self, restart):
         if restart:
             if self.video_processor is not None:
-                self.video_processor.stop_event.set()
+                self.video_processor_stop_event.set()
             self.start_video_processor()
 
     def load_settings(self):
