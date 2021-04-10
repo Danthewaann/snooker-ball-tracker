@@ -86,7 +86,7 @@ class MainView(QtWidgets.QMainWindow):
             return
 
         if self.video_processor is not None:
-            self.video_processor.stop_event.set()
+            self.video_processor_stop_event.set()
 
         try:
             self.video_file_stream = cv2.VideoCapture(self.video_file)
