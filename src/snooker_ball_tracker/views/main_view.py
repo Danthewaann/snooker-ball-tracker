@@ -50,7 +50,7 @@ class MainView(QtWidgets.QMainWindow):
 
         self.video_player = VideoPlayer()
         self.video_player.restartChanged.connect(self.restart_video_processor)
-        self.video_player_view = VideoPlayerView(self.video_player)
+        self.video_player_view = VideoPlayerView(self.video_player, videoFileOnClick=self.select_file_onclick)
 
         self.central_widget_layout.addWidget(self.settings_view, 0, 0, 1, 1)
         self.central_widget_layout.addWidget(self.logging_view, 1, 0, 1, 1)
@@ -99,6 +99,7 @@ class MainView(QtWidgets.QMainWindow):
             error.exec_()
             return
 
+        self.video_player.play = False
         self.start_video_processor()
 
     def start_video_processor(self):
