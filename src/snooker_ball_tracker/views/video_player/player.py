@@ -9,8 +9,7 @@ from ..components import Ui_Label, Ui_PushButton
 
 
 class Player(QtWidgets.QFrame):
-
-    def __init__(self, model: VideoPlayer, videoFileOnClick: typing.Callable[[]]):
+    def __init__(self, model: VideoPlayer, videoFileOnClick: typing.Callable[[], typing.Any]):
         super().__init__()
         self.model = model
 

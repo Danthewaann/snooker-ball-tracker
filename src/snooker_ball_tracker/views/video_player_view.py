@@ -9,7 +9,7 @@ from .video_player import Options, Player
 
 
 class VideoPlayerView(QtWidgets.QGroupBox):
-    def __init__(self, model: VideoPlayer, videoFileOnClick: typing.Callable[[]]):
+    def __init__(self, model: VideoPlayer, videoFileOnClick: typing.Callable[[], typing.Any]):
         super().__init__("Video Player")
         self.model = model
 
