@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from copy import deepcopy
 
+import numpy as np
 import PyQt5.QtCore as QtCore
 import snooker_ball_tracker.settings as s
 
@@ -16,6 +17,13 @@ class ColourDetectionSettings(QtCore.QObject):
         self._colour_model = HSVColour()
         self._colour_mask = False
         self._selected_colour = "NONE"
+
+        self._colour_model.l_HueChanged.connect(lambda value: self.update_colour_value("LOWER", 0, value))
+        self._colour_model.l_SaturationChanged.connect(lambda value: self.update_colour_value("LOWER", 1, value))
+        self._colour_model.l_ValueChanged.connect(lambda value: self.update_colour_value("LOWER", 2, value))
+        self._colour_model.u_HueChanged.connect(lambda value: self.update_colour_value("UPPER", 0, value))
+        self._colour_model.u_SaturationChanged.connect(lambda value: self.update_colour_value("UPPER", 1, value))
+        self._colour_model.u_ValueChanged.connect(lambda value: self.update_colour_value("UPPER", 2, value))
 
     @property
     def colours(self) -> dict:
@@ -85,34 +93,28 @@ class ColourDetectionSettings(QtCore.QObject):
         :param value: value to set
         :type value: str
         """
-        value = value.upper()
-        if self._selected_colour != "NONE":
-            self.update_colour()
+        self._selected_colour = value.upper()
 
-        if value != "NONE":
-            self._colour_model.update(self._colours[value])
+        if self._selected_colour != "NONE":
+            self._colour_model.update(self._colours[self._selected_colour])
         else:
             self._colour_model.clear()
 
-        self._selected_colour = value
         self.selected_colourChanged.emit(self._selected_colour)
 
-    def update_colour(self):
-        """Update selected colour in `colours` with values in `colour_model`"""
-        self._colours[self._selected_colour]["LOWER"][0] = self._colour_model.l_Hue
-        self._colours[self._selected_colour]["LOWER"][1] = self._colour_model.l_Saturation
-        self._colours[self._selected_colour]["LOWER"][2] = self._colour_model.l_Value
-        self._colours[self._selected_colour]["UPPER"][0] = self._colour_model.u_Hue
-        self._colours[self._selected_colour]["UPPER"][1] = self._colour_model.u_Saturation
-        self._colours[self._selected_colour]["UPPER"][2] = self._colour_model.u_Value
+    def update_colour_value(self, _range: str, index: int, value: int):
+        """Update specific colour range value
+
+        :param _range: either `LOWER` or `UPPER`
+        :type _range: str
+        :param index: index from 0 to 2
+        :type index: int
+        :param value: value to set to colour value
+        :type value: int
+        """
+        self._colours[self._selected_colour][_range][index] = value
 
     def reset(self):
         """Reset selected colour in `colours` and `colour_model` with original values from settings"""
         if self._selected_colour != "NONE":
-            self._colours[self._selected_colour]["LOWER"][0] = s.COLOURS[self._selected_colour]["LOWER"][0]
-            self._colours[self._selected_colour]["LOWER"][1] = s.COLOURS[self._selected_colour]["LOWER"][1]
-            self._colours[self._selected_colour]["LOWER"][2] = s.COLOURS[self._selected_colour]["LOWER"][2]
-            self._colours[self._selected_colour]["UPPER"][0] = s.COLOURS[self._selected_colour]["UPPER"][0]
-            self._colours[self._selected_colour]["UPPER"][1] = s.COLOURS[self._selected_colour]["UPPER"][1]
-            self._colours[self._selected_colour]["UPPER"][2] = s.COLOURS[self._selected_colour]["UPPER"][2]
-            self._colour_model.update(self._colours[self._selected_colour])
+            self._colour_model.update(s.COLOURS[self._selected_colour])

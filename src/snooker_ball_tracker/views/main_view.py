@@ -42,11 +42,10 @@ class MainView(QtWidgets.QMainWindow):
         self.video_file = None
 
         self.logger = Logger()
-        self.ball_tracker = BallTracker(logger=self.logger)
-
         self.settings = Settings()
-        self.settings_view = SettingsView(self.settings)
+        self.ball_tracker = BallTracker(logger=self.logger, settings=self.settings)
 
+        self.settings_view = SettingsView(self.settings)
         self.logging_view = LoggingView(self.logger)
 
         self.video_player = VideoPlayer()

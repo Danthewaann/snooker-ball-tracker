@@ -5,6 +5,7 @@ import numpy as np
 import snooker_ball_tracker.settings as s
 
 from .logger import Logger
+from .tracker_settings import Settings
 from .logging import BallsPotted
 from .snapshot import SnapShot
 from .util import dist_between_two_balls
@@ -13,11 +14,13 @@ Keypoints = typing.Dict[str, typing.List[cv2.KeyPoint]]
 
 
 class BallTracker():
-    def __init__(self, logger: Logger=None, **kwargs):
+    def __init__(self, logger: Logger=None, settings: Settings=None, **kwargs):
         """Creates an instance of BallTracker
 
-        :param logger: logger that contains snapshot to log to, defaults to None
+        :param logger: logger that contains snapshots to log to, defaults to None
         :type logger: Logger, optional
+        :param settings: ball and colour detection settings instance, defaults to None
+        :type settings: Settings, optional
         :param **kwargs: dictionary of options to use to configure
                          the underlying blob detector to detect balls with
         """
@@ -31,6 +34,12 @@ class BallTracker():
             self.__cur_shot_snapshot = SnapShot()
             self.__temp_snapshot = SnapShot()
             self.__white_status_setter = lambda value: value
+        if settings:
+            self.__colour_settings = settings.models["colour_detection"].colours
+            # self.__ball_settings = settings.models["ball_detection"].
+        else:
+            self.__colour_settings = s.COLOURS
+            
         self.__keypoints: Keypoints = {}
         self.__blob_detector: cv2.SimpleBlobDetector = None
         self.__image_counter = 0
@@ -125,7 +134,7 @@ class BallTracker():
         return balls
 
     def process_image(self, image: typing.Tuple[np.ndarray, np.ndarray, np.ndarray], 
-            show_threshold: bool=False) -> tuple:
+                      show_threshold: bool=False) -> tuple:
         """Process `image` to detect/track balls, determine if a shot has started/finished
         and determine if a ball was potted
 
@@ -347,9 +356,9 @@ class BallTracker():
         """
         colour_mask = None
         contours = None
-        if colour in s.COLOURS:
-            colour_mask = cv2.inRange(frame, s.COLOURS[colour]['LOWER'],
-                                      s.COLOURS[colour]['UPPER'])
+        if colour in self.__colour_settings:
+            colour_mask = cv2.inRange(frame, self.__colour_settings[colour]['LOWER'],
+                                      self.__colour_settings[colour]['UPPER'])
             contours, _ = cv2.findContours(
                 colour_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         return colour_mask, contours

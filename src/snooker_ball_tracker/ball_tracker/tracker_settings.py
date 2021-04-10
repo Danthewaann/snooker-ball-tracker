@@ -2,7 +2,6 @@ import PyQt5.QtCore as QtCore
 import snooker_ball_tracker.settings as s
 
 from .settings import BallDetectionSettings, ColourDetectionSettings
-from snooker_ball_tracker.ball_tracker import BallTracker
 
 
 class Settings(QtCore.QObject):
