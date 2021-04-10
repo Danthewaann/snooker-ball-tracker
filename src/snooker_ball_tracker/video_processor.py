@@ -104,6 +104,7 @@ class VideoProcessor(threading.Thread):
 
         with self.__producer_lock:
             self.__video_player.frame = output_frame
+            self.__video_player.hsv_frame = self.__image.hsv_frame
 
         if ball_potted:
             self.__logger.balls_potted.addPottedBall(f'Potted {count} {ball_potted.lower()}/s...')

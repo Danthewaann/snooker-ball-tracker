@@ -18,6 +18,7 @@ class VideoPlayer(QtCore.QObject):
         self._queue_size = 0
         self._fps = 0
         self._frame = np.array([])
+        self._hsv_frame = np.array([])
 
     @property
     def width(self) -> int:
@@ -229,3 +230,24 @@ class VideoPlayer(QtCore.QObject):
         """
         self._frame = value
         self.frameChanged.emit(self._frame)
+
+    @property
+    def hsv_frame(self) -> np.ndarray:
+        """HSV frame property
+
+        :return: hsv frame
+        :rtype: np.ndarray
+        """
+        return self._hsv_frame
+
+    hsv_frameChanged = QtCore.pyqtSignal(np.ndarray)
+
+    @hsv_frame.setter
+    def hsv_frame(self, value: np.ndarray):
+        """HSV frame setter
+
+        :param value: value to set
+        :type value: np.ndarray
+        """
+        self._hsv_frame = value
+        self.hsv_frameChanged.emit(self._hsv_frame)
