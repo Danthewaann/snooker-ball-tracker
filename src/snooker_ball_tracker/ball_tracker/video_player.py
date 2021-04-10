@@ -15,6 +15,8 @@ class VideoPlayer(QtCore.QObject):
         self._show_threshold = False
         self._perform_morph = False
         self._detect_table = False
+        self._queue_size = 0
+        self._fps = 0
         self._frame = np.array([])
 
     @property
@@ -164,6 +166,48 @@ class VideoPlayer(QtCore.QObject):
         """
         self._detect_table = value
         self.detect_tableChanged.emit(self._detect_table)
+
+    @property
+    def queue_size(self) -> int:
+        """Queue size property
+
+        :return: queue size
+        :rtype: int
+        """
+        return self._queue_size
+
+    queue_sizeChanged = QtCore.pyqtSignal(int)
+
+    @queue_size.setter
+    def queue_size(self, value: int):
+        """Queue size setter
+
+        :param value: value to set
+        :type value: int
+        """
+        self._queue_size = value
+        self.queue_sizeChanged.emit(self._queue_size)
+
+    @property
+    def fps(self) -> int:
+        """FPS property
+
+        :return: fps
+        :rtype: int
+        """
+        return self._fps
+
+    fpsChanged = QtCore.pyqtSignal(int)
+
+    @fps.setter
+    def fps(self, value: int):
+        """FPS setter
+
+        :param value: value to set
+        :type value: int
+        """
+        self._fps = value
+        self.fpsChanged.emit(self._fps)
 
     @property
     def frame(self) -> np.ndarray:

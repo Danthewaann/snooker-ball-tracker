@@ -99,11 +99,8 @@ class VideoProcessor(threading.Thread):
             self.__fps.update()
             self.__fps.stop()
 
-        cv2.putText(output_frame, "Queue Size: {}".format(self.__image_producer.Q.qsize()),
-                    (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
-
-        cv2.putText(output_frame, "FPS: {:.2f}".format(self.__fps.fps()),
-                    (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+        self.__video_player.queue_size = self.__image_producer.Q.qsize()
+        self.__video_player.fps = self.__fps.fps()
 
         with self.__producer_lock:
             self.__video_player.frame = output_frame

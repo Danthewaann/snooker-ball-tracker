@@ -14,7 +14,7 @@ class LoggingView(QtWidgets.QGroupBox):
 
         self.layout = QtWidgets.QHBoxLayout(self)
         self.layout.setContentsMargins(15, 15, 15, 15)
-        self.layout.setSpacing(30)
+        self.layout.setSpacing(15)
 
         self.widget = QtWidgets.QWidget(self)
         self.widget.setMaximumWidth(700)
