@@ -3,13 +3,12 @@ import typing
 import cv2
 import numpy as np
 import snooker_ball_tracker.settings as s
-from snooker_ball_tracker.video_file_stream import Image
 
 from .logger import Logger
 from .logging import BallsPotted
 from .snapshot import SnapShot
 from .tracker_settings import Settings
-from .util import dist_between_two_balls, get_mask_contours_for_colour
+from .util import Image, dist_between_two_balls, get_mask_contours_for_colour
 
 Keypoints = typing.Dict[str, typing.List[cv2.KeyPoint]]
 

@@ -1,6 +1,11 @@
+from collections import namedtuple
+
 import cv2
 import numpy as np
+
 import settings as s
+
+Image = namedtuple("Image", "frame binary_frame hsv_frame")
 
 
 def dist_between_two_balls(first_ball: cv2.KeyPoint, second_ball: cv2.KeyPoint) -> float:

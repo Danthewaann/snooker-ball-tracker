@@ -1,5 +1,4 @@
 import typing
-from collections import namedtuple
 from threading import Thread
 
 import cv2
@@ -9,14 +8,12 @@ from imutils.video import FileVideoStream
 
 import snooker_ball_tracker.settings as s
 
-from .ball_tracker import video_player
-from .ball_tracker.util import get_mask_contours_for_colour
-
-Image = namedtuple("Image", "frame binary_frame hsv_frame")
+from .ball_tracker import VideoPlayer
+from .ball_tracker.util import Image, get_mask_contours_for_colour
 
 
 class VideoFileStream(FileVideoStream):
-    def __init__(self, path: str, video_player: video_player, 
+    def __init__(self, path: str, video_player: VideoPlayer, 
                  colour_settings: dict=s.COLOURS, queue_size: int=128):
         """Create instance of VideoFileStream that loads frames from a file in a
         separate thread and performs some basic transformations
@@ -24,7 +21,7 @@ class VideoFileStream(FileVideoStream):
         :param path: file path to video file to process
         :type path: str
         :param video_player: video player to obtain transformation settings from
-        :type video_player: video_player
+        :type video_player: VideoPlayer
         :param settings: colour detection settings to obtain colours from, defaults to s.COLOURS,
         :type settings: dict, optional
         :param queue_size: max number of frames to process and store at a time, defaults to 128
@@ -33,8 +30,8 @@ class VideoFileStream(FileVideoStream):
         super().__init__(path, transform=self.transform_frame, queue_size=queue_size)
         self.__video_player = video_player
         self.__colour_settings = colour_settings
-        self.__table_bounds = None
-        self.__table_bounds_mask = None
+        self.__table_bounds: typing.Union[np.ndarray, None] = None
+        self.__table_bounds_mask: typing.Union[np.ndarray, None] = None
         self.thread = Thread(
             target=self.update, name=self.__class__.__name__, args=())
         self.thread.daemon = True
@@ -96,11 +93,11 @@ class VideoFileStream(FileVideoStream):
         """
         # Create mask where white is what we want, black otherwise
         self.__table_bounds_mask = np.zeros_like(frame)
-        if len(contours) > 1:
-            self.__table_bounds = max(
-                contours, key=lambda el: cv2.contourArea(el))
-        elif len(contours) == 1:
-            self.__table_bounds = contours[0]
+        if contours:
+            if len(contours) > 1:
+                self.__table_bounds = max(contours, key=lambda el: cv2.contourArea(el))
+            elif len(contours) == 1:
+                self.__table_bounds = contours[0]
         else:
             self.__table_bounds = None
         if self.__table_bounds is not None:
