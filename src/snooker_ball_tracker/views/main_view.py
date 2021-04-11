@@ -71,6 +71,7 @@ class MainView(QtWidgets.QMainWindow):
         action.triggered.connect(self.save_settings)
 
         action = self.menuBar().addAction("Exit")
+        action.triggered.connect(self.close)
 
         self.menuBar().setNativeMenuBar(False)
 
@@ -166,22 +167,31 @@ class MainView(QtWidgets.QMainWindow):
         if not settings_file:
             return
 
-        self.settings_file = settings_file
         success, error = s.load(settings_file)
         if success:
+            self.settings_file = settings_file
             self.settings.models["colour_detection"].colours = deepcopy(s.COLOURS)
             self.settings.models["ball_detection"].blob_detector = deepcopy(s.BLOB_DETECTOR)
+        else:
+            error = QtWidgets.QMessageBox(self)
+            error.setWindowTitle("Invalid Settings File!")
+            error.setText('Invalid file, please select a valid json file!')
+            error.exec_()
 
     def save_settings(self):
         """Save settings to user provided file"""
-        data = [("Json Files", ".json")]
-        name, ext = os.path.splitext(os.path.basename(self.settings_file))
         settings_file, _ = QtWidgets.QFileDialog().getSaveFileName(self, "Save Settings", self.settings_file)
 
         if not settings_file:
             return
 
-        self.settings_file = settings_file
         s.COLOURS = self.settings.models["colour_detection"].colours
         s.BLOB_DETECTOR = self.settings.models["ball_detection"].blob_detector
         success, error = s.save(settings_file)
+        if success:
+            self.settings_file = settings_file
+        else:
+            error = QtWidgets.QMessageBox(self)
+            error.setWindowTitle("Failed to Save Settings!")
+            error.setText(f"Failed to save settings to '{settings_file}'\nReason: {error}")
+            error.exec_()

@@ -23,7 +23,7 @@ def load(settings_file):
     try:
         with open(settings_file, "r") as fp:
             __SETTINGS = json.load(fp, object_hook=__decode_colour_to_np_array)
-    except OSError as error:
+    except Exception as error:
         return False, error
     else:
         return True, None
@@ -34,7 +34,7 @@ def save(settings_file):
     try:
         with open(settings_file, "w") as fp:
             json.dump(__SETTINGS, fp, indent=4, sort_keys=True, cls=__SettingsJSONEncoder)
-    except OSError as error:
+    except Exception as error:
         return False, error
     else:
         return True, None
