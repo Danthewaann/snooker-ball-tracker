@@ -74,10 +74,19 @@ class MainView(QtWidgets.QMainWindow):
 
         self.menuBar().setNativeMenuBar(False)
 
-    def closeEvent(self, event):
-        if self.video_file_stream is not None:
-            with self.video_processor_lock:
-                self.video_file_stream.stop()
+    def closeEvent(self, event: QtGui.QCloseEvent):
+        """Handle the close event by closing child threads before
+        accepting the close event
+
+        :param event: close event instance
+        :type event: QtGui.QCloseEvent
+        """
+        if self.video_processor is not None:
+            if self.video_file_stream is not None:
+                with self.video_processor_lock:
+                    self.video_file_stream.stop()
+            self.video_processor_stop_event.set()
+            self.video_processor.join()
         event.accept()
 
     def select_file_onclick(self):
