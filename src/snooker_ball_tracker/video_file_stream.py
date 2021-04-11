@@ -14,7 +14,7 @@ from .ball_tracker.util import Image, get_mask_contours_for_colour
 
 class VideoFileStream(FileVideoStream):
     def __init__(self, path: str, video_player: VideoPlayer, 
-                 colour_settings: dict=s.COLOURS, queue_size: int=128):
+                 colours: dict=s.COLOURS, queue_size: int=128):
         """Create instance of VideoFileStream that loads frames from a file in a
         separate thread and performs some basic transformations
 
@@ -22,14 +22,14 @@ class VideoFileStream(FileVideoStream):
         :type path: str
         :param video_player: video player to obtain transformation settings from
         :type video_player: VideoPlayer
-        :param settings: colour detection settings to obtain colours from, defaults to s.COLOURS,
-        :type settings: dict, optional
+        :param colours: colour settings to obtain colours from, defaults to s.COLOURS,
+        :type colours: dict, optional
         :param queue_size: max number of frames to process and store at a time, defaults to 128
         :type queue_size: int, optional
         """
         super().__init__(path, transform=self.transform_frame, queue_size=queue_size)
         self.__video_player = video_player
-        self.__colour_settings = colour_settings
+        self.__colours = colours
         self.__table_bounds: typing.Union[np.ndarray, None] = None
         self.__table_bounds_mask: typing.Union[np.ndarray, None] = None
         self.thread = Thread(
@@ -53,7 +53,7 @@ class VideoFileStream(FileVideoStream):
 
             # get mask of table cloth colour
             threshold, contours = get_mask_contours_for_colour(
-                hsv, 'TABLE', self.__colour_settings)
+                hsv, 'TABLE', self.__colours)
             threshold = cv2.cvtColor(threshold, cv2.COLOR_GRAY2BGR)
             threshold = cv2.bitwise_not(threshold)
 

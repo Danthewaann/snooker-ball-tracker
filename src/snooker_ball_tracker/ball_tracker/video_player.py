@@ -63,28 +63,6 @@ class VideoPlayer(QtCore.QObject):
         self.playChanged.emit(self._play)
 
     @property
-    def restart(self) -> bool:
-        """Restart property
-
-        :return: restart video
-        :rtype: bool
-        """
-        return self._restart
-
-    restartChanged = QtCore.pyqtSignal(bool)
-
-    @restart.setter
-    def restart(self, value: bool):
-        """Restart setter
-
-        :param value: value to set
-        :type value: bool
-        """
-        self._restart = value
-        self.play = False
-        self.restartChanged.emit(self._restart)
-
-    @property
     def crop_frames(self) -> bool:
         """Crop frames property
 
@@ -251,3 +229,10 @@ class VideoPlayer(QtCore.QObject):
         """
         self._hsv_frame = value
         self.hsv_frameChanged.emit(self._hsv_frame)
+
+    restartSignal = QtCore.pyqtSignal()
+
+    def restart(self):
+        """Restart the video player"""
+        self.play = False
+        self.restartSignal.emit()

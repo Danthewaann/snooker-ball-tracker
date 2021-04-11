@@ -87,7 +87,7 @@ class Options(QtWidgets.QWidget):
 
     @QtCore.pyqtSlot()
     def on_restart_btn_pressed(self):
-        self.model.restart = True
+        self.model.restart()
 
     @QtCore.pyqtSlot()
     def on_detectTable_btn_pressed(self):

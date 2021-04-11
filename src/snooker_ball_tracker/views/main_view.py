@@ -29,6 +29,7 @@ class MainView(QtWidgets.QMainWindow):
             s.load(self.settings_file)
 
         self.setWindowTitle("Snooker Ball Tracker Demo")
+        self.showMaximized()
 
         self.central_widget = QtWidgets.QWidget(self)
         self.central_widget_layout = QtWidgets.QGridLayout(self.central_widget)
@@ -43,13 +44,12 @@ class MainView(QtWidgets.QMainWindow):
 
         self.logger = Logger()
         self.settings = Settings()
+        self.video_player = VideoPlayer()
+        self.video_player.restartSignal.connect(self.restart_video_player)
         self.ball_tracker = BallTracker(logger=self.logger, settings=self.settings)
 
         self.settings_view = SettingsView(self.settings)
         self.logging_view = LoggingView(self.logger)
-
-        self.video_player = VideoPlayer()
-        self.video_player.restartChanged.connect(self.restart_video_processor)
         self.video_player_view = VideoPlayerView(self.video_player, 
             self.settings.models["colour_detection"], videoFileOnClick=self.select_file_onclick)
 
@@ -81,15 +81,20 @@ class MainView(QtWidgets.QMainWindow):
         :param event: close event instance
         :type event: QtGui.QCloseEvent
         """
-        if self.video_processor is not None:
-            if self.video_file_stream is not None:
-                with self.video_processor_lock:
-                    self.video_file_stream.stop()
-            self.video_processor_stop_event.set()
-            self.video_processor.join()
+        self.__destroy_video_threads()
         event.accept()
 
     def select_file_onclick(self):
+        """Select video file event handler.
+
+        Gets a video file provided by the user and attempts to validate
+        that it is in fact a valid video file.
+
+        Passes the video file to the VideoProcessor thread for processing
+        and display.
+
+        :raises TypeError: If the video file is not valid will display an error box
+        """
         self.video_file, _ = QtWidgets.QFileDialog().getOpenFileName(self, "Select Video File", "")
 
         if not self.video_file:
@@ -110,43 +115,65 @@ class MainView(QtWidgets.QMainWindow):
             return
 
         self.video_player.play = False
-        self.start_video_processor()
+        self.start_video_player()
 
-    def start_video_processor(self):
+    def start_video_player(self):
+        """Creates VideoProcessor and VideoFileStream instances to handle 
+        the selected video file.
+
+        The VideoFileStream is the producer thread and the VideoProcessor
+        is the consumer thread, where the VideoFileStream instance reads
+        frames from the video file and puts them into a queue for the
+        VideoProcessor to obtain frames to process from.
+
+        The VideoProcessor then passes processed frames to the VideoPlayer
+        to display to the user.
+        """
+        self.video_processor_stop_event.clear()
+
         self.video_file_stream = VideoFileStream(
             self.video_file, video_player=self.video_player,
-            colour_settings=self.settings.models["colour_detection"].colours, queue_size=1)
+            colours=self.settings.models["colour_detection"].colours, queue_size=1)
 
-        self.video_processor_stop_event = threading.Event()
         self.video_processor = VideoProcessor(
             video_stream=self.video_file_stream, 
             logger=self.logger, video_player=self.video_player, 
             colour_settings=self.settings.models["colour_detection"],
             ball_tracker=self.ball_tracker, lock=self.video_processor_lock, 
             stop_event=self.video_processor_stop_event)
+
         self.video_processor.start()
 
-    def restart_video_processor(self, restart):
-        if restart:
-            if self.video_processor is not None:
-                self.video_processor_stop_event.set()
-            self.start_video_processor()
+    def restart_video_player(self):
+        """Restart the video player by destroying the VideoProcessor
+        and VideoFileStream instances and creating new ones before 
+        starting the video player again."""
+        self.__destroy_video_threads()
+        self.start_video_player()
+
+    def __destroy_video_threads(self):
+        """Destroy the VideoProcessor and VideoFileStream thread instances"""
+        if self.video_processor is not None:
+            if self.video_file_stream is not None:
+                with self.video_processor_lock:
+                    self.video_file_stream.stop()
+            self.video_processor_stop_event.set()
+            self.video_processor.join()
 
     def load_settings(self):
+        """Load settings from user provided file"""
         settings_file, _ = QtWidgets.QFileDialog().getOpenFileName(self, "Load Settings", "")
         if not settings_file:
             return
 
         self.settings_file = settings_file
-        threading.Thread(target=self.__load_settings, args=(settings_file,), daemon=True).start()
-
-    def __load_settings(self, settings_file):
         success, error = s.load(settings_file)
         if success:
             self.settings.models["colour_detection"].colours = deepcopy(s.COLOURS)
             self.settings.models["ball_detection"].blob_detector = deepcopy(s.BLOB_DETECTOR)
 
     def save_settings(self):
+        """Save settings to user provided file"""
         data = [("Json Files", ".json")]
         name, ext = os.path.splitext(os.path.basename(self.settings_file))
         settings_file, _ = QtWidgets.QFileDialog().getSaveFileName(self, "Save Settings", self.settings_file)
@@ -155,9 +182,6 @@ class MainView(QtWidgets.QMainWindow):
             return
 
         self.settings_file = settings_file
-        threading.Thread(target=self.__save_settings, args=(settings_file,), daemon=True).start()
-
-    def __save_settings(self, settings_file):
         s.COLOURS = self.settings.models["colour_detection"].colours
         s.BLOB_DETECTOR = self.settings.models["ball_detection"].blob_detector
         success, error = s.save(settings_file)
