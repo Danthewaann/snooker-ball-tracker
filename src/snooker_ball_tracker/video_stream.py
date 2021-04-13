@@ -44,6 +44,9 @@ class VideoStream(ABC):
             # resize the frame if width is provided
             frame = imutils.resize(frame, width=self._video_player.width)
 
+            # set video player height to height of resized frame
+            self._video_player.height = frame.shape[0]
+
             # convert frame into HSV colour space
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 

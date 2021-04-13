@@ -19,6 +19,7 @@ class Player(QtWidgets.QFrame):
 
         self.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
         self.setMaximumWidth(self.video_player.width)
+        self.setMaximumHeight(self.video_player.height)
         self.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.setFrameShadow(QtWidgets.QFrame.Raised)
 
@@ -33,13 +34,20 @@ class Player(QtWidgets.QFrame):
 
         self.layout.addWidget(self.selectVideoFile_btn)
         self.video_player.output_frameChanged.connect(self.display_output_frame)
+        self.video_player.heightChanged.connect(self.setMaximumHeight)
 
     def output_frame_onclick(self, event: QtGui.QMouseEvent):
         if self.colours.selected_colour != "NONE":
             x = event.pos().x()
             y = event.pos().y()
 
-            pixels = self.video_player.hsv_frame[y-5:y+5, x-5:x+5]
+            lower_y = y - 5 if y - 5 >= 0 else 0
+            upper_y = y + 5 if y + 5 < self.video_player.height else self.video_player.height
+
+            lower_x = x - 5 if x - 5 >= 0 else 0    
+            upper_x = x + 5 if x + 5 < self.video_player.width else self.video_player.width
+
+            pixels = self.video_player.hsv_frame[lower_y:upper_y, lower_x:upper_x]
             min_pixel = np.min(pixels, axis=0)[0]
             max_pixel = np.max(pixels, axis=0)[0]
 

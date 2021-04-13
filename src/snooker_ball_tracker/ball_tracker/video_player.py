@@ -9,6 +9,7 @@ class VideoPlayer(QtCore.QObject):
         video player to display frames processed by the ball tracker"""
         super().__init__()
         self._width = 1000
+        self._height = 600
         self._play = False
         self._crop_frames = False
         self._show_threshold = False
@@ -39,6 +40,27 @@ class VideoPlayer(QtCore.QObject):
         """
         self._width = value
         self.widthChanged.emit(self._width)
+
+    @property
+    def height(self) -> int:
+        """Height property
+
+        :return: player height
+        :rtype: int
+        """
+        return self._height
+
+    heightChanged = QtCore.pyqtSignal(int)
+
+    @height.setter
+    def height(self, value: int):
+        """Height setter
+
+        :param value: value to set
+        :type value: int
+        """
+        self._height = value
+        self.heightChanged.emit(self._height)
 
     @property
     def play(self) -> bool:
