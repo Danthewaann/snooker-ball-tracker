@@ -9,28 +9,28 @@ import settings as s
 
 from .ball_tracker import BallTracker, Logger, VideoPlayer
 from .ball_tracker.settings import ColourDetectionSettings
-from .video_file_stream import VideoFileStream
+from .video_stream import VideoStream
 
 
 class VideoProcessor(threading.Thread):
-    def __init__(self, video_stream: VideoFileStream, logger: Logger, 
+    def __init__(self, video_stream: VideoStream, logger: Logger, 
                  video_player: VideoPlayer, colour_settings: ColourDetectionSettings,
                  ball_tracker: BallTracker, lock: threading.Lock, stop_event: threading.Event):
         """Creates instance of VideoProcessor that processes frames from a 
-        VideoFileStream and passes them to the ball tracker for processing before
+        VideoStream and passes them to the ball tracker for processing before
         passing them to the video player to display
 
         :param video_stream: video stream that produces images to process
-        :type video_stream: VideoFileStream
+        :type video_stream: VideoStream
         :param logger: logger instance that we pass ball potted info to
         :type logger: Logger
         :param video_player: video player instance that we pass processed frames to
         :type video_player: VideoPlayer
         :param colour_settings: colour settings that we obtain colour detection info from
         :type colour_settings: ColourDetectionSettings
-        :param ball_tracker: ball tracker that we pass frames obtained from VideoFileStream to
+        :param ball_tracker: ball tracker that we pass frames obtained from VideoStream to
         :type ball_tracker: BallTracker
-        :param lock: lock used to manage access to VideoFileStream
+        :param lock: lock used to manage access to VideoStream
         :type lock: threading.Lock
         :param stop_event: stop event used to shut down the VideoProcessor
         :type stop_event: threading.Event
@@ -65,9 +65,9 @@ class VideoProcessor(threading.Thread):
             self.__image_producer.stop()
 
     def _process_next_image(self) -> bool:
-        """Process the next image obtained from the VideoFileStream
+        """Process the next image obtained from the VideoStream
 
-        :return: True if VideoFileStream still has frames to read, False otherwise
+        :return: True if VideoStream still has frames to read, False otherwise
         :rtype: bool
         """
         with self.__producer_lock:
@@ -103,7 +103,7 @@ class VideoProcessor(threading.Thread):
         self.__video_player.fps = self.__fps.fps()
 
         with self.__producer_lock:
-            self.__video_player.frame = output_frame
+            self.__video_player.output_frame = output_frame
             self.__video_player.hsv_frame = self.__image.hsv_frame
 
         if ball_potted:
