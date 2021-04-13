@@ -4,21 +4,21 @@ import numpy as np
 import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
-from snooker_ball_tracker.ball_tracker import VideoPlayer
-from snooker_ball_tracker.ball_tracker.settings import ColourDetectionSettings
+from snooker_ball_tracker.ball_tracker import (ColourDetectionSettings,
+                                               VideoPlayer)
 
 from ..components import Ui_Label, Ui_PushButton
 
 
 class Player(QtWidgets.QFrame):
-    def __init__(self, model: VideoPlayer, colours: ColourDetectionSettings, 
+    def __init__(self, video_player: VideoPlayer, colours: ColourDetectionSettings, 
                  videoFileOnClick: typing.Callable[[], typing.Any]):
         super().__init__()
-        self.model = model
+        self.video_player = video_player
         self.colours = colours
 
         self.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
-        self.setMaximumWidth(self.model.width)
+        self.setMaximumWidth(self.video_player.width)
         self.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.setFrameShadow(QtWidgets.QFrame.Raised)
 
@@ -32,14 +32,14 @@ class Player(QtWidgets.QFrame):
         self.selectVideoFile_btn.pressed.connect(videoFileOnClick)
 
         self.layout.addWidget(self.selectVideoFile_btn)
-        self.model.output_frameChanged.connect(self.display_output_frame)
+        self.video_player.output_frameChanged.connect(self.display_output_frame)
 
     def output_frame_onclick(self, event: QtGui.QMouseEvent):
         if self.colours.selected_colour != "NONE":
             x = event.pos().x()
             y = event.pos().y()
 
-            pixels = self.model.hsv_frame[y-5:y+5, x-5:x+5]
+            pixels = self.video_player.hsv_frame[y-5:y+5, x-5:x+5]
             min_pixel = np.min(pixels, axis=0)[0]
             max_pixel = np.max(pixels, axis=0)[0]
 

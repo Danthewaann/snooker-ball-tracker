@@ -7,9 +7,9 @@ from ..components import Ui_Label, Ui_PushButton, Ui_RadioButton
 
 
 class Options(QtWidgets.QWidget):
-    def __init__(self, model: VideoPlayer):
+    def __init__(self, video_player: VideoPlayer):
         super().__init__()
-        self.model = model
+        self.video_player = video_player
 
         self.setMaximumSize(QtCore.QSize(575, 16777215))
         self.layout = QtWidgets.QGridLayout(self)
@@ -49,11 +49,11 @@ class Options(QtWidgets.QWidget):
         self.performMorph_btngroup.addButton(self.performMorph_nradio)
 
         self.observers = [
-            Observer([(self.cropFrames_yradio, "state"), (self.cropFrames_nradio, "state"), (self.model, "crop_frames")]),
-            Observer([(self.showThreshold_yradio, "state"), (self.showThreshold_nradio, "state"), (self.model, "show_threshold")]),
-            Observer([(self.performMorph_yradio, "state"), (self.performMorph_nradio, "state"), (self.model, "perform_morph")]),
-            Observer([(self.video_stream_queue_value, "text"), (self.model, "queue_size")]),
-            Observer([(self.video_fps_value, "text"), (self.model, "fps")])
+            Observer([(self.cropFrames_yradio, "state"), (self.cropFrames_nradio, "state"), (self.video_player, "crop_frames")]),
+            Observer([(self.showThreshold_yradio, "state"), (self.showThreshold_nradio, "state"), (self.video_player, "show_threshold")]),
+            Observer([(self.performMorph_yradio, "state"), (self.performMorph_nradio, "state"), (self.video_player, "perform_morph")]),
+            Observer([(self.video_stream_queue_value, "text"), (self.video_player, "queue_size")]),
+            Observer([(self.video_fps_value, "text"), (self.video_player, "fps")])
         ]
 
         self.layout.addWidget(self.video_fps_label,          1, 5)
@@ -73,22 +73,22 @@ class Options(QtWidgets.QWidget):
         self.layout.addWidget(self.performMorph_yradio,      2, 1)
         self.layout.addWidget(self.performMorph_nradio,      2, 0)
 
-        self.model.playChanged.connect(lambda value: self.play_btn.setText("Pause") if value else self.play_btn.setText("Play"))
+        self.video_player.playChanged.connect(lambda value: self.play_btn.setText("Pause") if value else self.play_btn.setText("Play"))
         QtCore.QMetaObject.connectSlotsByName(self)
 
     @QtCore.pyqtSlot()
     def on_play_btn_pressed(self):
         if self.play_btn.text() == "Play":
-            self.model.play_video = True
+            self.video_player.play_video = True
             self.play_btn.setText("Pause")
         else:
-            self.model.play_video = False
+            self.video_player.play_video = False
             self.play_btn.setText("Play")
 
     @QtCore.pyqtSlot()
     def on_restart_btn_pressed(self):
-        self.model.restart()
+        self.video_player.restart()
 
     @QtCore.pyqtSlot()
     def on_detectTable_btn_pressed(self):
-        self.model.detect_table = True
+        self.video_player.detect_table = True

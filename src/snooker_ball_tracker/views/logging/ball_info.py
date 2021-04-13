@@ -8,9 +8,9 @@ from ..components import Ui_Label, Ui_Line
 
 
 class BallInfo(QtWidgets.QGridLayout):
-    def __init__(self, model: Logger, parent=None):
+    def __init__(self, logger: Logger, parent=None):
         super().__init__(parent)
-        self.model = model
+        self.logger = logger
 
         self.setHorizontalSpacing(10)
         self.setVerticalSpacing(5)
@@ -19,7 +19,7 @@ class BallInfo(QtWidgets.QGridLayout):
         self.whiteStatus = Ui_Label("stopped...", parent=parent, alignment=QtCore.Qt.AlignCenter)
         self.lastShotCount_label = Ui_Label("Last Shot\nSnapshot", parent=parent, alignment=QtCore.Qt.AlignCenter)
         self.curBallCount_label = Ui_Label("Current\nSnapshot", parent=parent, alignment=QtCore.Qt.AlignCenter)
-        self.model.white_statusChanged.connect(self.set_white_status)
+        self.logger.white_statusChanged.connect(self.set_white_status)
         
         self.addWidget(self.whiteStatus_label, 0, 0, 1, 2)
         self.addWidget(self.whiteStatus, 0, 2, 1, 2)
@@ -36,8 +36,8 @@ class BallInfo(QtWidgets.QGridLayout):
                 curBallCount = Ui_Label("0", parent=parent, alignment=QtCore.Qt.AlignCenter)
                 tempBallcount = Ui_Label("0", parent=parent, alignment=QtCore.Qt.AlignCenter)
 
-                self.model.last_shot_snapshot.colours[colour].countChanged.connect(lastShot_ballCount.setNum)
-                self.model.cur_shot_snapshot.colours[colour].countChanged.connect(curBallCount.setNum)
+                self.logger.last_shot_snapshot.colours[colour].countChanged.connect(lastShot_ballCount.setNum)
+                self.logger.cur_shot_snapshot.colours[colour].countChanged.connect(curBallCount.setNum)
 
                 self.addWidget(label, start_row, 0, 1, 1)
                 self.addWidget(lastShot_ballCount, start_row, 1, 1, 1)

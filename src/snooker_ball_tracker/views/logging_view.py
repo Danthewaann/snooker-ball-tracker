@@ -8,10 +8,8 @@ from .logging import BallsPottedList, BallInfo
 
 
 class LoggingView(QtWidgets.QGroupBox):
-    def __init__(self, model: Logger):
+    def __init__(self, logger: Logger):
         super().__init__("Logging")
-        self.model = model
-
         self.layout = QtWidgets.QHBoxLayout(self)
         self.layout.setContentsMargins(15, 15, 15, 15)
         self.layout.setSpacing(15)
@@ -21,6 +19,6 @@ class LoggingView(QtWidgets.QGroupBox):
         self.widget_layout = QtWidgets.QHBoxLayout(self.widget)
         self.widget_layout.setSpacing(15)
 
-        self.widget_layout.addLayout(BallsPottedList(self.model))
-        self.widget_layout.addLayout(BallInfo(self.model))
+        self.widget_layout.addLayout(BallsPottedList(logger))
+        self.widget_layout.addLayout(BallInfo(logger))
         self.layout.addWidget(self.widget)

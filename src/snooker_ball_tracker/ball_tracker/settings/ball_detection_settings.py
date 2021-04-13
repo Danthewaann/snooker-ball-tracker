@@ -14,28 +14,17 @@ class BallDetectionSettings(QtCore.QObject):
         properties used by the ball tracker"""
         super().__init__()
         self._blob_detector = deepcopy(s.BLOB_DETECTOR)
-        self.models = OrderedDict([
+        self.groups = OrderedDict([
             ("convexity", BallDetectionSettingGroup("convexity")),
             ("inertia", BallDetectionSettingGroup("inertia")),
             ("circularity", BallDetectionSettingGroup("circularity")),
             ("area", BallDetectionSettingGroup("area", multiplier=1))
         ])
 
-        for model in self.models.values():
+        for model in self.groups.values():
             model.filter_byChanged[str, bool].connect(self.update_blob_detector)
             model.min_valueChanged[str, int].connect(self.update_blob_detector)
             model.max_valueChanged[str, int].connect(self.update_blob_detector)
-
-    def update_blob_detector(self, key: str, value: typing.Any):
-        """Update blob detector key value setting
-
-        :param key: name of setting to update
-        :type key: str
-        :param value: value to apply to setting
-        :type value: typing.Any
-        """
-        self._blob_detector[key] = value
-        self.blob_detectorChanged.emit()
 
     @property
     def blob_detector(self) -> dict:
@@ -55,5 +44,16 @@ class BallDetectionSettings(QtCore.QObject):
         :param value: value to set
         :type value: dict
         """
-        for model in self.models.values():
+        for model in self.groups.values():
             model.update(value)
+
+    def update_blob_detector(self, key: str, value: typing.Any):
+        """Update blob detector key value setting
+
+        :param key: name of setting to update
+        :type key: str
+        :param value: value to apply to setting
+        :type value: typing.Any
+        """
+        self._blob_detector[key] = value
+        self.blob_detectorChanged.emit()

@@ -4,17 +4,16 @@ import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
 import snooker_ball_tracker.settings as s
-from snooker_ball_tracker.ball_tracker import Observer
-from snooker_ball_tracker.ball_tracker.settings import ColourDetectionSettings
+from snooker_ball_tracker.ball_tracker import ColourDetectionSettings, Observer
 
 from ..components import (Ui_Combobox, Ui_Label, Ui_Line, Ui_PushButton,
                           Ui_RadioButton, Ui_Slider)
 
 
 class ColourDetectionTab(QtWidgets.QWidget):
-    def __init__(self, model: ColourDetectionSettings):
+    def __init__(self, colour_settings: ColourDetectionSettings):
         super().__init__()
-        self.model = model
+        self.colour_settings = colour_settings
         self.slider_names = ["Hue", "Saturation", "Value"]
 
         self.layout = QtWidgets.QGridLayout(self)
@@ -43,22 +42,22 @@ class ColourDetectionTab(QtWidgets.QWidget):
         }
 
         self.observers = [
-            Observer([(self.option_bar_widgets["detectColour_combobox"], "currentText"), (self.model, "selected_colour")]),
+            Observer([(self.option_bar_widgets["detectColour_combobox"], "currentText"), (self.colour_settings, "selected_colour")]),
             Observer([
                 (self.option_bar_widgets["showMask_yradio"], "state"),
                 (self.option_bar_widgets["showMask_nradio"], "state"),
-                (self.model, "colour_mask")
+                (self.colour_settings, "colour_mask")
             ]),
             [
                 (Observer([
                     (self.range_slider_widgets[name]["l_value"], "text"), 
                     (self.range_slider_widgets[name]["l_slider"], "value"), 
-                    (self.model.colour_model, "l_"+name)
+                    (self.colour_settings.colour_model, "l_"+name)
                 ]),
                 Observer([
                     (self.range_slider_widgets[name]["u_value"], "text"), 
                     (self.range_slider_widgets[name]["u_slider"], "value"), 
-                    (self.model.colour_model, "u_"+name)
+                    (self.colour_settings.colour_model, "u_"+name)
                 ])) for name in self.slider_names
             ]
         ]
@@ -110,4 +109,4 @@ class ColourDetectionTab(QtWidgets.QWidget):
             
     @QtCore.pyqtSlot()
     def on_reset_btn_pressed(self):
-        self.model.reset()
+        self.colour_settings.reset()

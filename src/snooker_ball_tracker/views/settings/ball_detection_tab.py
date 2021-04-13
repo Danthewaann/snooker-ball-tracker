@@ -4,25 +4,24 @@ import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
 import snooker_ball_tracker.settings as s
-from snooker_ball_tracker.ball_tracker import Observer
-from snooker_ball_tracker.ball_tracker.settings import (
-    BallDetectionSettingGroup, BallDetectionSettings)
+from snooker_ball_tracker.ball_tracker import (BallDetectionSettingGroup,
+                                               BallDetectionSettings, Observer)
 
 from ..components import Ui_Label, Ui_PushButton, Ui_RadioButton, Ui_Slider
 
 
 class BallDetectionTab(QtWidgets.QWidget):
-    def __init__(self, model: BallDetectionSettings):
+    def __init__(self, ball_settings: BallDetectionSettings):
         super().__init__()
-        self.model = model
+        self.ball_settings = ball_settings
 
         self.layout = QtWidgets.QGridLayout(self)
 
         self.setting_group_widgets = OrderedDict([
-            ("convexity", BallDetectionSettingView("Convexity", self.model.models["convexity"])),
-            ("inertia", BallDetectionSettingView("Inertia", self.model.models["inertia"])),
-            ("circularity", BallDetectionSettingView("Circularity", self.model.models["circularity"])),
-            ("area", BallDetectionSettingView("Area", self.model.models["area"], max_range=2000)),
+            ("convexity", BallDetectionSettingView("Convexity", self.ball_settings.groups["convexity"])),
+            ("inertia", BallDetectionSettingView("Inertia", self.ball_settings.groups["inertia"])),
+            ("circularity", BallDetectionSettingView("Circularity", self.ball_settings.groups["circularity"])),
+            ("area", BallDetectionSettingView("Area", self.ball_settings.groups["area"], max_range=2000)),
         ])
 
         self.layout.addWidget(self.setting_group_widgets["convexity"], 0, 0)
@@ -32,9 +31,9 @@ class BallDetectionTab(QtWidgets.QWidget):
 
 
 class BallDetectionSettingView(QtWidgets.QGroupBox):
-    def __init__(self, name, model: BallDetectionSettingGroup, max_range=100):
+    def __init__(self, name, settings: BallDetectionSettingGroup, max_range=100):
         super().__init__(name)
-        self.model = model
+        self.settings = settings
 
         self.layout = QtWidgets.QGridLayout(self)
         self.layout.setContentsMargins(10, 10, 10, 10)
@@ -72,23 +71,23 @@ class BallDetectionSettingView(QtWidgets.QGroupBox):
             Observer([
                 (self.widgets["filterBy_yradio"], "state", bool), 
                 (self.widgets["filterBy_nradio"], "state", bool),
-                (self.model, "filter_by", bool)
+                (self.settings, "filter_by", bool)
             ]),
             Observer([
                 (self.widgets["minVal_value"], "text", str),
                 (self.widgets["minVal_slider"], "value", int),
-                (self.model, "min_value", int)
+                (self.settings, "min_value", int)
             ]),
             Observer([
                 (self.widgets["maxVal_value"], "text", str),
                 (self.widgets["maxVal_slider"], "value", int),
-                (self.model, "max_value", int)
+                (self.settings, "max_value", int)
             ])
         ]
         
         QtCore.QMetaObject.connectSlotsByName(self)
-        self.model.reset()
+        self.settings.reset()
 
     @QtCore.pyqtSlot()
     def on_reset_btn_pressed(self):
-        self.model.reset()
+        self.settings.reset()

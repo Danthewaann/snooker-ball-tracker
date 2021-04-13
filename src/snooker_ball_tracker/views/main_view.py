@@ -6,7 +6,9 @@ import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
 import snooker_ball_tracker.settings as s
-from snooker_ball_tracker.ball_tracker import (BallTracker, Logger, Settings,
+from snooker_ball_tracker.ball_tracker import (BallDetectionSettings,
+                                               BallTracker,
+                                               ColourDetectionSettings, Logger,
                                                VideoPlayer)
 from snooker_ball_tracker.video_file_stream import VideoFileStream
 from snooker_ball_tracker.video_processor import VideoProcessor
@@ -40,15 +42,17 @@ class MainView(QtWidgets.QMainWindow):
         self.video_file = None
 
         self.logger = Logger()
-        self.settings = Settings()
+        self.colour_settings = ColourDetectionSettings()
+        self.ball_settings = BallDetectionSettings()
         self.video_player = VideoPlayer()
         self.video_player.restartSignal.connect(self.restart_video_player)
-        self.ball_tracker = BallTracker(logger=self.logger, settings=self.settings)
+        self.ball_tracker = BallTracker(logger=self.logger, 
+            colour_settings=self.colour_settings, ball_settings=self.ball_settings)
 
-        self.settings_view = SettingsView(self.settings)
+        self.settings_view = SettingsView(colour_settings=self.colour_settings, ball_settings=self.ball_settings)
         self.logging_view = LoggingView(self.logger)
         self.video_player_view = VideoPlayerView(self.video_player, 
-            self.settings.models["colour_detection"], videoFileOnClick=self.select_file_onclick)
+            self.colour_settings, videoFileOnClick=self.select_file_onclick)
 
         self.central_widget_layout.addWidget(self.settings_view, 0, 0, 1, 1)
         self.central_widget_layout.addWidget(self.logging_view, 1, 0, 1, 1)
@@ -57,7 +61,7 @@ class MainView(QtWidgets.QMainWindow):
 
         self.setCentralWidget(self.central_widget)
 
-        menu = self.menuBar().addMenu("File")
+        menu = self.menuBar().addMenu("Video")
         action = menu.addAction("Select Video File")
         action.triggered.connect(self.select_file_onclick)
 
@@ -131,12 +135,12 @@ class MainView(QtWidgets.QMainWindow):
 
         self.video_file_stream = VideoFileStream(
             self.video_file, video_player=self.video_player,
-            colours=self.settings.models["colour_detection"].colours, queue_size=1)
+            colours=self.colour_settings.colours, queue_size=1)
 
         self.video_processor = VideoProcessor(
             video_stream=self.video_file_stream, 
             logger=self.logger, video_player=self.video_player, 
-            colour_settings=self.settings.models["colour_detection"],
+            colour_settings=self.colour_settings,
             ball_tracker=self.ball_tracker, lock=self.video_processor_lock, 
             stop_event=self.video_processor_stop_event)
 

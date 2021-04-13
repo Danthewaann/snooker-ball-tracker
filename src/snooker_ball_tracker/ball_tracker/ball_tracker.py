@@ -6,21 +6,25 @@ import snooker_ball_tracker.settings as s
 
 from .logger import Logger
 from .logging import BallsPotted
+from .settings import BallDetectionSettings, ColourDetectionSettings
 from .snapshot import SnapShot
-from .tracker_settings import Settings
 from .util import Image, dist_between_two_balls, get_mask_contours_for_colour
 
 Keypoints = typing.Dict[str, typing.List[cv2.KeyPoint]]
 
 
 class BallTracker():
-    def __init__(self, logger: Logger=None, settings: Settings=None, **kwargs):
-        """Creates an instance of BallTracker
+    def __init__(self, logger: Logger=None, colour_settings: ColourDetectionSettings=None, 
+                 ball_settings: BallDetectionSettings=None, **kwargs):
+        """Creates an instance of BallTracker that detects balls in images provided to it
+        and maps colours to each ball detected.
 
         :param logger: logger that contains snapshots to log to, defaults to None
         :type logger: Logger, optional
-        :param settings: ball and colour detection settings instance, defaults to None
-        :type settings: Settings, optional
+        :param colour_settings: colour detection settings instance, defaults to None
+        :type colour_settings: ColourDetectionSettings, optional
+        :param ball_settings: ball detection settings instance, defaults to None
+        :type ball_settings: BallDetectionSettings, optional
         :param **kwargs: dictionary of options to use to configure
                          the underlying blob detector to detect balls with
         """
@@ -34,12 +38,16 @@ class BallTracker():
             self.__cur_shot_snapshot = SnapShot()
             self.__temp_snapshot = SnapShot()
             self.__white_status_setter = lambda value: value
-        if settings:
-            self.__colour_settings = settings.models["colour_detection"].colours
-            self.__ball_settings = settings.models["ball_detection"].blob_detector
-            settings.models["ball_detection"].blob_detectorChanged.connect(self.setup_blob_detector)
+
+        if colour_settings:
+            self.__colour_settings = colour_settings.colours
         else:
             self.__colour_settings = s.COLOURS
+
+        if ball_settings:
+            self.__ball_settings = ball_settings.blob_detector
+            ball_settings.blob_detectorChanged.connect(self.setup_blob_detector)
+        else:
             self.__ball_settings = s.BLOB_DETECTOR
             
         self.__keypoints: Keypoints = {}
