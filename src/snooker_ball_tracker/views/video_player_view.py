@@ -15,5 +15,6 @@ class VideoPlayerView(QtWidgets.QGroupBox):
         super().__init__("Video Player")
         self.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.layout = QtWidgets.QGridLayout(self)
+        self.layout.setContentsMargins(15, 15, 15, 15)
         self.layout.addWidget(Player(video_player, colours, videoFileOnClick), 0, 0, 1, 1)
         self.layout.addWidget(Options(video_player), 1, 0, 1, 1)
