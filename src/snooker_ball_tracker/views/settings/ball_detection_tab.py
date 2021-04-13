@@ -36,19 +36,19 @@ class BallDetectionSettingView(QtWidgets.QGroupBox):
         self.settings = settings
 
         self.layout = QtWidgets.QGridLayout(self)
-        self.layout.setContentsMargins(10, 10, 10, 10)
-        self.layout.setSpacing(10)
+        self.layout.setContentsMargins(5, 5, 5, 5)
+        self.layout.setSpacing(5)
 
         self.widgets = {
-            "filterBy_label": Ui_Label("Filter By", self, width=(120, 120), alignment=QtCore.Qt.AlignCenter),
+            "filterBy_label": Ui_Label("Filter By", self, alignment=QtCore.Qt.AlignCenter),
             "filterBy_yradio": Ui_RadioButton("Yes", value=True, parent=self, width=(50, 50)),
             "filterBy_nradio": Ui_RadioButton("No", value=False, checked=True, parent=self, width=(50, 50)),
-            "minVal_label": Ui_Label("Minimum Value", self, width=(120, 120), alignment=QtCore.Qt.AlignCenter, 
+            "minVal_label": Ui_Label("Min Value", self, alignment=QtCore.Qt.AlignCenter, 
                                      sizePolicy=(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)),
             "minVal_value": Ui_Label("0", self, alignment=QtCore.Qt.AlignCenter, width=(50, 50),
                               sizePolicy=(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)),
             "minVal_slider": Ui_Slider(max_range=max_range, parent=self, objectName="minVal_slider"),
-            "maxVal_label": Ui_Label("Maximum Value", self, width=(120, 120), alignment=QtCore.Qt.AlignCenter, 
+            "maxVal_label": Ui_Label("Max Value", self, alignment=QtCore.Qt.AlignCenter, 
                                    sizePolicy=(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)),
             "maxVal_value": Ui_Label("0", self, alignment=QtCore.Qt.AlignCenter, width=(50, 50),
                             sizePolicy=(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)),

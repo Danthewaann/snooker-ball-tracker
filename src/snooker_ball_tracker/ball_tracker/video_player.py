@@ -8,7 +8,7 @@ class VideoPlayer(QtCore.QObject):
         """Creates an instance of this class that contains properties used by the
         video player to display frames processed by the ball tracker"""
         super().__init__()
-        self._width = 1000
+        self._width = 1100
         self._height = 600
         self._play = False
         self._crop_frames = False

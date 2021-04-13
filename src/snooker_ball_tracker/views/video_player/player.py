@@ -61,7 +61,7 @@ class Player(QtWidgets.QFrame):
     def display_output_frame(self, output_frame):
         self.layout.removeWidget(self.selectVideoFile_btn)
         self.layout.addWidget(self.output_frame)
-        self.setStyleSheet("background-color: black")
+        self.output_frame.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         output_frame = QtGui.QImage(output_frame.data, output_frame.shape[1], 
             output_frame.shape[0], QtGui.QImage.Format_RGB888).rgbSwapped()
         self.output_frame.setPixmap(QtGui.QPixmap.fromImage(output_frame))
