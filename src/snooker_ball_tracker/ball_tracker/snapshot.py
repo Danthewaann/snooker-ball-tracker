@@ -10,7 +10,7 @@ from .util import dist_between_two_balls
 
 
 class SnapShot():
-    def __init__(self, balls: dict=None):
+    def __init__(self, balls: dict=None, ball_colours: dict=s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]):
         """Creates an instance of this class that contains ball counts for all
         possible ball colours
 
@@ -22,7 +22,7 @@ class SnapShot():
             self._colours = { colour: BallColour(keypoints) for colour, keypoints in balls.items()}
         else:
             self._colours = {
-                colour: BallColour() for colour in s.DETECT_COLOURS if s.DETECT_COLOURS[colour]
+                colour: BallColour() for colour in ball_colours if ball_colours[colour]
             }
 
     @property

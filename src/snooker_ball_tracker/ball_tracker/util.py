@@ -26,7 +26,8 @@ def dist_between_two_balls(first_ball: cv2.KeyPoint, second_ball: cv2.KeyPoint) 
     return np.sqrt(np.sum((arr[0] - arr[1]) ** 2))
 
 
-def get_mask_contours_for_colour(frame: np.ndarray, colour: str, colour_settings: dict=s.COLOURS) -> tuple:
+def get_mask_contours_for_colour(frame: np.ndarray, colour: str, 
+                                 colour_settings: dict=s.COLOUR_DETECTION_SETTINGS["COLOURS"]) -> tuple:
     """Obtains the colour mask of `colour` from `frame`
 
     :param frame: frame to process

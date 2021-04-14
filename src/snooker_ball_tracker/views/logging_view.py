@@ -38,8 +38,8 @@ class LoggingView(QtWidgets.QGroupBox):
         self.layout.addWidget(self.curBallCount_label, 2, 6, 1, 1)
 
         start_row = 3
-        for colour in s.DETECT_COLOURS:
-            if s.DETECT_COLOURS[colour]:
+        for colour, detectable in s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"].items():
+            if detectable:
                 label = Ui_Label(colour.lower() + 's', alignment=QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
                 lastShot_ballCount = Ui_Label("0", alignment=QtCore.Qt.AlignCenter)
                 curBallCount = Ui_Label("0", alignment=QtCore.Qt.AlignCenter)

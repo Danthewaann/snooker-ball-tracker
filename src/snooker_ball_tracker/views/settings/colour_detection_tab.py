@@ -24,7 +24,7 @@ class ColourDetectionTab(QtWidgets.QWidget):
 
         self.option_bar_widgets = {
             "detectColour_label": Ui_Label("Detect Colour", self, width=(50, 100), objectName="detectColour_label"),
-            "detectColour_combobox": Ui_Combobox(self, items=["None"] + [key[0].upper() + key[1:].lower() for key in s.COLOURS.keys()], 
+            "detectColour_combobox": Ui_Combobox(self, items=["None"] + [key[0].upper() + key[1:].lower() for key in s.COLOUR_DETECTION_SETTINGS["COLOURS"].keys()], 
                                                  objectName="detectColour_combobox"),
             "showMask_label": Ui_Label("Show Mask", self, width=(50, 100), objectName="showMask_label", alignment=QtCore.Qt.AlignCenter),
             "showMask_yradio": Ui_RadioButton("Yes", value=True, parent=self, objectName="showMask_yradio"),

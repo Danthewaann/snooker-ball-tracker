@@ -115,6 +115,6 @@ class BallDetectionSettingGroup(QtCore.QObject):
 
     def reset(self):
         """Reset properties to their previous values from settings"""
-        self.min_value = s.BLOB_DETECTOR["MIN_" + self._name.upper()] * self._multiplier
-        self.max_value = s.BLOB_DETECTOR["MAX_" + self._name.upper()] * self._multiplier
-        self.filter_by = s.BLOB_DETECTOR["FILTER_BY_" + self._name.upper()]
+        self.min_value = s.BALL_DETECTION_SETTINGS["MIN_" + self._name.upper()] * self._multiplier
+        self.max_value = s.BALL_DETECTION_SETTINGS["MAX_" + self._name.upper()] * self._multiplier
+        self.filter_by = s.BALL_DETECTION_SETTINGS["FILTER_BY_" + self._name.upper()]

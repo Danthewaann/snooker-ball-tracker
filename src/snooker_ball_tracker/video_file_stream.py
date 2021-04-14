@@ -10,7 +10,7 @@ from .video_stream import VideoStream
 
 class VideoFileStream(VideoStream, FileVideoStream):
     def __init__(self, path: str, video_player: VideoPlayer, 
-                 colours: dict=s.COLOURS, queue_size: int=128):
+                 colours: dict=s.COLOUR_DETECTION_SETTINGS["COLOURS"], queue_size: int=128):
         """Create instance of VideoFileStream that loads frames from a video file in a
         separate thread and performs some basic transformations
 

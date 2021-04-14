@@ -13,7 +13,7 @@ class ColourDetectionSettings(QtCore.QObject):
         """Creates and instance of this class that contains colour detection
         properties used by the ball tracker"""
         super().__init__()
-        self._colours = deepcopy(s.COLOURS)
+        self._settings = deepcopy(s.COLOUR_DETECTION_SETTINGS)
         self._colour_model = HSVColour()
         self._colour_mask = False
         self._selected_colour = "NONE"
@@ -32,7 +32,7 @@ class ColourDetectionSettings(QtCore.QObject):
         :return: colours
         :rtype: dict
         """
-        return self._colours
+        return self._settings["COLOURS"]
 
     @colours.setter
     def colours(self, value: dict):
@@ -41,9 +41,29 @@ class ColourDetectionSettings(QtCore.QObject):
         :param value: value to set
         :type value: dict
         """
-        self._colours = value
+        self._settings["COLOURS"] = value
         if self._selected_colour != "NONE":
-            self.colour_model.update(self._colours[self._selected_colour])
+            self.colour_model.update(self.colours[self._selected_colour])
+
+    @property
+    def settings(self) -> dict:
+        """Copy of colour detection settings loaded from settings
+
+        :return: settings
+        :rtype: dict
+        """
+        return self._settings
+
+    @settings.setter
+    def settings(self, value: dict):
+        """Settings setter
+
+        :param value: value to set
+        :type value: dict
+        """
+        self._settings = value
+        if self._selected_colour != "NONE":
+            self.colour_model.update(self.colours[self._selected_colour])
 
     @property
     def colour_model(self) -> HSVColour:
@@ -96,7 +116,7 @@ class ColourDetectionSettings(QtCore.QObject):
         self._selected_colour = value.upper()
 
         if self._selected_colour != "NONE":
-            self._colour_model.update(self._colours[self._selected_colour])
+            self._colour_model.update(self.colours[self._selected_colour])
         else:
             self._colour_model.clear()
 
@@ -112,9 +132,9 @@ class ColourDetectionSettings(QtCore.QObject):
         :param value: value to set to colour value
         :type value: int
         """
-        self._colours[self._selected_colour][_range][index] = value
+        self.colours[self._selected_colour][_range][index] = value
 
     def reset(self):
         """Reset selected colour in `colours` and `colour_model` with original values from settings"""
         if self._selected_colour != "NONE":
-            self._colour_model.update(s.COLOURS[self._selected_colour])
+            self._colour_model.update(s.COLOUR_DETECTION_SETTINGS["COLOURS"][self._selected_colour])

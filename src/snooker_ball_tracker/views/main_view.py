@@ -42,17 +42,17 @@ class MainView(QtWidgets.QMainWindow):
         self.video_file = None
 
         self.logger = Logger()
-        self.colour_settings = ColourDetectionSettings()
-        self.ball_settings = BallDetectionSettings()
+        self.colour_detection_settings = ColourDetectionSettings()
+        self.ball_detection_settings = BallDetectionSettings()
         self.video_player = VideoPlayer()
         self.video_player.restartSignal.connect(self.restart_video_player)
         self.ball_tracker = BallTracker(logger=self.logger, 
-            colour_settings=self.colour_settings, ball_settings=self.ball_settings)
+            colour_settings=self.colour_detection_settings, ball_settings=self.ball_detection_settings)
 
-        self.settings_view = SettingsView(colour_settings=self.colour_settings, ball_settings=self.ball_settings)
+        self.settings_view = SettingsView(colour_settings=self.colour_detection_settings, ball_settings=self.ball_detection_settings)
         self.logging_view = LoggingView(self.logger)
         self.video_player_view = VideoPlayerView(self.video_player, 
-            self.colour_settings, videoFileOnClick=self.select_file_onclick)
+            self.colour_detection_settings, videoFileOnClick=self.select_file_onclick)
 
         self.central_widget_layout.addWidget(self.logging_view, 0, 0, 1, 1)
         self.central_widget_layout.addWidget(self.settings_view, 1, 0, 1, 1)
@@ -134,12 +134,12 @@ class MainView(QtWidgets.QMainWindow):
 
         self.video_file_stream = VideoFileStream(
             self.video_file, video_player=self.video_player,
-            colours=self.colour_settings.colours, queue_size=1)
+            colours=self.colour_detection_settings.colours, queue_size=1)
 
         self.video_processor = VideoProcessor(
             video_stream=self.video_file_stream, 
             logger=self.logger, video_player=self.video_player, 
-            colour_settings=self.colour_settings,
+            colour_settings=self.colour_detection_settings,
             ball_tracker=self.ball_tracker, lock=self.video_processor_lock, 
             stop_event=self.video_processor_stop_event)
 
@@ -164,14 +164,16 @@ class MainView(QtWidgets.QMainWindow):
     def load_settings(self):
         """Load settings from user provided file"""
         settings_file, _ = QtWidgets.QFileDialog().getOpenFileName(self, "Load Settings", "")
+
         if not settings_file:
             return
 
         success, error = s.load(settings_file)
+
         if success:
             self.settings_file = settings_file
-            self.colour_settings.colours = deepcopy(s.COLOURS)
-            self.ball_settings.blob_detector = deepcopy(s.BLOB_DETECTOR)
+            self.colour_detection_settings.colours = deepcopy(s.COLOURS)
+            self.ball_detection_settings.blob_detector = deepcopy(s.BLOB_DETECTOR)
         else:
             error = QtWidgets.QMessageBox(self)
             error.setWindowTitle("Invalid Settings File!")
@@ -185,11 +187,15 @@ class MainView(QtWidgets.QMainWindow):
         if not settings_file:
             return
 
-        s.COLOURS = self.colour_settings.colours
-        s.BLOB_DETECTOR = self.ball_settings.blob_detector
-        success, error = s.save(settings_file)
+        success, error = s.save(settings_file, settings={
+            "COLOUR_DETECTION_SETTINGS": self.colour_detection_settings.settings, 
+            "BALL_DETECTION_SETTINGS": self.ball_detection_settings.settings
+        })
+
         if success:
             self.settings_file = settings_file
+            s.COLOUR_DETECTION_SETTINGS = deepcopy(self.colour_detection_settings.settings)
+            s.BALL_DETECTION_SETTINGS = deepcopy(self.ball_detection_settings.settings)
         else:
             error = QtWidgets.QMessageBox(self)
             error.setWindowTitle("Failed to Save Settings!")

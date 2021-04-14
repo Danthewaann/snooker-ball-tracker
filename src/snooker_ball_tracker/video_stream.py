@@ -13,7 +13,7 @@ from .ball_tracker.util import Image, get_mask_contours_for_colour
 
 class VideoStream(ABC):
     def __init__(self, video: typing.Any, video_player: VideoPlayer, 
-                 colours: dict=s.COLOURS, queue_size: int=128):
+                 colours: dict=s.COLOUR_DETECTION_SETTINGS["COLOURS"], queue_size: int=128):
         """VideoStream abstract base class that contains base functionality to
         process video streams
 
