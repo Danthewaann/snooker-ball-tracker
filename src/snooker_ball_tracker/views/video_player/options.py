@@ -52,8 +52,7 @@ class Options(QtWidgets.QWidget):
             Observer([(self.cropFrames_yradio, "state"), (self.cropFrames_nradio, "state"), (self.video_player, "crop_frames")]),
             Observer([(self.showThreshold_yradio, "state"), (self.showThreshold_nradio, "state"), (self.video_player, "show_threshold")]),
             Observer([(self.performMorph_yradio, "state"), (self.performMorph_nradio, "state"), (self.video_player, "perform_morph")]),
-            Observer([(self.video_stream_queue_value, "text"), (self.video_player, "queue_size")]),
-            Observer([(self.video_fps_value, "text"), (self.video_player, "fps")])
+            Observer([(self.video_stream_queue_value, "text"), (self.video_player, "queue_size")])
         ]
 
         self.layout.addWidget(self.video_fps_label,          1, 5)
@@ -73,14 +72,24 @@ class Options(QtWidgets.QWidget):
         self.layout.addWidget(self.performMorph_yradio,      2, 1)
         self.layout.addWidget(self.performMorph_nradio,      2, 0)
 
-        self.video_player.playChanged.connect(lambda value: self.play_btn.setText("Pause") if value else self.play_btn.setText("Play"))
+        self.video_player.playChanged.connect(self.update_on_play_changed)
+        self.video_player.fpsChanged.connect(self.video_fps_value.setNum)
         QtCore.QMetaObject.connectSlotsByName(self)
+
+    @QtCore.pyqtSlot(bool)
+    def update_on_play_changed(self, playing: bool):
+        if playing:
+            self.play_btn.setText("Pause")
+            self.video_player.start_fps()
+        else:
+            self.play_btn.setText("Play")
 
     @QtCore.pyqtSlot()
     def on_play_btn_pressed(self):
         if self.play_btn.text() == "Play":
             self.video_player.play_video = True
             self.play_btn.setText("Pause")
+            self.video_player.start_fps() 
         else:
             self.video_player.play_video = False
             self.play_btn.setText("Play")

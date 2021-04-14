@@ -1,6 +1,7 @@
 import numpy as np
 import PyQt5.QtCore as QtCore
 import snooker_ball_tracker.settings as s
+from imutils.video import FPS
 
 
 class VideoPlayer(QtCore.QObject):
@@ -16,7 +17,7 @@ class VideoPlayer(QtCore.QObject):
         self._perform_morph = False
         self._detect_table = False
         self._queue_size = 0
-        self._fps = 0
+        self.__fps = FPS()
         self._output_frame = np.array([])
         self._hsv_frame = np.array([])
 
@@ -188,26 +189,21 @@ class VideoPlayer(QtCore.QObject):
         self._queue_size = value
         self.queue_sizeChanged.emit(self._queue_size)
 
-    @property
-    def fps(self) -> int:
-        """FPS property
-
-        :return: fps
-        :rtype: int
-        """
-        return self._fps
-
     fpsChanged = QtCore.pyqtSignal(int)
 
-    @fps.setter
-    def fps(self, value: int):
-        """FPS setter
+    def start_fps(self):
+        """Start FPS timer"""
+        self.__fps = FPS()
+        self.__fps.start()
 
-        :param value: value to set
-        :type value: int
-        """
-        self._fps = value
-        self.fpsChanged.emit(self._fps)
+    def update_fps(self):
+        """Update FPS timer"""
+        self.__fps.update()
+
+    def stop_fps(self):
+        """Stop FPS timer"""
+        self.__fps.stop()
+        self.fpsChanged.emit(self.__fps.fps())
 
     @property
     def output_frame(self) -> np.ndarray:

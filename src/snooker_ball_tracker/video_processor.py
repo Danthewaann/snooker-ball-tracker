@@ -3,7 +3,6 @@ from copy import deepcopy
 from queue import Queue
 
 import cv2
-from imutils.video import FPS
 
 import settings as s
 
@@ -44,13 +43,12 @@ class VideoProcessor(threading.Thread):
         self.__stop_event = stop_event
         self.__image_producer = video_stream
         self.__image = None
-        self.__fps = FPS()
 
     def run(self):
         """Run the main video processor process"""
         self.__video_player.play_video = True
         self.__image_producer.start()
-        self.__fps.start()
+        self.__video_player.start_fps()
         self._process_next_image()
         self.__video_player.play_video = False
         self.__image_producer.Q = Queue(maxsize=16)
@@ -72,15 +70,14 @@ class VideoProcessor(threading.Thread):
         """
         with self.__producer_lock:
             image = self.__image_producer.read()
+            self.__video_player.update_fps()
 
         if image:
             self.__image = image
             self._process_image()
+            self.__video_player.stop_fps()
 
-        if self.__image_producer.running():
-            return True
-
-        return False
+        return self.__image_producer.running()
 
     def _process_image(self):
         """Process the currently loaded image"""
@@ -95,12 +92,7 @@ class VideoProcessor(threading.Thread):
             mask_colour=mask_colour
         )
 
-        if self.__video_player.play_video:
-            self.__fps.update()
-            self.__fps.stop()
-
         self.__video_player.queue_size = self.__image_producer.Q.qsize()
-        self.__video_player.fps = self.__fps.fps()
 
         with self.__producer_lock:
             self.__video_player.output_frame = output_frame
