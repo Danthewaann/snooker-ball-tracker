@@ -72,11 +72,11 @@ class VideoStream(ABC):
                 cv2.drawContours(
                     frame, [self._table_bounds], -1, (255, 255, 255), 3)
 
-            # crop frame, hsv and threshold
+            # fill frame, hsv and threshold
             if self._video_player.crop_frames and self._table_bounds is not None:
-                frame = self.crop(frame)
-                hsv = self.crop(hsv)
-                threshold = self.crop(threshold)
+                frame = self.fill(frame)
+                hsv = self.fill(hsv)
+                threshold = self.fill(threshold)
 
             return Image(frame, threshold, hsv)
 
@@ -103,6 +103,20 @@ class VideoStream(ABC):
             cv2.drawContours(self._table_bounds_mask, [
                              self._table_bounds], -1, (255, 255, 255), -1)
 
+    def fill(self, frame: np.ndarray) -> np.ndarray:
+        """Fill `frame` using the detected table boundary
+
+        :param frame: frame to process
+        :type frame: np.ndarray
+        :return: frame filled around table boundary
+        :rtype: np.ndarray
+        """
+        # Extract out the object and place into output image
+        out = np.zeros(frame.shape).astype(frame.dtype)
+        out[self._table_bounds_mask == 255] = frame[self._table_bounds_mask == 255]
+        frame = cv2.bitwise_and(frame, out) 
+        return frame
+
     def crop(self, frame: np.ndarray) -> np.ndarray:
         """Crops `frame` using the detected table boundary
 
@@ -112,11 +126,13 @@ class VideoStream(ABC):
         :rtype: np.ndarray
         """
         # Extract out the object and place into output image
-        out = np.zeros_like(frame)
-        out[self._table_bounds_mask ==
-            255] = frame[self._table_bounds_mask == 255]
-        (x, y, _) = np.where(self._table_bounds_mask == 255)
-        (topx, topy) = (np.min(x), np.min(y))
-        (bottomx, bottomy) = (np.max(x), np.max(y))
-        frame = out[topx:bottomx + 1, topy:bottomy + 1]
-        return frame
+        # black = [255, 255, 255]
+        out = np.zeros(frame.shape).astype(frame.dtype)
+        # cv2.fillPoly(out, self._table_bounds, black)
+
+        out[self._table_bounds_mask == 255] = frame[self._table_bounds_mask == 255]
+        # (x, y, _) = np.where(self._table_bounds_mask == 255)
+        # (topx, topy) = (np.min(x), np.min(y))
+        # (bottomx, bottomy) = (np.max(x), np.max(y))
+        # frame = out[topx:bottomx + 1, topy:bottomy + 1]
+        return cv2.bitwise_and(frame, out)
