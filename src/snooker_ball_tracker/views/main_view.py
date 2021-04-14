@@ -170,8 +170,8 @@ class MainView(QtWidgets.QMainWindow):
         success, error = s.load(settings_file)
         if success:
             self.settings_file = settings_file
-            self.settings.models["colour_detection"].colours = deepcopy(s.COLOURS)
-            self.settings.models["ball_detection"].blob_detector = deepcopy(s.BLOB_DETECTOR)
+            self.colour_settings.colours = deepcopy(s.COLOURS)
+            self.ball_settings.blob_detector = deepcopy(s.BLOB_DETECTOR)
         else:
             error = QtWidgets.QMessageBox(self)
             error.setWindowTitle("Invalid Settings File!")
@@ -185,8 +185,8 @@ class MainView(QtWidgets.QMainWindow):
         if not settings_file:
             return
 
-        s.COLOURS = self.settings.models["colour_detection"].colours
-        s.BLOB_DETECTOR = self.settings.models["ball_detection"].blob_detector
+        s.COLOURS = self.colour_settings.colours
+        s.BLOB_DETECTOR = self.ball_settings.blob_detector
         success, error = s.save(settings_file)
         if success:
             self.settings_file = settings_file
