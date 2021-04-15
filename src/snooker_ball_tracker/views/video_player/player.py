@@ -26,6 +26,7 @@ class Player(QtWidgets.QFrame):
         
         self.selectVideoFile_btn = Ui_PushButton("Select Video File", parent=self, sizePolicy=QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed))
         self.output_frame = Ui_Label("", parent=self)
+        self.output_frame.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.output_frame.mousePressEvent = self.output_frame_onclick
 
         self.selectVideoFile_btn.pressed.connect(videoFileOnClick)
@@ -60,7 +61,6 @@ class Player(QtWidgets.QFrame):
         self.layout.removeWidget(self.selectVideoFile_btn)
         self.layout.addWidget(self.output_frame, alignment=QtCore.Qt.AlignCenter)
         self.setStyleSheet("background-color: black")
-        self.output_frame.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         output_frame = QtGui.QImage(output_frame.data, output_frame.shape[1], 
             output_frame.shape[0], QtGui.QImage.Format_RGB888).rgbSwapped()
         self.output_frame.setPixmap(QtGui.QPixmap.fromImage(output_frame))

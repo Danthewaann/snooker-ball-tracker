@@ -12,8 +12,7 @@ class LoggingView(QtWidgets.QGroupBox):
         super().__init__("Logging")
         self.logger = logger
         self.layout = QtWidgets.QGridLayout(self)
-        self.layout.setContentsMargins(25, 25, 25, 25)
-        self.layout.setSpacing(15)
+        self.layout.setSpacing(10)
 
         self.balls_potted_label = Ui_Label("Balls Potted", alignment=QtCore.Qt.AlignCenter)
         self.balls_potted_list = QtWidgets.QListView()

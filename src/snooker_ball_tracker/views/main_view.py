@@ -35,8 +35,7 @@ class MainView(QtWidgets.QMainWindow):
         self.central_widget_layout = QtWidgets.QHBoxLayout()
         self.column_1 = QtWidgets.QVBoxLayout()
         self.column_2 = QtWidgets.QVBoxLayout()
-        self.central_widget_layout.setContentsMargins(30, 30, 30, 30)
-        self.central_widget_layout.setSpacing(30)
+        self.central_widget_layout.setContentsMargins(15, 15, 15, 15)
 
         self.video_processor_lock = threading.Lock()
         self.video_processor_stop_event = threading.Event()
@@ -66,8 +65,7 @@ class MainView(QtWidgets.QMainWindow):
         self.central_widget_layout.addLayout(self.column_2, 45)
         self.central_widget_layout.addStretch(15)
 
-        self.main_layout.addLayout(self.central_widget_layout, 85)
-        self.main_layout.addStretch(15)
+        self.main_layout.addLayout(self.central_widget_layout)
 
         self.setCentralWidget(self.central_widget)
 
