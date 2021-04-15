@@ -14,5 +14,6 @@ class Ui_PushButton(QtWidgets.QPushButton):
             self.setMaximumHeight(height[1])
         if objectName: self.setObjectName(objectName)
         if sizePolicy: self.setSizePolicy(sizePolicy)
+        self.setStyleSheet("padding: .3em")
 
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))

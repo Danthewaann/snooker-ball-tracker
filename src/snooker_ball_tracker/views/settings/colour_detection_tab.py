@@ -18,7 +18,7 @@ class ColourDetectionTab(QtWidgets.QWidget):
 
         self.layout = QtWidgets.QGridLayout(self)
         self.layout.setContentsMargins(25, 25, 25, 25)
-        self.layout.setSpacing(10)
+        self.layout.setSpacing(20)
 
         self._label_policy = (QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
 
@@ -65,7 +65,7 @@ class ColourDetectionTab(QtWidgets.QWidget):
         self.layout.addWidget(Ui_Line(self),                                    0, 0, 1, 9)
         self.layout.addWidget(self.option_bar_widgets["detectColour_label"],    1, 0, 1, 1)
         self.layout.addWidget(self.option_bar_widgets["detectColour_combobox"], 1, 1, 1, 3)
-        self.layout.addWidget(self.option_bar_widgets["showMask_label"],        1, 4, 1, 1)
+        self.layout.addWidget(self.option_bar_widgets["showMask_label"],        1, 4, 1, 1, )
         self.layout.addWidget(self.option_bar_widgets["showMask_yradio"],       1, 5, 1, 1)
         self.layout.addWidget(self.option_bar_widgets["showMask_nradio"],       1, 6, 1, 1)
         self.layout.addWidget(self.option_bar_widgets["reset_btn"],             1, 8, 1, 1)

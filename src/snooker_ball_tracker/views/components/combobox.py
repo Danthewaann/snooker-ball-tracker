@@ -17,6 +17,6 @@ class Ui_Combobox(QtWidgets.QComboBox):
         if objectName: self.setObjectName(objectName)
 
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.setMinimumWidth(100)
+        self.setStyleSheet("padding: .3em")
         self.setSizePolicy(QtWidgets.QSizePolicy(sizePolicy[0], sizePolicy[1]))
 

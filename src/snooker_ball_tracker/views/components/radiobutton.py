@@ -19,6 +19,7 @@ class Ui_RadioButton(QtWidgets.QRadioButton):
 
         self._value = value
 
+        self.setStyleSheet("padding; .3em")
         self.setSizePolicy(QtWidgets.QSizePolicy(sizePolicy[0], sizePolicy[1]))
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.setChecked(checked)

@@ -24,7 +24,8 @@ class LoggingView(QtWidgets.QGroupBox):
         self.clear_btn = Ui_PushButton("Clear", objectName="clear_btn")
 
         self.whiteStatus_label = Ui_Label("White Ball Status:", alignment=QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
-        self.whiteStatus = Ui_Label("stopped...", alignment=QtCore.Qt.AlignCenter)
+        self.whiteStatus = Ui_Label("stopped...", width=(0, 150), 
+            alignment=QtCore.Qt.AlignCenter, sizePolicy=(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred))
         self.lastShotCount_label = Ui_Label("Last Shot\nSnapshot", alignment=QtCore.Qt.AlignCenter)
         self.curBallCount_label = Ui_Label("Current\nSnapshot", alignment=QtCore.Qt.AlignCenter)
 
@@ -43,7 +44,6 @@ class LoggingView(QtWidgets.QGroupBox):
                 label = Ui_Label(colour.lower() + 's', alignment=QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
                 lastShot_ballCount = Ui_Label("0", alignment=QtCore.Qt.AlignCenter)
                 curBallCount = Ui_Label("0", alignment=QtCore.Qt.AlignCenter)
-                tempBallcount = Ui_Label("0", alignment=QtCore.Qt.AlignCenter)
 
                 self.logger.last_shot_snapshot.colours[colour].countChanged.connect(lastShot_ballCount.setNum)
                 self.logger.cur_shot_snapshot.colours[colour].countChanged.connect(curBallCount.setNum)
