@@ -36,24 +36,24 @@ class BallDetectionSettingView(QtWidgets.QGroupBox):
         self.settings = settings
 
         self.layout = QtWidgets.QGridLayout(self)
-        self.layout.setContentsMargins(5, 5, 5, 5)
-        self.layout.setSpacing(5)
+        self.layout.setContentsMargins(10, 10, 10, 10)
+        self.layout.setSpacing(20)
 
         self.widgets = {
             "filterBy_label": Ui_Label("Filter By", self, alignment=QtCore.Qt.AlignCenter),
-            "filterBy_yradio": Ui_RadioButton("Yes", value=True, parent=self, width=(50, 50)),
-            "filterBy_nradio": Ui_RadioButton("No", value=False, checked=True, parent=self, width=(50, 50)),
+            "filterBy_yradio": Ui_RadioButton("Yes", value=True, parent=self),
+            "filterBy_nradio": Ui_RadioButton("No", value=False, checked=True, parent=self),
             "minVal_label": Ui_Label("Min Value", self, alignment=QtCore.Qt.AlignCenter, 
                                      sizePolicy=(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)),
-            "minVal_value": Ui_Label("0", self, alignment=QtCore.Qt.AlignCenter, width=(50, 50),
+            "minVal_value": Ui_Label("0", self, alignment=QtCore.Qt.AlignCenter,
                               sizePolicy=(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)),
             "minVal_slider": Ui_Slider(max_range=max_range, parent=self, objectName="minVal_slider"),
             "maxVal_label": Ui_Label("Max Value", self, alignment=QtCore.Qt.AlignCenter, 
                                    sizePolicy=(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)),
-            "maxVal_value": Ui_Label("0", self, alignment=QtCore.Qt.AlignCenter, width=(50, 50),
+            "maxVal_value": Ui_Label("0", self, alignment=QtCore.Qt.AlignCenter,
                             sizePolicy=(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)),
             "maxVal_slider": Ui_Slider(max_range=max_range, parent=self, objectName="maxVal_slider"),
-            "reset_btn": Ui_PushButton("Reset", self, width=(0, 100), objectName="reset_btn")
+            "reset_btn": Ui_PushButton("Reset", self, objectName="reset_btn")
         }
 
         self.layout.addWidget(self.widgets["filterBy_label"],  0, 0, 1, 1)

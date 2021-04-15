@@ -31,7 +31,10 @@ class MainView(QtWidgets.QMainWindow):
         self.showMaximized()
 
         self.central_widget = QtWidgets.QWidget(self)
-        self.central_widget_layout = QtWidgets.QGridLayout(self.central_widget)
+        self.main_layout = QtWidgets.QVBoxLayout(self.central_widget)
+        self.central_widget_layout = QtWidgets.QHBoxLayout()
+        self.column_1 = QtWidgets.QVBoxLayout()
+        self.column_2 = QtWidgets.QVBoxLayout()
         self.central_widget_layout.setContentsMargins(30, 30, 30, 30)
         self.central_widget_layout.setSpacing(30)
 
@@ -54,10 +57,17 @@ class MainView(QtWidgets.QMainWindow):
         self.video_player_view = VideoPlayerView(self.video_player, 
             self.colour_detection_settings, videoFileOnClick=self.select_file_onclick)
 
-        self.central_widget_layout.addWidget(self.logging_view, 0, 0, 1, 1)
-        self.central_widget_layout.addWidget(self.settings_view, 1, 0, 1, 1)
-        self.central_widget_layout.addWidget(self.video_player_view, 0, 1, 2, 1)
-        self.central_widget_layout.setColumnStretch(1, 2)
+        self.column_1.addWidget(self.logging_view, 40)
+        self.column_1.addWidget(self.settings_view, 40)
+        self.column_2.addWidget(self.video_player_view, 100)
+
+        self.central_widget_layout.addStretch(15)
+        self.central_widget_layout.addLayout(self.column_1, 25)
+        self.central_widget_layout.addLayout(self.column_2, 45)
+        self.central_widget_layout.addStretch(15)
+
+        self.main_layout.addLayout(self.central_widget_layout, 85)
+        self.main_layout.addStretch(15)
 
         self.setCentralWidget(self.central_widget)
 

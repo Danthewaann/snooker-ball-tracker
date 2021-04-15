@@ -12,7 +12,7 @@ class LoggingView(QtWidgets.QGroupBox):
         super().__init__("Logging")
         self.logger = logger
         self.layout = QtWidgets.QGridLayout(self)
-        self.layout.setContentsMargins(15, 15, 15, 15)
+        self.layout.setContentsMargins(25, 25, 25, 25)
         self.layout.setSpacing(15)
 
         self.balls_potted_label = Ui_Label("Balls Potted", alignment=QtCore.Qt.AlignCenter)
@@ -21,10 +21,10 @@ class LoggingView(QtWidgets.QGroupBox):
         self.balls_potted_list.setModel(self.logger.balls_potted)
         
         self.logger.balls_potted.layoutChanged.connect(lambda: self.balls_potted_list.scrollToBottom())
-        self.clear_btn = Ui_PushButton("Clear", width=(100, 100), objectName="clear_btn")
+        self.clear_btn = Ui_PushButton("Clear", objectName="clear_btn")
 
         self.whiteStatus_label = Ui_Label("White Ball Status:", alignment=QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
-        self.whiteStatus = Ui_Label("stopped...", width=(100, 100), alignment=QtCore.Qt.AlignCenter)
+        self.whiteStatus = Ui_Label("stopped...", alignment=QtCore.Qt.AlignCenter)
         self.lastShotCount_label = Ui_Label("Last Shot\nSnapshot", alignment=QtCore.Qt.AlignCenter)
         self.curBallCount_label = Ui_Label("Current\nSnapshot", alignment=QtCore.Qt.AlignCenter)
 

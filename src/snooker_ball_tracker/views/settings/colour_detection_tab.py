@@ -17,16 +17,16 @@ class ColourDetectionTab(QtWidgets.QWidget):
         self.slider_names = ["Hue", "Saturation", "Value"]
 
         self.layout = QtWidgets.QGridLayout(self)
-        self.layout.setContentsMargins(15, 15, 15, 15)
+        self.layout.setContentsMargins(25, 25, 25, 25)
         self.layout.setSpacing(10)
 
         self._label_policy = (QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
 
         self.option_bar_widgets = {
-            "detectColour_label": Ui_Label("Detect Colour", self, width=(50, 100), objectName="detectColour_label"),
+            "detectColour_label": Ui_Label("Detect Colour", self, objectName="detectColour_label"),
             "detectColour_combobox": Ui_Combobox(self, items=["None"] + [key[0].upper() + key[1:].lower() for key in s.COLOUR_DETECTION_SETTINGS["COLOURS"].keys()], 
                                                  objectName="detectColour_combobox"),
-            "showMask_label": Ui_Label("Show Mask", self, width=(50, 100), objectName="showMask_label", alignment=QtCore.Qt.AlignCenter),
+            "showMask_label": Ui_Label("Show Mask", self, objectName="showMask_label", alignment=QtCore.Qt.AlignCenter),
             "showMask_yradio": Ui_RadioButton("Yes", value=True, parent=self, objectName="showMask_yradio"),
             "showMask_nradio": Ui_RadioButton("No", value=False, parent=self, checked=True, objectName="showMask_nradio"),
             "reset_btn": Ui_PushButton("Reset", parent=self, objectName="reset_btn")
@@ -90,9 +90,9 @@ class ColourDetectionTab(QtWidgets.QWidget):
     def _create_range_slider_widget(self, name):
         return {
             "label": Ui_Label(name, parent=self, sizePolicy=self._label_policy),
-            "l_value": Ui_Label("0", parent=self, width=(50, 100), objectName=name+"_l_value", sizePolicy=self._label_policy, alignment=QtCore.Qt.AlignCenter),
+            "l_value": Ui_Label("0", parent=self, objectName=name+"_l_value", sizePolicy=self._label_policy, alignment=QtCore.Qt.AlignCenter),
             "l_slider": Ui_Slider(255, parent=self, name=name, objectName=name+"_l_slider", sizePolicy=self._label_policy),
-            "u_value": Ui_Label("0", parent=self, width=(50, 100), objectName=name+"_u_value", sizePolicy=self._label_policy, alignment=QtCore.Qt.AlignCenter),
+            "u_value": Ui_Label("0", parent=self, objectName=name+"_u_value", sizePolicy=self._label_policy, alignment=QtCore.Qt.AlignCenter),
             "u_slider": Ui_Slider(255, parent=self, name=name, objectName=name+"_u_slider", sizePolicy=self._label_policy)
         }
 

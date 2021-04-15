@@ -18,15 +18,13 @@ class Player(QtWidgets.QFrame):
         self.colours = colours
 
         self.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
-        self.setMaximumWidth(self.video_player.width)
-        self.setMaximumHeight(self.video_player.height)
         self.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.setFrameShadow(QtWidgets.QFrame.Raised)
 
         self.layout = QtWidgets.QHBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
         
-        self.selectVideoFile_btn = Ui_PushButton("Select Video File", parent=self, width=(200, 200))
+        self.selectVideoFile_btn = Ui_PushButton("Select Video File", parent=self, sizePolicy=QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed))
         self.output_frame = Ui_Label("", parent=self)
         self.output_frame.mousePressEvent = self.output_frame_onclick
 
@@ -60,7 +58,8 @@ class Player(QtWidgets.QFrame):
 
     def display_output_frame(self, output_frame):
         self.layout.removeWidget(self.selectVideoFile_btn)
-        self.layout.addWidget(self.output_frame)
+        self.layout.addWidget(self.output_frame, alignment=QtCore.Qt.AlignCenter)
+        self.setStyleSheet("background-color: black")
         self.output_frame.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         output_frame = QtGui.QImage(output_frame.data, output_frame.shape[1], 
             output_frame.shape[0], QtGui.QImage.Format_RGB888).rgbSwapped()

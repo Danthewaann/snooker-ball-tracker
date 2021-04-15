@@ -3,7 +3,7 @@ import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
 from snooker_ball_tracker.ball_tracker import Observer, VideoPlayer
 
-from ..components import Ui_Label, Ui_PushButton, Ui_RadioButton
+from ..components import Ui_Label, Ui_PushButton, Ui_RadioButton, Ui_Line
 
 
 class Options(QtWidgets.QWidget):
@@ -11,21 +11,21 @@ class Options(QtWidgets.QWidget):
         super().__init__()
         self.video_player = video_player
 
-        self.setMaximumSize(QtCore.QSize(575, 16777215))
         self.layout = QtWidgets.QGridLayout(self)
         self.layout.setHorizontalSpacing(10)
         self.layout.setContentsMargins(15, 15, 15, 15)
+        self.layout.setSpacing(15)
         self.setLayoutDirection(QtCore.Qt.RightToLeft)
 
-        self.video_stream_queue_label = Ui_Label("Queue Size:", height=(0, 30), alignment=QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.video_stream_queue_value = Ui_Label("0", height=(0, 30), width=(20, 20), alignment=QtCore.Qt.AlignCenter)
+        self.video_stream_queue_label = Ui_Label("Queue Size:", alignment=QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.video_stream_queue_value = Ui_Label("0", alignment=QtCore.Qt.AlignCenter)
 
-        self.video_fps_label = Ui_Label("FPS:", height=(0, 30), alignment=QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.video_fps_value = Ui_Label("0", height=(0, 30), width=(20, 20), alignment=QtCore.Qt.AlignCenter)
+        self.video_fps_label = Ui_Label("FPS:", alignment=QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.video_fps_value = Ui_Label("0", alignment=QtCore.Qt.AlignCenter)
 
-        self.play_btn = Ui_PushButton("Play", self, height=(0, 30), objectName="play_btn")
-        self.restart_btn = Ui_PushButton("Restart", self, height=(0, 30), objectName="restart_btn")
-        self.detectTable_btn = Ui_PushButton("Detect Table", self, height=(0, 30), objectName="detectTable_btn")
+        self.play_btn = Ui_PushButton("Play", self, objectName="play_btn")
+        self.restart_btn = Ui_PushButton("Restart", self, objectName="restart_btn")
+        self.detectTable_btn = Ui_PushButton("Detect Table", self, objectName="detectTable_btn")
         
         self.showThreshold_label = Ui_Label("Show Threshold", self, alignment=QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
         self.showThreshold_yradio = Ui_RadioButton("Yes", parent=self, value=True)
@@ -55,13 +55,16 @@ class Options(QtWidgets.QWidget):
             Observer([(self.video_stream_queue_value, "text"), (self.video_player, "queue_size")])
         ]
 
-        self.layout.addWidget(self.video_fps_label,          1, 5)
-        self.layout.addWidget(self.video_fps_value,          1, 4)
-        self.layout.addWidget(self.video_stream_queue_label, 0, 5)
-        self.layout.addWidget(self.video_stream_queue_value, 0, 4)
-        self.layout.addWidget(self.play_btn,                 0, 3)
-        self.layout.addWidget(self.restart_btn,              1, 3)
-        self.layout.addWidget(self.detectTable_btn,          2, 3)
+        self.layout.addItem(QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding), 0, 8, 3, 1)
+        self.layout.addWidget(self.video_stream_queue_label, 0, 7)
+        self.layout.addWidget(self.video_stream_queue_value, 0, 6)
+        self.layout.addWidget(self.video_fps_label,          1, 7)
+        self.layout.addWidget(self.video_fps_value,          1, 6)
+        self.layout.addWidget(Ui_Line(shape=QtWidgets.QFrame.VLine), 0, 5, 3, 1)
+        self.layout.addWidget(self.play_btn,                 0, 4)
+        self.layout.addWidget(self.restart_btn,              1, 4)
+        self.layout.addWidget(self.detectTable_btn,          2, 4)
+        self.layout.addWidget(Ui_Line(shape=QtWidgets.QFrame.VLine), 0, 3, 3, 1)
         self.layout.addWidget(self.showThreshold_label,      0, 2)
         self.layout.addWidget(self.showThreshold_yradio,     0, 1)
         self.layout.addWidget(self.showThreshold_nradio,     0, 0)
@@ -71,6 +74,7 @@ class Options(QtWidgets.QWidget):
         self.layout.addWidget(self.performMorph_label,       2, 2)
         self.layout.addWidget(self.performMorph_yradio,      2, 1)
         self.layout.addWidget(self.performMorph_nradio,      2, 0)
+        self.layout.addItem(QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding), 3, 0, 1, 5)
 
         self.video_player.playChanged.connect(self.update_on_play_changed)
         self.video_player.fpsChanged.connect(self.video_fps_value.setNum)
