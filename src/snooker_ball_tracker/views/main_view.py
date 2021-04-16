@@ -1,22 +1,15 @@
-import threading
-from copy import deepcopy
-
 import cv2
 import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
 import snooker_ball_tracker.settings as s
-from snooker_ball_tracker.ball_tracker import (BallDetectionSettings,
-                                               BallTracker,
-                                               ColourDetectionSettings, Logger,
-                                               VideoPlayer)
-from snooker_ball_tracker.video_file_stream import VideoFileStream
-from snooker_ball_tracker.video_processor import VideoProcessor
+from snooker_ball_tracker.ball_tracker import BallTracker, VideoPlayer
 
+from .actions import (load_settings_action, save_settings_action,
+                      select_video_file_action)
 from .logging_view import LoggingView
 from .settings_view import SettingsView
 from .video_player_view import VideoPlayerView
-from .actions import select_video_file_action, load_settings_action, save_settings_action
 
 
 class MainView(QtWidgets.QMainWindow):
@@ -38,23 +31,13 @@ class MainView(QtWidgets.QMainWindow):
         self.column_2 = QtWidgets.QVBoxLayout()
         self.central_widget_layout.setContentsMargins(15, 15, 15, 15)
 
-        self.video_processor_lock = threading.Lock()
-        self.video_processor_stop_event = threading.Event()
-        self.video_processor = None
-        self.video_file_stream = None
-        self.video_file = None
+        self.ball_tracker = BallTracker()
+        self.video_player = VideoPlayer(self.ball_tracker)
 
-        self.logger = Logger()
-        self.colour_detection_settings = ColourDetectionSettings()
-        self.ball_detection_settings = BallDetectionSettings()
-        self.video_player = VideoPlayer()
-        self.video_player.restartSignal.connect(self.restart_video_player)
-        self.ball_tracker = BallTracker(logger=self.logger, 
-            colour_settings=self.colour_detection_settings, ball_settings=self.ball_detection_settings)
-
-        self.settings_view = SettingsView(colour_settings=self.colour_detection_settings, ball_settings=self.ball_detection_settings)
-        self.logging_view = LoggingView(self.logger)
-        self.video_player_view = VideoPlayerView(self.video_player, self.colour_detection_settings)
+        self.settings_view = SettingsView(colour_settings=self.ball_tracker.colour_settings, 
+            ball_settings=self.ball_tracker.ball_settings)
+        self.logging_view = LoggingView(self.ball_tracker.logger)
+        self.video_player_view = VideoPlayerView(self.video_player, self.ball_tracker.colour_settings)
 
         self.column_1.addWidget(self.logging_view, 40)
         self.column_1.addWidget(self.settings_view, 40)
@@ -91,7 +74,7 @@ class MainView(QtWidgets.QMainWindow):
         :param event: close event instance
         :type event: QtGui.QCloseEvent
         """
-        self.__destroy_video_threads()
+        self.video_player.destroy_video_threads()
         event.accept()
 
     def select_file_onclick(self):
@@ -103,54 +86,9 @@ class MainView(QtWidgets.QMainWindow):
         Passes the video file to the VideoProcessor thread for processing
         and display.
         """
-        self.video_file = select_video_file_action()
-        if self.video_file:
-            self.__destroy_video_threads()
-            self.video_player.play = False
-            self.start_video_player()
-
-    def start_video_player(self):
-        """Creates VideoProcessor and VideoFileStream instances to handle 
-        the selected video file.
-
-        The VideoFileStream is the producer thread and the VideoProcessor
-        is the consumer thread, where the VideoFileStream instance reads
-        frames from the video file and puts them into a queue for the
-        VideoProcessor to obtain frames to process from.
-
-        The VideoProcessor then passes processed frames to the VideoPlayer
-        to display to the user.
-        """
-        self.video_processor_stop_event.clear()
-
-        self.video_file_stream = VideoFileStream(
-            self.video_file, video_player=self.video_player,
-            colour_settings=self.colour_detection_settings, queue_size=1)
-
-        self.video_processor = VideoProcessor(
-            video_stream=self.video_file_stream, 
-            logger=self.logger, video_player=self.video_player, 
-            colour_settings=self.colour_detection_settings,
-            ball_tracker=self.ball_tracker, lock=self.video_processor_lock, 
-            stop_event=self.video_processor_stop_event)
-
-        self.video_processor.start()
-
-    def restart_video_player(self):
-        """Restart the video player by destroying the VideoProcessor
-        and VideoFileStream instances and creating new ones before 
-        starting the video player again."""
-        self.__destroy_video_threads()
-        self.start_video_player()
-
-    def __destroy_video_threads(self):
-        """Destroy the VideoProcessor and VideoFileStream thread instances"""
-        if self.video_processor is not None:
-            if self.video_file_stream is not None:
-                with self.video_processor_lock:
-                    self.video_file_stream.stop()
-            self.video_processor_stop_event.set()
-            self.video_processor.join()
+        video_file = select_video_file_action()
+        if video_file:
+            self.video_player.start(video_file)
 
     def load_settings(self):
         """Load settings from user provided file"""

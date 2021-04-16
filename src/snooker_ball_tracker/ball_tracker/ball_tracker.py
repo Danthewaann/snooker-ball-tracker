@@ -28,27 +28,17 @@ class BallTracker():
         :param **kwargs: dictionary of options to use to configure
                          the underlying blob detector to detect balls with
         """
-        if logger:
-            self.__last_shot_snapshot = logger.last_shot_snapshot
-            self.__cur_shot_snapshot = logger.cur_shot_snapshot
-            self.__temp_snapshot = logger.temp_snapshot
-            self.__white_status_setter = logger.set_white_status
-        else:
-            self.__last_shot_snapshot = SnapShot()
-            self.__cur_shot_snapshot = SnapShot()
-            self.__temp_snapshot = SnapShot()
-            self.__white_status_setter = lambda value: value
+        self.logger = logger or Logger()
+        
+        self.__last_shot_snapshot = self.logger.last_shot_snapshot
+        self.__cur_shot_snapshot = self.logger.cur_shot_snapshot
+        self.__temp_snapshot = self.logger.temp_snapshot
+        self.__white_status_setter = self.logger.set_white_status
 
-        if colour_settings:
-            self.__colour_settings = colour_settings.colours
-        else:
-            self.__colour_settings = s.COLOURS
+        self.colour_settings = colour_settings or ColourDetectionSettings()
 
-        if ball_settings:
-            self.__ball_settings = ball_settings.settings
-            ball_settings.settingsChanged.connect(self.setup_blob_detector)
-        else:
-            self.__ball_settings = s.BLOB_DETECTOR
+        self.ball_settings = ball_settings or BallDetectionSettings()
+        self.ball_settings.settingsChanged.connect(self.setup_blob_detector)
             
         self.__keypoints: Keypoints = {}
         self.__blob_detector: cv2.SimpleBlobDetector = None
@@ -59,21 +49,21 @@ class BallTracker():
     def setup_blob_detector(self, **kwargs):
         """Setup underlying blob detector with provided kwargs"""
         params = cv2.SimpleBlobDetector_Params()
-        params.filterByConvexity = kwargs.get('FILTER_BY_CONVEXITY', self.__ball_settings["FILTER_BY_CONVEXITY"])
-        params.minConvexity = kwargs.get('MIN_CONVEXITY', self.__ball_settings["MIN_CONVEXITY"])
-        params.maxConvexity = kwargs.get('MAX_CONVEXITY', self.__ball_settings["MAX_CONVEXITY"])
-        params.filterByCircularity = kwargs.get('FILTER_BY_CIRCULARITY', self.__ball_settings["FILTER_BY_CIRCULARITY"])
-        params.minCircularity = kwargs.get('MIN_CIRCULARITY', self.__ball_settings["MIN_CIRCULARITY"])
-        params.maxCircularity = kwargs.get('MAX_CIRCULARITY', self.__ball_settings["MAX_CIRCULARITY"])
-        params.filterByInertia = kwargs.get('FILTER_BY_INERTIA', self.__ball_settings["FILTER_BY_INERTIA"])
-        params.minInertiaRatio = kwargs.get('MIN_INERTIA', self.__ball_settings["MIN_INERTIA"])
-        params.maxInertiaRatio = kwargs.get('MAX_INERTIA', self.__ball_settings["MAX_INERTIA"])
-        params.filterByArea = kwargs.get('FILTER_BY_AREA', self.__ball_settings["FILTER_BY_AREA"])
-        params.minArea = kwargs.get('MIN_AREA', self.__ball_settings["MIN_AREA"])
-        params.maxArea = kwargs.get('MAX_AREA', self.__ball_settings["MAX_AREA"])
-        params.filterByColor = kwargs.get('FILTER_BY_COLOUR', self.__ball_settings["FILTER_BY_COLOUR"])
-        params.blobColor = kwargs.get('BLOB_COLOR', self.__ball_settings["BLOB_COLOUR"])
-        params.minDistBetweenBlobs = kwargs.get('MIN_DEST_BETWEEN_BLOBS', self.__ball_settings["MIN_DIST_BETWEEN_BLOBS"])
+        params.filterByConvexity = kwargs.get('FILTER_BY_CONVEXITY', self.ball_settings.settings["FILTER_BY_CONVEXITY"])
+        params.minConvexity = kwargs.get('MIN_CONVEXITY', self.ball_settings.settings["MIN_CONVEXITY"])
+        params.maxConvexity = kwargs.get('MAX_CONVEXITY', self.ball_settings.settings["MAX_CONVEXITY"])
+        params.filterByCircularity = kwargs.get('FILTER_BY_CIRCULARITY', self.ball_settings.settings["FILTER_BY_CIRCULARITY"])
+        params.minCircularity = kwargs.get('MIN_CIRCULARITY', self.ball_settings.settings["MIN_CIRCULARITY"])
+        params.maxCircularity = kwargs.get('MAX_CIRCULARITY', self.ball_settings.settings["MAX_CIRCULARITY"])
+        params.filterByInertia = kwargs.get('FILTER_BY_INERTIA', self.ball_settings.settings["FILTER_BY_INERTIA"])
+        params.minInertiaRatio = kwargs.get('MIN_INERTIA', self.ball_settings.settings["MIN_INERTIA"])
+        params.maxInertiaRatio = kwargs.get('MAX_INERTIA', self.ball_settings.settings["MAX_INERTIA"])
+        params.filterByArea = kwargs.get('FILTER_BY_AREA', self.ball_settings.settings["FILTER_BY_AREA"])
+        params.minArea = kwargs.get('MIN_AREA', self.ball_settings.settings["MIN_AREA"])
+        params.maxArea = kwargs.get('MAX_AREA', self.ball_settings.settings["MAX_AREA"])
+        params.filterByColor = kwargs.get('FILTER_BY_COLOUR', self.ball_settings.settings["FILTER_BY_COLOUR"])
+        params.blobColor = kwargs.get('BLOB_COLOR', self.ball_settings.settings["BLOB_COLOUR"])
+        params.minDistBetweenBlobs = kwargs.get('MIN_DEST_BETWEEN_BLOBS', self.ball_settings.settings["MIN_DIST_BETWEEN_BLOBS"])
         self.__blob_detector = cv2.SimpleBlobDetector_create(params)
 
     def get_snapshot_report(self) -> str:
@@ -194,8 +184,8 @@ class BallTracker():
         # Draw contours around a colour to detect if not None
         if detect_colour:
             colour_mask, contours = self.detect_colour(
-                hsv_frame, self.__colour_settings[detect_colour]["LOWER"], 
-                self.__colour_settings[detect_colour]["UPPER"])
+                hsv_frame, self.colour_settings.colours[detect_colour]["LOWER"], 
+                self.colour_settings.colours[detect_colour]["UPPER"])
 
             # Show only the detected colour in the output frame
             if mask_colour:
@@ -277,21 +267,21 @@ class BallTracker():
 
         # Obtain 8 contours for each ball colour from the HSV colour space of the image
         if s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['WHITE']:
-            _, whites = get_mask_contours_for_colour(hsv_frame, 'WHITE', self.__colour_settings)
+            _, whites = get_mask_contours_for_colour(hsv_frame, 'WHITE', self.colour_settings.colours)
         if s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['RED']:
-            _, reds = get_mask_contours_for_colour(hsv_frame, 'RED', self.__colour_settings)
+            _, reds = get_mask_contours_for_colour(hsv_frame, 'RED', self.colour_settings.colours)
         if s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['YELLOW']:
-            _, yellows = get_mask_contours_for_colour(hsv_frame, 'YELLOW', self.__colour_settings)
+            _, yellows = get_mask_contours_for_colour(hsv_frame, 'YELLOW', self.colour_settings.colours)
         if s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['GREEN']:
-            _, greens = get_mask_contours_for_colour(hsv_frame, 'GREEN', self.__colour_settings)
+            _, greens = get_mask_contours_for_colour(hsv_frame, 'GREEN', self.colour_settings.colours)
         if s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['BROWN']:
-            _, browns = get_mask_contours_for_colour(hsv_frame, 'BROWN', self.__colour_settings)
+            _, browns = get_mask_contours_for_colour(hsv_frame, 'BROWN', self.colour_settings.colours)
         if s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['BLUE']:
-            _, blues = get_mask_contours_for_colour(hsv_frame, 'BLUE', self.__colour_settings)
+            _, blues = get_mask_contours_for_colour(hsv_frame, 'BLUE', self.colour_settings.colours)
         if s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['PINK']:
-            _, pinks = get_mask_contours_for_colour(hsv_frame, 'PINK', self.__colour_settings)
+            _, pinks = get_mask_contours_for_colour(hsv_frame, 'PINK', self.colour_settings.colours)
         if s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['BLACK']:
-            _, blacks = get_mask_contours_for_colour(hsv_frame, 'BLACK', self.__colour_settings)
+            _, blacks = get_mask_contours_for_colour(hsv_frame, 'BLACK', self.colour_settings.colours)
 
         # For each ball found, determine what colour it is and add it to the list of balls
         # If a ball is not mapped to an appropriate colour, it is discarded

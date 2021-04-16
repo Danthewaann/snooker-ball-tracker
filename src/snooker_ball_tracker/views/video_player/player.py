@@ -37,11 +37,9 @@ class Player(QtWidgets.QFrame):
         self.video_player.heightChanged.connect(self.setMaximumHeight)
 
     def select_video_file_btn_pressed(self):
-        self.video_player.video_file = select_video_file_action()
-        if self.video_file:
-            self.__destroy_video_threads()
-            self.video_player.play = False
-            self.start_video_player()
+        video_file = select_video_file_action()
+        if video_file:
+            self.video_player.start(video_file)
 
     def output_frame_onclick(self, event: QtGui.QMouseEvent):
         if self.colours.selected_colour != "NONE":

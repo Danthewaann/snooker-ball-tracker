@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import typing
 from abc import ABC
 
@@ -7,14 +9,15 @@ import numpy as np
 
 import snooker_ball_tracker.settings as s
 
-from .ball_tracker import VideoPlayer, ColourDetectionSettings
+if typing.TYPE_CHECKING:
+    from .ball_tracker import VideoPlayer, ColourDetectionSettings
+
 from .ball_tracker.util import Image, get_mask_contours_for_colour
 
 
 class VideoStream(ABC):
     def __init__(self, video: typing.Any, video_player: VideoPlayer, 
-                 colours_settings: typing.Union[dict, ColourDetectionSettings]=s.COLOUR_DETECTION_SETTINGS, 
-                 queue_size: int=128):
+                 colours_settings: ColourDetectionSettings, queue_size: int=128):
         """VideoStream abstract base class that contains base functionality to
         process video streams
 
@@ -22,8 +25,8 @@ class VideoStream(ABC):
         :type video: typing.Any
         :param video_player: video player to obtain transformation settings from
         :type video_player: VideoPlayer
-        :param colours_settings: settings to obtain colours from, defaults to s.COLOUR_DETECTION_SETTINGS
-        :type colours_settings: typing.Union[dict, ColourDetectionSettings], optional
+        :param colours_settings: settings to obtain colours from
+        :type colours_settings: ColourDetectionSettings
         :param queue_size: max number of frames to process and store at a time, defaults to 128
         :type queue_size: int, optional
         """

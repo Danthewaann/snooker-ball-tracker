@@ -1,14 +1,30 @@
+from __future__ import annotations
+
+import threading
+
 import numpy as np
 import PyQt5.QtCore as QtCore
 import snooker_ball_tracker.settings as s
 from imutils.video import FPS
+from snooker_ball_tracker.ball_tracker import (BallDetectionSettings,
+                                               BallTracker,
+                                               ColourDetectionSettings, Logger)
+from snooker_ball_tracker.video_file_stream import VideoFileStream
+from snooker_ball_tracker.video_processor import VideoProcessor
 
 
 class VideoPlayer(QtCore.QObject):
-    def __init__(self):
+    def __init__(self, ball_tracker: BallTracker):
         """Creates an instance of this class that contains properties used by the
         video player to display frames processed by the ball tracker"""
         super().__init__()
+        self.ball_tracker = ball_tracker
+        self.video_processor_lock = threading.Lock()
+        self.video_processor_stop_event = threading.Event()
+        self.video_processor = None
+        self.video_file_stream = None
+        self.video_file = None
+
         self._width = 1100
         self._height = 600
         self._play = False
@@ -17,7 +33,7 @@ class VideoPlayer(QtCore.QObject):
         self._perform_morph = False
         self._detect_table = False
         self._queue_size = 0
-        self.__fps = FPS()
+        self._fps = FPS()
         self._output_frame = np.array([])
         self._hsv_frame = np.array([])
 
@@ -193,17 +209,17 @@ class VideoPlayer(QtCore.QObject):
 
     def start_fps(self):
         """Start FPS timer"""
-        self.__fps = FPS()
-        self.__fps.start()
+        self._fps = FPS()
+        self._fps.start()
 
     def update_fps(self):
         """Update FPS timer"""
-        self.__fps.update()
+        self._fps.update()
 
     def stop_fps(self):
         """Stop FPS timer"""
-        self.__fps.stop()
-        self.fpsChanged.emit(self.__fps.fps())
+        self._fps.stop()
+        self.fpsChanged.emit(self._fps.fps())
 
     @property
     def output_frame(self) -> np.ndarray:
@@ -247,9 +263,49 @@ class VideoPlayer(QtCore.QObject):
         self._hsv_frame = value
         self.hsv_frameChanged.emit(self._hsv_frame)
 
-    restartSignal = QtCore.pyqtSignal()
+    def start(self, video_file: str=None):
+        """Creates VideoProcessor and VideoFileStream instances to handle 
+        the selected video file.
+
+        The VideoFileStream is the producer thread and the VideoProcessor
+        is the consumer thread, where the VideoFileStream instance reads
+        frames from the video file and puts them into a queue for the
+        VideoProcessor to obtain frames to process from.
+
+        The VideoProcessor then passes processed frames to the VideoPlayer
+        to display to the user.
+
+        :param video_file: video file to read from, defaults to None
+        :type video_file: str, optional
+        """
+        self.play = False
+        self.video_file = video_file or self.video_file
+
+        self.destroy_video_threads()
+        self.video_processor_stop_event.clear()
+
+        self.video_file_stream = VideoFileStream(
+            self.video_file, video_player=self,
+            colour_settings=self.ball_tracker.colour_settings, queue_size=1)
+
+        self.video_processor = VideoProcessor(
+            video_stream=self.video_file_stream, video_player=self, 
+            ball_tracker=self.ball_tracker, lock=self.video_processor_lock, 
+            stop_event=self.video_processor_stop_event)
+
+        self.video_processor.start()
 
     def restart(self):
-        """Restart the video player"""
-        self.play = False
-        self.restartSignal.emit()
+        """Restart the video player by destroying the VideoProcessor
+        and VideoFileStream instances and creating new ones before 
+        starting the video player again."""
+        self.start()
+
+    def destroy_video_threads(self):
+        """Destroy the VideoProcessor and VideoFileStream thread instances"""
+        if self.video_processor is not None:
+            if self.video_file_stream is not None:
+                with self.video_processor_lock:
+                    self.video_file_stream.stop()
+            self.video_processor_stop_event.set()
+            self.video_processor.join()

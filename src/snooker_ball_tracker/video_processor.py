@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import threading
+import typing
 from copy import deepcopy
 from queue import Queue
 
@@ -6,14 +9,15 @@ import cv2
 
 import settings as s
 
-from .ball_tracker import BallTracker, Logger, VideoPlayer
+if typing.TYPE_CHECKING:
+    from .ball_tracker import BallTracker, Logger, VideoPlayer
+
 from .ball_tracker.settings import ColourDetectionSettings
 from .video_stream import VideoStream
 
 
 class VideoProcessor(threading.Thread):
-    def __init__(self, video_stream: VideoStream, logger: Logger, 
-                 video_player: VideoPlayer, colour_settings: ColourDetectionSettings,
+    def __init__(self, video_stream: VideoStream, video_player: VideoPlayer, 
                  ball_tracker: BallTracker, lock: threading.Lock, stop_event: threading.Event):
         """Creates instance of VideoProcessor that processes frames from a 
         VideoStream and passes them to the ball tracker for processing before
@@ -21,12 +25,8 @@ class VideoProcessor(threading.Thread):
 
         :param video_stream: video stream that produces images to process
         :type video_stream: VideoStream
-        :param logger: logger instance that we pass ball potted info to
-        :type logger: Logger
         :param video_player: video player instance that we pass processed frames to
         :type video_player: VideoPlayer
-        :param colour_settings: colour settings that we obtain colour detection info from
-        :type colour_settings: ColourDetectionSettings
         :param ball_tracker: ball tracker that we pass frames obtained from VideoStream to
         :type ball_tracker: BallTracker
         :param lock: lock used to manage access to VideoStream
@@ -35,9 +35,9 @@ class VideoProcessor(threading.Thread):
         :type stop_event: threading.Event
         """
         super().__init__(name=self.__class__.__name__, daemon=True)
-        self.__logger = logger
+        self.__logger = ball_tracker.logger
         self.__video_player = video_player
-        self.__colour_settings = colour_settings
+        self.__colour_settings = ball_tracker.colour_settings
         self.__ball_tracker = ball_tracker
         self.__producer_lock = lock
         self.__stop_event = stop_event
