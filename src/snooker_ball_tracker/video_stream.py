@@ -45,7 +45,7 @@ class VideoStream(ABC):
             frame = imutils.resize(frame, width=self._video_player.width)
 
             # set video player height to height of resized frame
-            self._video_player.height = frame.shape[0]
+            # self._video_player.height = frame.shape[0]
 
             # convert frame into HSV colour space
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -126,13 +126,10 @@ class VideoStream(ABC):
         :rtype: np.ndarray
         """
         # Extract out the object and place into output image
-        # black = [255, 255, 255]
         out = np.zeros(frame.shape).astype(frame.dtype)
-        # cv2.fillPoly(out, self._table_bounds, black)
-
         out[self._table_bounds_mask == 255] = frame[self._table_bounds_mask == 255]
-        # (x, y, _) = np.where(self._table_bounds_mask == 255)
-        # (topx, topy) = (np.min(x), np.min(y))
-        # (bottomx, bottomy) = (np.max(x), np.max(y))
-        # frame = out[topx:bottomx + 1, topy:bottomy + 1]
-        return cv2.bitwise_and(frame, out)
+        (x, y, _) = np.where(self._table_bounds_mask == 255)
+        (topx, topy) = (np.min(x), np.min(y))
+        (bottomx, bottomy) = (np.max(x), np.max(y))
+        frame = out[topx:bottomx + 1, topy:bottomy + 1]
+        return frame
