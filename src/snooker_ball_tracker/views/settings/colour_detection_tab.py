@@ -90,7 +90,7 @@ class ColourDetectionTab(QtWidgets.QWidget):
     def _create_range_slider_widget(self, name):
         return {
             "label": Ui_Label(name, parent=self, sizePolicy=self._label_policy),
-            "l_value": Ui_Label("0", parent=self, objectName=name+"_l_value", sizePolicy=self._label_policy, alignment=QtCore.Qt.AlignCenter),
+            "l_value": Ui_Label("0", parent=self, objectName=name+"_l_value", sizePolicy=self._label_policy, width=(50, 50), alignment=QtCore.Qt.AlignCenter),
             "l_slider": Ui_Slider(255, parent=self, name=name, objectName=name+"_l_slider", sizePolicy=self._label_policy),
             "u_value": Ui_Label("0", parent=self, objectName=name+"_u_value", sizePolicy=self._label_policy, alignment=QtCore.Qt.AlignCenter),
             "u_slider": Ui_Slider(255, parent=self, name=name, objectName=name+"_u_slider", sizePolicy=self._label_policy)
