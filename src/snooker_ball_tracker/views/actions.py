@@ -67,15 +67,18 @@ def load_settings_action(*args) -> tuple:
 
 
 def save_settings_action(colour_settings: ColourDetectionSettings,
-                         ball_settings: BallDetectionSettings):
+                         ball_settings: BallDetectionSettings,
+                         settings_file: str):
     """Save settings to user provided file  
 
     :param colour_settings: colour settings to save  
     :type colour_settings: ColourDetectionSettings  
     :param ball_settings: ball settings to save  
     :type ball_settings: BallDetectionSettings  
+    :param settings_file: settings file path to write to  
+    :type settings_file: str  
     """
-    settings_file, _ = QtWidgets.QFileDialog().getSaveFileName(None, "Save Settings", self.settings_file)
+    settings_file, _ = QtWidgets.QFileDialog().getSaveFileName(None, "Save Settings", settings_file)
 
     if not settings_file:
         return
