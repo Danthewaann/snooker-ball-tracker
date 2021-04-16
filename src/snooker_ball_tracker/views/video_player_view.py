@@ -10,14 +10,13 @@ from .video_player import Options, Player
 
 
 class VideoPlayerView(QtWidgets.QGroupBox):
-    def __init__(self, video_player: VideoPlayer, colours: ColourDetectionSettings, 
-                 videoFileOnClick: typing.Callable[[], typing.Any]):
+    def __init__(self, video_player: VideoPlayer, colours: ColourDetectionSettings):
         super().__init__("Video Player")
         self.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.layout = QtWidgets.QHBoxLayout(self)
 
         self.video_player_layout = QtWidgets.QGridLayout()
-        self.video_player_layout.addWidget(Player(video_player, colours, videoFileOnClick), 0, 0, 1, 1)
+        self.video_player_layout.addWidget(Player(video_player, colours), 0, 0, 1, 1)
         self.video_player_layout.addWidget(Options(video_player), 1, 0, 1, 1)
 
         self.layout.addStretch(5)

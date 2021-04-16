@@ -1,15 +1,21 @@
-def select_video_file_action(parent=None, ):
-    """Select video file event handler.
+from copy import deepcopy
+
+import cv2
+import PyQt5.QtWidgets as QtWidgets
+import snooker_ball_tracker.settings as s
+
+
+def select_video_file_action(*args) -> str:
+    """Select video file action handler.
 
     Gets a video file provided by the user and attempts to validate
     that it is in fact a valid video file.
 
-    Passes the video file to the VideoProcessor thread for processing
-    and display.
-
     :raises TypeError: If the video file is not valid will display an error box
+    :return: video file path or None
+    :rtype: str
     """
-    video_file, _ = QtWidgets.QFileDialog().getOpenFileName(parent, "Select Video File", "")
+    video_file, _ = QtWidgets.QFileDialog().getOpenFileName(None, "Select Video File", "")
 
     if not video_file:
         return
@@ -19,13 +25,68 @@ def select_video_file_action(parent=None, ):
         if not video_file_stream.isOpened():
             raise TypeError
     except:
-        error = QtWidgets.QMessageBox(parent)
+        video_file = None
+        error = QtWidgets.QMessageBox(None)
         error.setWindowTitle("Invalid Video File!")
         error.setText('Invalid file, please select a video file!')
         error.exec_()
-        return
-
+    finally:
+        video_file_stream.release()
+    
     return video_file
 
-    # self.video_player.play = False
-    # self.start_video_player()
+
+def load_settings_action(*args) -> tuple:
+    """Load settings from user provided file  
+
+    :return: path of loaded settings file, loaded colour settings 
+    and loaded ball settings  
+    :rtype: tuple  
+    """ 
+    colours_settings = {}
+    ball_settings = {}
+    settings_file, _ = QtWidgets.QFileDialog().getOpenFileName(None, "Load Settings", "")
+
+    if not settings_file:
+        return
+
+    success, error = s.load(settings_file)
+
+    if success:
+        colours_settings = deepcopy(s.COLOUR_DETECTION_SETTINGS)
+        ball_settings = deepcopy(s.BALL_DETECTION_SETTINGS)
+    else:
+        error = QtWidgets.QMessageBox(None)
+        error.setWindowTitle("Invalid Settings File!")
+        error.setText('Invalid file, please select a valid json file!')
+        error.exec_()
+
+    return settings_file, colours_settings, ball_settings
+
+
+def save_settings_action(self, colour_settings: dict, ball_settings: dict):
+    """Save settings to user provided file  
+
+    :param colour_settings: colour settings to save  
+    :type colour_settings: dict  
+    :param ball_settings: ball settings to save  
+    :type ball_settings: dict  
+    """
+    settings_file, _ = QtWidgets.QFileDialog().getSaveFileName(None, "Save Settings", self.settings_file)
+
+    if not settings_file:
+        return
+
+    success, error = s.save(settings_file, settings={
+        "COLOUR_DETECTION_SETTINGS": colour_settings,
+        "BALL_DETECTION_SETTINGS": ball_settings
+    })
+
+    if success:
+        s.COLOUR_DETECTION_SETTINGS = deepcopy(colour_settings)
+        s.BALL_DETECTION_SETTINGS = deepcopy(ball_settings)
+    else:
+        error = QtWidgets.QMessageBox(None)
+        error.setWindowTitle("Failed to Save Settings!")
+        error.setText(f"Failed to save settings to '{settings_file}'\nReason: {error}")
+        error.exec_()

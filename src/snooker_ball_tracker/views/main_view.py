@@ -16,6 +16,7 @@ from snooker_ball_tracker.video_processor import VideoProcessor
 from .logging_view import LoggingView
 from .settings_view import SettingsView
 from .video_player_view import VideoPlayerView
+from .actions import select_video_file_action, load_settings_action, save_settings_action
 
 
 class MainView(QtWidgets.QMainWindow):
@@ -53,8 +54,7 @@ class MainView(QtWidgets.QMainWindow):
 
         self.settings_view = SettingsView(colour_settings=self.colour_detection_settings, ball_settings=self.ball_detection_settings)
         self.logging_view = LoggingView(self.logger)
-        self.video_player_view = VideoPlayerView(self.video_player, 
-            self.colour_detection_settings, videoFileOnClick=self.select_file_onclick)
+        self.video_player_view = VideoPlayerView(self.video_player, self.colour_detection_settings)
 
         self.column_1.addWidget(self.logging_view, 40)
         self.column_1.addWidget(self.settings_view, 40)
@@ -102,29 +102,12 @@ class MainView(QtWidgets.QMainWindow):
 
         Passes the video file to the VideoProcessor thread for processing
         and display.
-
-        :raises TypeError: If the video file is not valid will display an error box
         """
-        self.video_file, _ = QtWidgets.QFileDialog().getOpenFileName(self, "Select Video File", "")
-
-        if not self.video_file:
-            return
-
-        self.__destroy_video_threads()
-
-        try:
-            self.video_file_stream = cv2.VideoCapture(self.video_file)
-            if not self.video_file_stream.isOpened():
-                raise TypeError
-        except:
-            error = QtWidgets.QMessageBox(self)
-            error.setWindowTitle("Invalid Video File!")
-            error.setText('Invalid file, please select a video file!')
-            error.exec_()
-            return
-
-        self.video_player.play = False
-        self.start_video_player()
+        self.video_file = select_video_file_action()
+        if self.video_file:
+            self.__destroy_video_threads()
+            self.video_player.play = False
+            self.start_video_player()
 
     def start_video_player(self):
         """Creates VideoProcessor and VideoFileStream instances to handle 
@@ -142,7 +125,7 @@ class MainView(QtWidgets.QMainWindow):
 
         self.video_file_stream = VideoFileStream(
             self.video_file, video_player=self.video_player,
-            colours=self.colour_detection_settings.colours, queue_size=1)
+            colour_settings=self.colour_detection_settings, queue_size=1)
 
         self.video_processor = VideoProcessor(
             video_stream=self.video_file_stream, 
@@ -171,41 +154,12 @@ class MainView(QtWidgets.QMainWindow):
 
     def load_settings(self):
         """Load settings from user provided file"""
-        settings_file, _ = QtWidgets.QFileDialog().getOpenFileName(self, "Load Settings", "")
-
-        if not settings_file:
-            return
-
-        success, error = s.load(settings_file)
-
-        if success:
-            self.settings_file = settings_file
-            self.colour_detection_settings.colours = deepcopy(s.COLOURS)
-            self.ball_detection_settings.blob_detector = deepcopy(s.BLOB_DETECTOR)
-        else:
-            error = QtWidgets.QMessageBox(self)
-            error.setWindowTitle("Invalid Settings File!")
-            error.setText('Invalid file, please select a valid json file!')
-            error.exec_()
+        settings_file, colour_settings, ball_settings = load_settings_action()
+        self.settings_file = settings_file
+        self.colour_detection_settings.settings = colour_settings
+        self.ball_detection_settings.settings = ball_settings
 
     def save_settings(self):
         """Save settings to user provided file"""
-        settings_file, _ = QtWidgets.QFileDialog().getSaveFileName(self, "Save Settings", self.settings_file)
-
-        if not settings_file:
-            return
-
-        success, error = s.save(settings_file, settings={
-            "COLOUR_DETECTION_SETTINGS": self.colour_detection_settings.settings, 
-            "BALL_DETECTION_SETTINGS": self.ball_detection_settings.settings
-        })
-
-        if success:
-            self.settings_file = settings_file
-            s.COLOUR_DETECTION_SETTINGS = deepcopy(self.colour_detection_settings.settings)
-            s.BALL_DETECTION_SETTINGS = deepcopy(self.ball_detection_settings.settings)
-        else:
-            error = QtWidgets.QMessageBox(self)
-            error.setWindowTitle("Failed to Save Settings!")
-            error.setText(f"Failed to save settings to '{settings_file}'\nReason: {error}")
-            error.exec_()
+        save_settings_action(self.colour_detection_settings.settings, 
+            self.ball_detection_settings.settings)

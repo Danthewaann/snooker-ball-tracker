@@ -8,11 +8,11 @@ from snooker_ball_tracker.ball_tracker import (ColourDetectionSettings,
                                                VideoPlayer)
 
 from ..components import Ui_Label, Ui_PushButton
+from ..actions import select_video_file_action
 
 
 class Player(QtWidgets.QFrame):
-    def __init__(self, video_player: VideoPlayer, colours: ColourDetectionSettings, 
-                 videoFileOnClick: typing.Callable[[], typing.Any]):
+    def __init__(self, video_player: VideoPlayer, colours: ColourDetectionSettings):
         super().__init__()
         self.video_player = video_player
         self.colours = colours
@@ -24,16 +24,24 @@ class Player(QtWidgets.QFrame):
         self.layout = QtWidgets.QHBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
         
-        self.selectVideoFile_btn = Ui_PushButton("Select Video File", parent=self, sizePolicy=QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed))
+        self.selectVideoFile_btn = Ui_PushButton("Select Video File", parent=self,
+            sizePolicy=QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed))
         self.output_frame = Ui_Label("", parent=self)
         self.output_frame.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.output_frame.mousePressEvent = self.output_frame_onclick
 
-        self.selectVideoFile_btn.pressed.connect(videoFileOnClick)
+        self.selectVideoFile_btn.pressed.connect(self.select_video_file_btn_pressed)
 
         self.layout.addWidget(self.selectVideoFile_btn)
         self.video_player.output_frameChanged.connect(self.display_output_frame)
         self.video_player.heightChanged.connect(self.setMaximumHeight)
+
+    def select_video_file_btn_pressed(self):
+        self.video_player.video_file = select_video_file_action()
+        if self.video_file:
+            self.__destroy_video_threads()
+            self.video_player.play = False
+            self.start_video_player()
 
     def output_frame_onclick(self, event: QtGui.QMouseEvent):
         if self.colours.selected_colour != "NONE":
