@@ -61,7 +61,10 @@ class ColourDetectionSettings(QtCore.QObject):
         :param value: value to set
         :type value: dict
         """
-        self._settings = value
+        for colour in self.colours:
+            self.colours[colour] = value["COLOURS"][colour]
+            if colour in self._settings["BALL_COLOURS"]:
+                self._settings["BALL_COLOURS"][colour] = value["BALL_COLOURS"][colour]
         if self._selected_colour != "NONE":
             self.colour_model.update(self.colours[self._selected_colour])
 

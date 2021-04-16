@@ -21,12 +21,12 @@ def __decode_colour_to_np_array(dct):
 
 
 def load(settings_file: str) -> tuple:
-    """Load settings from provided json file
+    """Load settings from provided json file.
 
-    :param settings_file: path to json file to read from
-    :type settings_file: str
-    :return: True/False if load operation succeeded/failed and error message
-    :rtype: tuple
+    :param settings_file: path to json file to read from  
+    :type settings_file: str  
+    :return: True/False if load operation succeeded/failed and error message  
+    :rtype: tuple  
     """
     global __SETTINGS
     try:
@@ -39,14 +39,14 @@ def load(settings_file: str) -> tuple:
 
 
 def save(settings_file: str, settings: dict=None) -> tuple:
-    """Save settings to provided json file  
+    """Save settings to provided json file. 
 
-    :param settings_file: path to json to write to
-    :type settings_file: str
-    :param settings: settings to save, defaults to None
-    :type settings: dict, optional
-    :return: True/False if save operation succeeded/failed and error message
-    :rtype: tuple
+    :param settings_file: path to json to write to  
+    :type settings_file: str  
+    :param settings: settings to save, defaults to None  
+    :type settings: dict, optional  
+    :return: True/False if save operation succeeded/failed and error message  
+    :rtype: tuple  
     """
     global __SETTINGS
     settings_to_save = __SETTINGS

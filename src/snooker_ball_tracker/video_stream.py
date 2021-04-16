@@ -7,13 +7,14 @@ import numpy as np
 
 import snooker_ball_tracker.settings as s
 
-from .ball_tracker import VideoPlayer
+from .ball_tracker import VideoPlayer, ColourDetectionSettings
 from .ball_tracker.util import Image, get_mask_contours_for_colour
 
 
 class VideoStream(ABC):
     def __init__(self, video: typing.Any, video_player: VideoPlayer, 
-                 colours: dict=s.COLOUR_DETECTION_SETTINGS["COLOURS"], queue_size: int=128):
+                 colours_settings: typing.Union[dict, ColourDetectionSettings]=s.COLOUR_DETECTION_SETTINGS, 
+                 queue_size: int=128):
         """VideoStream abstract base class that contains base functionality to
         process video streams
 
@@ -21,13 +22,13 @@ class VideoStream(ABC):
         :type video: typing.Any
         :param video_player: video player to obtain transformation settings from
         :type video_player: VideoPlayer
-        :param colours: settings to obtain colours from, defaults to s.COLOURS
-        :type colours: dict, optional
+        :param colours_settings: settings to obtain colours from, defaults to s.COLOUR_DETECTION_SETTINGS
+        :type colours_settings: typing.Union[dict, ColourDetectionSettings], optional
         :param queue_size: max number of frames to process and store at a time, defaults to 128
         :type queue_size: int, optional
         """
         self._video_player = video_player
-        self._colours = colours
+        self._colour_settings = colours_settings
         self._table_bounds: typing.Union[np.ndarray, None] = None
         self._table_bounds_mask: typing.Union[np.ndarray, None] = None
         super().__init__(video, transform=self.transform_frame, queue_size=queue_size)
@@ -45,14 +46,14 @@ class VideoStream(ABC):
             frame = imutils.resize(frame, width=self._video_player.width)
 
             # set video player height to height of resized frame
-            # self._video_player.height = frame.shape[0]
+            self._video_player.height = frame.shape[0]
 
             # convert frame into HSV colour space
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
             # get mask of table cloth colour
             threshold, contours = get_mask_contours_for_colour(
-                hsv, 'TABLE', self._colours)
+                hsv, 'TABLE', self._colour_settings.colours)
             threshold = cv2.cvtColor(threshold, cv2.COLOR_GRAY2BGR)
             threshold = cv2.bitwise_not(threshold)
 
