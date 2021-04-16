@@ -3,6 +3,8 @@ from copy import deepcopy
 import cv2
 import PyQt5.QtWidgets as QtWidgets
 import snooker_ball_tracker.settings as s
+from snooker_ball_tracker.ball_tracker import (BallDetectionSettings,
+                                               ColourDetectionSettings)
 
 
 def select_video_file_action(*args) -> str:
@@ -64,13 +66,14 @@ def load_settings_action(*args) -> tuple:
     return settings_file, colours_settings, ball_settings
 
 
-def save_settings_action(self, colour_settings: dict, ball_settings: dict):
+def save_settings_action(colour_settings: ColourDetectionSettings,
+                         ball_settings: BallDetectionSettings):
     """Save settings to user provided file  
 
     :param colour_settings: colour settings to save  
-    :type colour_settings: dict  
+    :type colour_settings: ColourDetectionSettings  
     :param ball_settings: ball settings to save  
-    :type ball_settings: dict  
+    :type ball_settings: BallDetectionSettings  
     """
     settings_file, _ = QtWidgets.QFileDialog().getSaveFileName(None, "Save Settings", self.settings_file)
 
@@ -78,13 +81,13 @@ def save_settings_action(self, colour_settings: dict, ball_settings: dict):
         return
 
     success, error = s.save(settings_file, settings={
-        "COLOUR_DETECTION_SETTINGS": colour_settings,
-        "BALL_DETECTION_SETTINGS": ball_settings
+        "COLOUR_DETECTION_SETTINGS": colour_settings.settings,
+        "BALL_DETECTION_SETTINGS": ball_settings.settings
     })
 
     if success:
-        s.COLOUR_DETECTION_SETTINGS = deepcopy(colour_settings)
-        s.BALL_DETECTION_SETTINGS = deepcopy(ball_settings)
+        s.COLOUR_DETECTION_SETTINGS = deepcopy(colour_settings.settings)
+        s.BALL_DETECTION_SETTINGS = deepcopy(ball_settings.settings)
     else:
         error = QtWidgets.QMessageBox(None)
         error.setWindowTitle("Failed to Save Settings!")

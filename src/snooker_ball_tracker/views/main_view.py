@@ -94,10 +94,9 @@ class MainView(QtWidgets.QMainWindow):
         """Load settings from user provided file"""
         settings_file, colour_settings, ball_settings = load_settings_action()
         self.settings_file = settings_file
-        self.colour_detection_settings.settings = colour_settings
-        self.ball_detection_settings.settings = ball_settings
+        self.ball_tracker.colour_settings.settings = colour_settings
+        self.ball_tracker.ball_settings.settings = ball_settings
 
     def save_settings(self):
         """Save settings to user provided file"""
-        save_settings_action(self.colour_detection_settings.settings, 
-            self.ball_detection_settings.settings)
+        save_settings_action(self.ball_tracker.colour_settings, self.ball_tracker.ball_settings)
