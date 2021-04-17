@@ -68,7 +68,7 @@ def load_settings_action(*args) -> tuple:
 
 def save_settings_action(colour_settings: ColourDetectionSettings,
                          ball_settings: BallDetectionSettings,
-                         settings_file: str):
+                         settings_file: str) -> str:
     """Save settings to user provided file  
 
     :param colour_settings: colour settings to save  
@@ -77,6 +77,8 @@ def save_settings_action(colour_settings: ColourDetectionSettings,
     :type ball_settings: BallDetectionSettings  
     :param settings_file: settings file path to write to  
     :type settings_file: str  
+    :return: settings file we saved to  
+    :rtype: str  
     """
     settings_file, _ = QtWidgets.QFileDialog().getSaveFileName(None, "Save Settings", settings_file)
 
@@ -96,3 +98,5 @@ def save_settings_action(colour_settings: ColourDetectionSettings,
         error.setWindowTitle("Failed to Save Settings!")
         error.setText(f"Failed to save settings to '{settings_file}'\nReason: {error}")
         error.exec_()
+
+    return settings_file

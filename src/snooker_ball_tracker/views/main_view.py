@@ -1,3 +1,5 @@
+import os.path
+
 import cv2
 import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
@@ -17,9 +19,13 @@ class MainView(QtWidgets.QMainWindow):
         super().__init__()
 
         self.settings_file = args.settings_file
+        self.menuBar().setStyleSheet("background-color: #e6e6e6")
+        self.statusBar().show()
+        self.statusBar().setStyleSheet("background-color: #e6e6e6")
 
         if self.settings_file:
             s.load(self.settings_file)
+            self.statusBar().showMessage(f"Loaded settings from '{os.path.basename(self.settings_file)}'")
 
         self.setWindowTitle("Snooker Ball Tracker Demo")
         self.showMaximized()
@@ -92,15 +98,21 @@ class MainView(QtWidgets.QMainWindow):
 
     def load_settings(self):
         """Load settings from user provided file"""
-        settings_file, colour_settings, ball_settings = load_settings_action()
-        self.settings_file = settings_file
-        self.ball_tracker.colour_settings.settings = colour_settings
-        self.ball_tracker.ball_settings.settings = ball_settings
+        loaded_settings = load_settings_action()
+        if loaded_settings:
+            settings_file, colour_settings, ball_settings = loaded_settings
+            self.statusBar().showMessage(f"Loaded settings from '{os.path.basename(settings_file)}'")
+            self.settings_file = settings_file
+            self.ball_tracker.colour_settings.settings = colour_settings
+            self.ball_tracker.ball_settings.settings = ball_settings
 
     def save_settings(self):
         """Save settings to user provided file"""
-        save_settings_action(
+        settings_file = save_settings_action(
             self.ball_tracker.colour_settings, 
             self.ball_tracker.ball_settings, 
             self.settings_file
         )
+        if settings_file:
+            self.settings_file = settings_file
+            self.statusBar().showMessage(f"Saved settings to '{os.path.basename(self.settings_file)}'")
