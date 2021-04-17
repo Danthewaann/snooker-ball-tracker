@@ -1,11 +1,11 @@
 # Snooker Ball Tracker
 
-This project is a prototype that I developed in Python to demo an idea I had for an app that could automatically detect and track Snooker balls on a Snooker table.
+This project is a prototype that I developed in Python to demo an idea I had for a program that could automatically detect and track Snooker balls on a Snooker table. The program would therefore be able to automatically score points based upon which ball was potted.
 
-The app would therefore be able to automatically score points based upon which ball was potted.
+The program allows you to configure all the settings that are used by the ball tracker, from how it detects colours to how it detects balls. It also provides features that allows you to see what the ball trackers sees. 
 
 ## Python version
-Python => 3.6.9 
+Python => 3.8.5
 
 ## Setup and Run
 - Run `python setup.py install` to install all required modules and dependencies
