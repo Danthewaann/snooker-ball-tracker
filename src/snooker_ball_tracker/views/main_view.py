@@ -92,9 +92,15 @@ class MainView(QtWidgets.QMainWindow):
         Passes the video file to the VideoProcessor thread for processing
         and display.
         """
-        video_file = select_video_file_action()
-        if video_file:
-            self.video_player.start(video_file)
+        try:
+            video_file = select_video_file_action()
+            if video_file:
+                self.video_player.start(video_file)
+        except TypeError:
+            error = QtWidgets.QMessageBox(None)
+            error.setWindowTitle("Invalid Video File!")
+            error.setText('Invalid file, please select a video file!')
+            error.exec_()
 
     def load_settings(self):
         """Load settings from user provided file"""

@@ -18,23 +18,6 @@ def select_video_file_action(*args) -> str:
     :rtype: str
     """
     video_file, _ = QtWidgets.QFileDialog().getOpenFileName(None, "Select Video File", "")
-
-    if not video_file:
-        return
-
-    try:
-        video_file_stream = cv2.VideoCapture(video_file)
-        if not video_file_stream.isOpened():
-            raise TypeError
-    except:
-        video_file = None
-        error = QtWidgets.QMessageBox(None)
-        error.setWindowTitle("Invalid Video File!")
-        error.setText('Invalid file, please select a video file!')
-        error.exec_()
-    finally:
-        video_file_stream.release()
-    
     return video_file
 
 

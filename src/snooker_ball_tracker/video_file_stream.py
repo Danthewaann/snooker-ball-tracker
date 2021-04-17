@@ -3,6 +3,7 @@ from __future__ import annotations
 import typing
 from threading import Thread
 
+import cv2
 from imutils.video import FileVideoStream
 
 import snooker_ball_tracker.settings as s
@@ -28,5 +29,13 @@ class VideoFileStream(VideoStream, FileVideoStream):
         :param queue_size: max number of frames to process and store at a time, defaults to 128
         :type queue_size: int, optional
         """
+        try:
+            video_file_stream = cv2.VideoCapture(path)
+            if not video_file_stream.isOpened():
+                raise TypeError
+        except Exception as error:
+           raise error
+        finally:
+            video_file_stream.release()
         super().__init__(video=path, video_player=video_player, colours_settings=colour_settings, queue_size=queue_size)
         self.thread.name = self.__class__.__name__

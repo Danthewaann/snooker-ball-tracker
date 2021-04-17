@@ -37,9 +37,15 @@ class Player(QtWidgets.QFrame):
         self.video_player.heightChanged.connect(self.setMaximumHeight)
 
     def select_video_file_btn_pressed(self):
-        video_file = select_video_file_action()
-        if video_file:
-            self.video_player.start(video_file)
+        try:
+            video_file = select_video_file_action()
+            if video_file:
+                self.video_player.start(video_file)
+        except TypeError:
+            error = QtWidgets.QMessageBox(None)
+            error.setWindowTitle("Invalid Video File!")
+            error.setText('Invalid file, please select a video file!')
+            error.exec_()
 
     def output_frame_onclick(self, event: QtGui.QMouseEvent):
         if self.colours.selected_colour != "NONE":
