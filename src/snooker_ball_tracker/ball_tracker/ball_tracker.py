@@ -196,7 +196,7 @@ class BallTracker():
 
         # Draw only the balls for the detected colour 
         # if we are only showing the detected colour
-        if detect_colour and detect_colour in s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"] and mask_colour:
+        if detect_colour and detect_colour in self.colour_settings.settings["BALL_COLOURS"] and mask_colour:
             self.draw_balls(output_frame, { detect_colour: self.__keypoints[detect_colour] })
         else:
             # Otherwise just draw all detected balls
