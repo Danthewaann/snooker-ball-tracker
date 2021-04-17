@@ -9,6 +9,8 @@ import numpy as np
 
 import snooker_ball_tracker.settings as s
 
+from .colours import SnookerColour
+
 if typing.TYPE_CHECKING:
     from .ball_tracker import VideoPlayer, ColourDetectionSettings
 
@@ -56,7 +58,7 @@ class VideoStream(ABC):
 
             # get mask of table cloth colour
             threshold, contours = get_mask_contours_for_colour(
-                hsv, 'TABLE', self._colour_settings.colours)
+                hsv, SnookerColour.TABLE, self._colour_settings.colours)
             threshold = cv2.cvtColor(threshold, cv2.COLOR_GRAY2BGR)
             threshold = cv2.bitwise_not(threshold)
 

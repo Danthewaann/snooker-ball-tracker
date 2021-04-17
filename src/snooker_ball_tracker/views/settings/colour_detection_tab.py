@@ -5,6 +5,7 @@ import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
 import snooker_ball_tracker.settings as s
 from snooker_ball_tracker.ball_tracker import ColourDetectionSettings, Observer
+from snooker_ball_tracker.colours import SnookerColour
 
 from ..components import (Ui_Combobox, Ui_Label, Ui_Line, Ui_PushButton,
                           Ui_RadioButton, Ui_Slider)
@@ -24,8 +25,9 @@ class ColourDetectionTab(QtWidgets.QWidget):
 
         self.option_bar_widgets = {
             "detectColour_label": Ui_Label("Detect Colour", self, objectName="detectColour_label"),
-            "detectColour_combobox": Ui_Combobox(self, items=["None"] + [key[0].upper() + key[1:].lower() for key in s.COLOUR_DETECTION_SETTINGS["COLOURS"].keys()], 
-                                                 objectName="detectColour_combobox"),
+            "detectColour_combobox": Ui_Combobox(self, items=["None"] 
+                + [colour[0].upper() + colour[1:].lower() for colour in SnookerColour],
+                objectName="detectColour_combobox"),
             "showMask_label": Ui_Label("Show Mask", self, objectName="showMask_label", alignment=QtCore.Qt.AlignCenter),
             "showMask_yradio": Ui_RadioButton("Yes", value=True, parent=self, objectName="showMask_yradio"),
             "showMask_nradio": Ui_RadioButton("No", value=False, parent=self, checked=True, objectName="showMask_nradio"),

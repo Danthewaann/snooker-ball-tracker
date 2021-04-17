@@ -2,8 +2,7 @@ from collections import namedtuple
 
 import cv2
 import numpy as np
-
-import settings as s
+import snooker_ball_tracker.settings as s
 
 Image = namedtuple("Image", "frame binary_frame hsv_frame")
 

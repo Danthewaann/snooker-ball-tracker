@@ -1,6 +1,9 @@
 import json
-import numpy as np
 from json import JSONEncoder
+
+import numpy as np
+
+from .colours import SnookerColour
 
 
 class __SettingsJSONEncoder(JSONEncoder):
@@ -11,8 +14,13 @@ class __SettingsJSONEncoder(JSONEncoder):
         return JSONEncoder.default(self, obj)
 
 
-def __decode_colour_to_np_array(dct):
-    # Decode colour dicts loaded from json into numpy arrays
+def __settings_object_hook(dct):
+    # Decode colour keys into Enums
+    if SnookerColour.WHITE in dct:
+        for colour in SnookerColour:
+            if colour.value in dct:
+                dct[colour] = dct.pop(colour.value)
+    # Decode colour range dicts loaded from json into numpy arrays
     if "LOWER" in dct:
         dct["LOWER"] = np.array(dct["LOWER"])
     if "UPPER" in dct:
@@ -31,7 +39,7 @@ def load(settings_file: str) -> tuple:
     global __SETTINGS
     try:
         with open(settings_file, "r") as fp:
-            __SETTINGS = json.load(fp, object_hook=__decode_colour_to_np_array)
+            __SETTINGS = json.load(fp, object_hook=__settings_object_hook)
     except Exception as error:
         return False, error
     else:
@@ -68,11 +76,11 @@ def __getattr__(key):
     except KeyError:
         try:
             default_value = __DEFAULT_SETTINGS[key]
+        except KeyError:
+            return globals()[key]
+        else:
             print(f"Error: could not find key '{key}' in loaded settings, using default")
             return default_value
-        except KeyError:
-            return getattr(__file__, key)
-            # raise KeyError(f"Error: could not find key '{key}' in {__DEFAULT_SETTINGS}")
 
 
 ######################
@@ -113,49 +121,73 @@ __DEFAULT_SETTINGS = {
     #####################
     "COLOUR_DETECTION_SETTINGS": {
         "BALL_COLOURS": {
-            "WHITE": True,
-            "RED": True,
-            "YELLOW": True,
-            "GREEN": True,
-            "BROWN": True,
-            "BLUE": True,
-            "PINK": True,
-            "BLACK": True
+            SnookerColour.RED: {
+                "DETECT": True,
+                "ORDER": 1
+            },
+            SnookerColour.YELLOW: {
+                "DETECT": True,
+                "ORDER": 3
+            },
+            SnookerColour.GREEN: {
+                "DETECT": True,
+                "ORDER": 4
+            },
+            SnookerColour.BROWN: {
+                "DETECT": True,
+                "ORDER": 8
+            },
+            SnookerColour.BLUE: {
+                "DETECT": True,
+                "ORDER": 5
+            },
+            SnookerColour.PINK: {
+                "DETECT": True,
+                "ORDER": 6
+            },
+            SnookerColour.BLACK: {
+                "DETECT": True,
+                "ORDER": 7
+            },
+            SnookerColour.WHITE: {
+                "DETECT": True,
+                "ORDER": 2
+            },
         },
         "COLOURS": {
-            "RED": {
+            SnookerColour.RED: {
                 "LOWER": np.array([25, 190, 150]),
                 "UPPER": np.array([180, 255, 255])
             },
-            "YELLOW": {
+            SnookerColour.YELLOW: {
                 "LOWER": np.array([10, 100, 100]),
                 "UPPER": np.array([35, 255, 255])
             },
-            "GREEN": {
+            SnookerColour.GREEN: {
                 "LOWER": np.array([55, 50, 50]),
                 "UPPER": np.array([100, 255, 255])
             },
-            "BROWN": {
+            SnookerColour.BROWN: {
                 "LOWER": np.array([0, 136, 150]),
                 "UPPER": np.array([10, 225, 255])
             },
-            "BLUE": {
+            SnookerColour.BLUE: {
                 "LOWER": np.array([115, 60, 60]),
                 "UPPER": np.array([135, 255, 255])
             },
-            "PINK": {
+            SnookerColour.PINK: {
                 "LOWER": np.array([160, 60, 240]),
                 "UPPER": np.array([180, 120, 255])
             },
-            "BLACK": {
+            SnookerColour.BLACK: {
                 "LOWER": np.array([0, 0, 0]),
                 "UPPER": np.array([180, 255, 40])
             },
-            "WHITE": {
+            SnookerColour.WHITE: {
                 "LOWER": np.array([0, 0, 240]),
                 "UPPER": np.array([30, 80, 255])
             },
-            "TABLE": {
+            SnookerColour.TABLE: {
                 "LOWER": np.array([0, 18, 0]),
                 "UPPER": np.array([66, 125, 230])
             }

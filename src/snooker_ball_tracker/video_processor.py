@@ -7,12 +7,11 @@ from queue import Queue
 
 import cv2
 
-import settings as s
+import snooker_ball_tracker.settings as s
 
 if typing.TYPE_CHECKING:
-    from .ball_tracker import BallTracker, Logger, VideoPlayer
+    from .ball_tracker import BallTracker, Logger, VideoPlayer, ColourDetectionSettings
 
-from .ball_tracker.settings import ColourDetectionSettings
 from .video_stream import VideoStream
 
 

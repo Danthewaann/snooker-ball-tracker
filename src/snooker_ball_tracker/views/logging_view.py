@@ -2,15 +2,16 @@ import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
 import snooker_ball_tracker.settings as s
-from snooker_ball_tracker.ball_tracker import Logger
+from snooker_ball_tracker.ball_tracker import ColourDetectionSettings, Logger
 
 from .components import Ui_Label, Ui_Line, Ui_PushButton
 
 
 class LoggingView(QtWidgets.QGroupBox):
-    def __init__(self, logger: Logger):
+    def __init__(self, logger: Logger, colour_settings: ColourDetectionSettings):
         super().__init__("Logging")
         self.logger = logger
+        self.colour_settings = colour_settings
         self.layout = QtWidgets.QGridLayout(self)
         self.layout.setSpacing(10)
 
@@ -38,9 +39,9 @@ class LoggingView(QtWidgets.QGroupBox):
         self.layout.addWidget(self.curBallCount_label, 2, 6, 1, 1)
 
         start_row = 3
-        for colour, detectable in s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"].items():
-            if detectable:
-                label = Ui_Label(colour.lower() + 's', alignment=QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
+        for colour, properties in self.colour_settings.settings["BALL_COLOURS"].items():
+            if properties["DETECT"]:
+                label = Ui_Label(colour[0].upper() + colour[1:].lower() + 's', alignment=QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
                 lastShot_ballCount = Ui_Label("0", alignment=QtCore.Qt.AlignCenter)
                 curBallCount = Ui_Label("0", alignment=QtCore.Qt.AlignCenter)
 

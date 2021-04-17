@@ -3,9 +3,9 @@ import typing
 import cv2
 import numpy as np
 import snooker_ball_tracker.settings as s
+from snooker_ball_tracker.colours import SnookerColour
 
 from .logger import Logger
-from .logging import BallsPotted
 from .settings import BallDetectionSettings, ColourDetectionSettings
 from .snapshot import SnapShot
 from .util import Image, dist_between_two_balls, get_mask_contours_for_colour
@@ -251,72 +251,36 @@ class BallTracker():
         :rtype: Keypoints
         """
 
-        balls: Keypoints = {
-            'WHITE': [],
-            'RED': [],
-            'YELLOW': [],
-            'GREEN': [],
-            'BROWN': [],
-            'BLUE': [],
-            'PINK': [],
-            'BLACK': []
+        balls: Keypoints = { 
+            colour: list() for colour in self.colour_settings.settings["BALL_COLOURS"] 
+        }
+
+        colour_contours: typing.List[np.ndarray] = {
+            colour: list() for colour in self.colour_settings.settings["BALL_COLOURS"] 
         }
 
         # Detect balls in the binary image (White circles on a black background)
         keypoints = self.__blob_detector.detect(binary_frame)
 
-        # Obtain 8 contours for each ball colour from the HSV colour space of the image
-        if s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['WHITE']:
-            _, whites = get_mask_contours_for_colour(hsv_frame, 'WHITE', self.colour_settings.colours)
-        if s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['RED']:
-            _, reds = get_mask_contours_for_colour(hsv_frame, 'RED', self.colour_settings.colours)
-        if s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['YELLOW']:
-            _, yellows = get_mask_contours_for_colour(hsv_frame, 'YELLOW', self.colour_settings.colours)
-        if s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['GREEN']:
-            _, greens = get_mask_contours_for_colour(hsv_frame, 'GREEN', self.colour_settings.colours)
-        if s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['BROWN']:
-            _, browns = get_mask_contours_for_colour(hsv_frame, 'BROWN', self.colour_settings.colours)
-        if s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['BLUE']:
-            _, blues = get_mask_contours_for_colour(hsv_frame, 'BLUE', self.colour_settings.colours)
-        if s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['PINK']:
-            _, pinks = get_mask_contours_for_colour(hsv_frame, 'PINK', self.colour_settings.colours)
-        if s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['BLACK']:
-            _, blacks = get_mask_contours_for_colour(hsv_frame, 'BLACK', self.colour_settings.colours)
+        # Obtain colours contours for each ball colour from the HSV colour space of the image
+        for colour, properties in self.colour_settings.settings["BALL_COLOURS"].items():
+            if properties["DETECT"]:
+                _, contours = get_mask_contours_for_colour(hsv_frame, colour, self.colour_settings.colours)
+                colour_contours[colour] = contours
+
+        # Get colours in their detection order
+        colours = sorted(self.colour_settings.settings["BALL_COLOURS"], 
+            key=lambda x: self.colour_settings.settings["BALL_COLOURS"][x]["ORDER"])
 
         # For each ball found, determine what colour it is and add it to the list of balls
         # If a ball is not mapped to an appropriate colour, it is discarded
         for keypoint in keypoints:
-            is_ball = False
+            for colour in colours:
+                if self.colour_settings.settings["BALL_COLOURS"][colour]["DETECT"]:
+                    if self.__keypoint_is_ball(colour, 
+                            colour_contours[colour], keypoint, balls):
+                        break
 
-            if not is_ball and s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['RED']:
-                is_ball = self.__keypoint_is_ball('RED', reds, keypoint, balls)
-
-            if not is_ball and s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['WHITE']:
-                is_ball = self.__keypoint_is_ball(
-                    'WHITE', whites, keypoint, balls)
-
-            if not is_ball and s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['YELLOW']:
-                is_ball = self.__keypoint_is_ball(
-                    'YELLOW', yellows, keypoint, balls, biggest_contour=True)
-
-            if not is_ball and s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['GREEN']:
-                is_ball = self.__keypoint_is_ball(
-                    'GREEN', greens, keypoint, balls, biggest_contour=False)
-
-            if not is_ball and s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['BLUE']:
-                is_ball = self.__keypoint_is_ball(
-                    'BLUE', blues, keypoint, balls, biggest_contour=True)
-
-            if not is_ball and s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['PINK']:
-                is_ball = self.__keypoint_is_ball(
-                    'PINK', pinks, keypoint, balls, biggest_contour=True)
-
-            if not is_ball and s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['BLACK']:
-                is_ball = self.__keypoint_is_ball(
-                    'BLACK', blacks, keypoint, balls)
-
-            if not is_ball and s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]['BROWN']:
-                self.__keypoint_is_ball('BROWN', browns, keypoint, balls)
         return balls
 
     def __keypoint_is_ball(self, colour: str, colour_contours: typing.List[np.ndarray], 

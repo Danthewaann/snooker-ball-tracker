@@ -36,7 +36,7 @@ class MainView(QtWidgets.QMainWindow):
 
         self.settings_view = SettingsView(colour_settings=self.ball_tracker.colour_settings, 
             ball_settings=self.ball_tracker.ball_settings)
-        self.logging_view = LoggingView(self.ball_tracker.logger)
+        self.logging_view = LoggingView(self.ball_tracker.logger, self.ball_tracker.colour_settings)
         self.video_player_view = VideoPlayerView(self.video_player, self.ball_tracker.colour_settings)
 
         self.column_1.addWidget(self.logging_view, 40)

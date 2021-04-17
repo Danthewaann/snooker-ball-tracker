@@ -6,30 +6,64 @@
         "FILTER_BY_COLOUR": true,
         "FILTER_BY_CONVEXITY": false,
         "FILTER_BY_INERTIA": false,
-        "MAX_AREA": 200.0,
-        "MAX_CIRCULARITY": 1.0,
-        "MAX_CONVEXITY": 1.0,
-        "MAX_INERTIA": 1.0,
+        "MAX_AREA": 200,
+        "MAX_CIRCULARITY": 1,
+        "MAX_CONVEXITY": 1,
+        "MAX_INERTIA": 1,
         "MAX_THRESHOLD": 255,
-        "MIN_AREA": 5.0,
-        "MIN_CIRCULARITY": 0.2,
-        "MIN_CONVEXITY": 0.5,
+        "MIN_AREA": 5,
+        "MIN_CIRCULARITY": 0,
+        "MIN_CONVEXITY": 0,
         "MIN_DIST_BETWEEN_BLOBS": 10.0,
-        "MIN_INERTIA": 0.2,
+        "MIN_INERTIA": 0,
         "MIN_THRESHOLD": 170
     },
     "COLOUR_DETECTION_SETTINGS": {
+        "BALL_COLOURS": {
+            "BLACK": {
+                "DETECT": true,
+                "ORDER": 7
+            },
+            "BLUE": {
+                "DETECT": true,
+                "ORDER": 5
+            },
+            "BROWN": {
+                "DETECT": true,
+                "ORDER": 8
+            },
+            "GREEN": {
+                "DETECT": true,
+                "ORDER": 4
+            },
+            "PINK": {
+                "DETECT": true,
+                "ORDER": 6
+            },
+            "RED": {
+                "DETECT": true,
+                "ORDER": 1
+            },
+            "WHITE": {
+                "DETECT": true,
+                "ORDER": 2
+            },
+            "YELLOW": {
+                "DETECT": true,
+                "ORDER": 3
+            }
+        },
         "COLOURS": {
             "BLACK": {
                 "LOWER": [
-                    0,
+                    32,
                     0,
                     0
                 ],
                 "UPPER": [
-                    180,
-                    255,
-                    40
+                    105,
+                    247,
+                    79
                 ]
             },
             "BLUE": {
@@ -128,16 +162,6 @@
                     255
                 ]
             }
-        },
-        "BALL_COLOURS": {
-            "WHITE": true,
-            "RED": true,
-            "YELLOW": true,
-            "GREEN": true,
-            "BROWN": true,
-            "BLUE": true,
-            "PINK": true,
-            "BLACK": true
         }
     }
 }
