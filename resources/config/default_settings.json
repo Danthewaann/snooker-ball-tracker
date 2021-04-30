@@ -1,5 +1,5 @@
 {
-    "BLOB_DETECTOR": {
+    "BALL_DETECTION_SETTINGS": {
         "BLOB_COLOUR": 255,
         "FILTER_BY_AREA": true,
         "FILTER_BY_CIRCULARITY": true,
@@ -18,124 +18,150 @@
         "MIN_INERTIA": 0.2,
         "MIN_THRESHOLD": 170
     },
-    "COLOURS": {
-        "BLACK": {
-            "LOWER": [
-                0,
-                0,
-                0
-            ],
-            "UPPER": [
-                180,
-                255,
-                40
-            ]
+    "COLOUR_DETECTION_SETTINGS": {
+        "COLOURS": {
+            "BLACK": {
+                "LOWER": [
+                    0,
+                    0,
+                    0
+                ],
+                "UPPER": [
+                    180,
+                    255,
+                    40
+                ]
+            },
+            "BLUE": {
+                "LOWER": [
+                    115,
+                    60,
+                    60
+                ],
+                "UPPER": [
+                    135,
+                    255,
+                    255
+                ]
+            },
+            "BROWN": {
+                "LOWER": [
+                    0,
+                    136,
+                    150
+                ],
+                "UPPER": [
+                    10,
+                    225,
+                    255
+                ]
+            },
+            "GREEN": {
+                "LOWER": [
+                    55,
+                    50,
+                    50
+                ],
+                "UPPER": [
+                    100,
+                    255,
+                    255
+                ]
+            },
+            "PINK": {
+                "LOWER": [
+                    160,
+                    60,
+                    240
+                ],
+                "UPPER": [
+                    180,
+                    120,
+                    255
+                ]
+            },
+            "RED": {
+                "LOWER": [
+                    25,
+                    190,
+                    150
+                ],
+                "UPPER": [
+                    180,
+                    255,
+                    255
+                ]
+            },
+            "TABLE": {
+                "LOWER": [
+                    0,
+                    18,
+                    0
+                ],
+                "UPPER": [
+                    66,
+                    125,
+                    230
+                ]
+            },
+            "WHITE": {
+                "LOWER": [
+                    0,
+                    0,
+                    240
+                ],
+                "UPPER": [
+                    30,
+                    80,
+                    255
+                ]
+            },
+            "YELLOW": {
+                "LOWER": [
+                    10,
+                    100,
+                    100
+                ],
+                "UPPER": [
+                    35,
+                    255,
+                    255
+                ]
+            }
         },
-        "BLUE": {
-            "LOWER": [
-                115,
-                60,
-                60
-            ],
-            "UPPER": [
-                135,
-                255,
-                255
-            ]
-        },
-        "BROWN": {
-            "LOWER": [
-                0,
-                136,
-                150
-            ],
-            "UPPER": [
-                10,
-                225,
-                255
-            ]
-        },
-        "GREEN": {
-            "LOWER": [
-                55,
-                50,
-                50
-            ],
-            "UPPER": [
-                100,
-                255,
-                255
-            ]
-        },
-        "PINK": {
-            "LOWER": [
-                160,
-                60,
-                240
-            ],
-            "UPPER": [
-                180,
-                120,
-                255
-            ]
-        },
-        "RED": {
-            "LOWER": [
-                25,
-                190,
-                150
-            ],
-            "UPPER": [
-                180,
-                255,
-                255
-            ]
-        },
-        "TABLE": {
-            "LOWER": [
-                0,
-                18,
-                0
-            ],
-            "UPPER": [
-                66,
-                125,
-                230
-            ]
-        },
-        "WHITE": {
-            "LOWER": [
-                0,
-                0,
-                240
-            ],
-            "UPPER": [
-                30,
-                80,
-                255
-            ]
-        },
-        "YELLOW": {
-            "LOWER": [
-                10,
-                100,
-                100
-            ],
-            "UPPER": [
-                35,
-                255,
-                255
-            ]
+        "BALL_COLOURS": {
+            "BLACK": {
+                "DETECT": true,
+                "ORDER": 7
+            },
+            "BLUE": {
+                "DETECT": true,
+                "ORDER": 5
+            },
+            "BROWN": {
+                "DETECT": true,
+                "ORDER": 1
+            },
+            "GREEN": {
+                "DETECT": true,
+                "ORDER": 4
+            },
+            "PINK": {
+                "DETECT": true,
+                "ORDER": 6
+            },
+            "RED": {
+                "DETECT": true,
+                "ORDER": 2
+            },
+            "WHITE": {
+                "DETECT": true,
+                "ORDER": 2
+            },
+            "YELLOW": {
+                "DETECT": true,
+                "ORDER": 3
+            }
         }
-    },
-    "DETECT_COLOURS": {
-        "BLACK": true,
-        "BLUE": true,
-        "BROWN": true,
-        "GREEN": true,
-        "PINK": true,
-        "RED": true,
-        "WHITE": true,
-        "YELLOW": true
     }
 }

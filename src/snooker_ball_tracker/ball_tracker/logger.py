@@ -1,6 +1,6 @@
 import PyQt5.QtCore as QtCore
 
-from .logging import BallsPotted
+from .balls import BallsPotted
 from .snapshot import SnapShot
 
 

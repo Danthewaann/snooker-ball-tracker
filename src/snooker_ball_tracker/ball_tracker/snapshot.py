@@ -5,7 +5,7 @@ import typing
 import cv2
 import snooker_ball_tracker.settings as s
 
-from .logging import Ball, BallColour
+from .balls import Ball, BallColour
 from .util import dist_between_two_balls
 
 
