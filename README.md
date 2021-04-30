@@ -28,11 +28,13 @@ is processing video. Currently only supports pre-recorded video.
 The Image CLI supports processing images.
 
 ### Image 1
-    python src/snooker_ball_tracker/ball_tracker/ball_tracker_cli.py resources/images/image-1.jpg --settings resources/config/image_1.json
+    python src/snooker_ball_tracker/ball_tracker/ball_tracker_cli.py \
+        resources/images/image-1.jpg --settings resources/config/image_1.json
 
 <img src="examples/image-1-frame-1.jpg" width=100%></img>
 
 ### Image 2
-    python src/snooker_ball_tracker/ball_tracker/ball_tracker_cli.py resources/images/image-2.jpg --settings resources/config/image_2.json
+    python src/snooker_ball_tracker/ball_tracker/ball_tracker_cli.py \
+        resources/images/image-2.jpg --settings resources/config/image_2.json
 
 <img src="examples/image-2-frame-1.jpg" width=100%></img>
