@@ -2,8 +2,6 @@ import typing
 
 import cv2
 import numpy as np
-import snooker_ball_tracker.settings as s
-from snooker_ball_tracker.colours import SnookerColour
 
 from .logger import Logger
 from .settings import BallDetectionSettings, ColourDetectionSettings
@@ -270,7 +268,7 @@ class BallTracker():
 
         # Get colours in their detection order
         colours = sorted(self.colour_settings.settings["BALL_COLOURS"], 
-            key=lambda x: self.colour_settings.settings["BALL_COLOURS"][x]["ORDER"])
+            key=lambda colour: self.colour_settings.settings["BALL_COLOURS"][colour]["ORDER"])
 
         # For each ball found, determine what colour it is and add it to the list of balls
         # If a ball is not mapped to an appropriate colour, it is discarded
@@ -344,24 +342,6 @@ class BallTracker():
         contours, _ = cv2.findContours(
             colour_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         return colour_mask, contours
-
-    def get_threshold(self, frame: np.ndarray, color_space: int=cv2.COLOR_BGR2GRAY, 
-                      threshold_type: int=cv2.THRESH_BINARY_INV) -> np.ndarray:
-        """Converts `frame` into a binary frame
-
-        :param frame: frame to process
-        :type frame: np.ndarray
-        :param color_space: colour space to convert `frame` into, defaults to cv2.COLOR_BGR2GRAY
-        :type color_space: int, optional
-        :param threshold_type: threshold type to use in conversion, defaults to cv2.THRESH_BINARY_INV
-        :type threshold_type: int, optional
-        :return: binary version of `frame`
-        :rtype: np.ndarray
-        """
-        gray = cv2.cvtColor(frame, color_space)
-        retval, binary_frame = cv2.threshold(
-            gray, s.MIN_THRESHOLD, s.MAX_THRESHOLD, threshold_type)
-        return binary_frame
 
     def has_shot_started(self, first_snapshot: SnapShot, second_snapshot: SnapShot) -> bool:
         """Determine if the shot has started by comparing `first_snapshot` white ball

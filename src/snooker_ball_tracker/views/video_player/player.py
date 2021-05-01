@@ -1,5 +1,3 @@
-import typing
-
 import numpy as np
 import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
@@ -7,8 +5,8 @@ import PyQt5.QtWidgets as QtWidgets
 from snooker_ball_tracker.ball_tracker import (ColourDetectionSettings,
                                                VideoPlayer)
 
-from ..components import Ui_Label, Ui_PushButton
 from ..actions import select_video_file_action
+from ..components import Ui_Label, Ui_PushButton
 
 
 class Player(QtWidgets.QFrame):

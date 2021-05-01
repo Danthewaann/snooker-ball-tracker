@@ -1,15 +1,12 @@
 from __future__ import annotations
 
 import typing
-from threading import Thread
 
 import cv2
 from imutils.video import FileVideoStream
 
-import snooker_ball_tracker.settings as s
-
 if typing.TYPE_CHECKING:
-    from .ball_tracker import ColourDetectionSettings, VideoPlayer
+    from . import ColourDetectionSettings, VideoPlayer
 
 from .video_stream import VideoStream
 

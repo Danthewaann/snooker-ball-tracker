@@ -4,7 +4,7 @@ import cv2
 import imutils
 import numpy as np
 import snooker_ball_tracker.settings as s
-from snooker_ball_tracker.colours import SnookerColour
+from snooker_ball_tracker.enums import SnookerColour
 
 
 Image = namedtuple("Image", "frame binary_frame hsv_frame")

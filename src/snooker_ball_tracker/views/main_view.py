@@ -1,7 +1,5 @@
 import os.path
 
-import cv2
-import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
 import snooker_ball_tracker.settings as s
@@ -23,9 +21,9 @@ class MainView(QtWidgets.QMainWindow):
         self.statusBar().show()
         self.statusBar().setStyleSheet("background-color: #e6e6e6")
 
-        if self.settings_file:
+        if self.settings_file is not None:
             s.load(self.settings_file)
-            self.statusBar().showMessage(f"Loaded settings from '{os.path.basename(self.settings_file)}'")
+            self.statusBar().showMessage(f"Loaded settings from \"{os.path.basename(self.settings_file)}\"")
 
         self.setWindowTitle("Snooker Ball Tracker Demo")
         self.showMaximized()
@@ -73,6 +71,16 @@ class MainView(QtWidgets.QMainWindow):
 
         self.menuBar().setNativeMenuBar(False)
 
+        if args.video is not None:
+            try:
+                self.video_player.start(args.video)
+            except TypeError:
+                error = QtWidgets.QMessageBox(None)
+                error.setWindowTitle("Invalid Video File!")
+                error.setText("Invalid file, please select a video file!")
+                error.exec_()
+
+
     def closeEvent(self, event: QtGui.QCloseEvent):
         """Handle the close event by closing child threads before
         accepting the close event
@@ -92,22 +100,22 @@ class MainView(QtWidgets.QMainWindow):
         Passes the video file to the VideoProcessor thread for processing
         and display.
         """
-        try:
-            video_file = select_video_file_action()
-            if video_file:
+        video_file = select_video_file_action()
+        if video_file:
+            try:
                 self.video_player.start(video_file)
-        except TypeError:
-            error = QtWidgets.QMessageBox(None)
-            error.setWindowTitle("Invalid Video File!")
-            error.setText('Invalid file, please select a video file!')
-            error.exec_()
+            except TypeError:
+                error = QtWidgets.QMessageBox(None)
+                error.setWindowTitle("Invalid Video File!")
+                error.setText("Invalid file, please select a video file!")
+                error.exec_()
 
     def load_settings(self):
         """Load settings from user provided file"""
         loaded_settings = load_settings_action()
         if loaded_settings:
             settings_file, colour_settings, ball_settings = loaded_settings
-            self.statusBar().showMessage(f"Loaded settings from '{os.path.basename(settings_file)}'")
+            self.statusBar().showMessage(f"Loaded settings from \"{os.path.basename(settings_file)}\"")
             self.settings_file = settings_file
             self.ball_tracker.colour_settings.settings = colour_settings
             self.ball_tracker.ball_settings.settings = ball_settings
@@ -121,4 +129,4 @@ class MainView(QtWidgets.QMainWindow):
         )
         if settings_file:
             self.settings_file = settings_file
-            self.statusBar().showMessage(f"Saved settings to '{os.path.basename(self.settings_file)}'")
+            self.statusBar().showMessage(f"Saved settings to \"{os.path.basename(self.settings_file)}\"")

@@ -1,6 +1,5 @@
 from copy import deepcopy
 
-import cv2
 import PyQt5.QtWidgets as QtWidgets
 import snooker_ball_tracker.settings as s
 from snooker_ball_tracker.ball_tracker import (BallDetectionSettings,

@@ -5,30 +5,29 @@
             "name": "CLI image-1",
             "type": "python",
             "request": "launch",
-            "program": "src/snooker_ball_tracker/ball_tracker/ball_tracker_cli.py",
+            "program": "src/snooker_ball_tracker/cli.py",
             "console": "integratedTerminal",
-            "args": ["resources/images/image-1.jpg", "--settings", "resources/config/image_1.json"]
+            "args": ["resources/images/image-1.jpg", "-s", "resources/config/image_1.json", "--detect-colour", "red"]
         },
         {
             "name": "CLI image-2",
             "type": "python",
             "request": "launch",
-            "program": "src/snooker_ball_tracker/ball_tracker/ball_tracker_cli.py",
+            "program": "src/snooker_ball_tracker/cli.py",
             "console": "integratedTerminal",
-            "args": ["resources/images/image-2.jpg", "--settings", "resources/config/image_2.json",]
+            "args": ["resources/images/image-2.jpg", "-s", "resources/config/image_2.json",]
         },
         {
             "name": "GUI Entry Point",
             "type": "python",
             "request": "launch",
-            "program": "src/snooker_ball_tracker/__main__.py",
+            "program": "src/snooker_ball_tracker/gui.py",
             "console": "integratedTerminal",
             "environment": [
                 { "name": "PYTHONDONTWRITEBYTECODE", "value": "1" }
             ],
             "args": [ 
-                "--settings", "${workspaceFolder}/resources/config/pre_recorded_footage.json",
-                "--no-splash"
+                "--settings", "${workspaceFolder}/resources/config/pre_recorded_footage.json"
             ]
         },
     ]

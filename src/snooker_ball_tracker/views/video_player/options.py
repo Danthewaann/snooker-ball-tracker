@@ -1,9 +1,9 @@
 import PyQt5.QtCore as QtCore
-import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
-from snooker_ball_tracker.ball_tracker import Observer, VideoPlayer
+from snooker_ball_tracker.ball_tracker import VideoPlayer
+from snooker_ball_tracker.observer import Observer
 
-from ..components import Ui_Label, Ui_PushButton, Ui_RadioButton, Ui_Line
+from ..components import Ui_Label, Ui_Line, Ui_PushButton, Ui_RadioButton
 
 
 class Options(QtWidgets.QWidget):

@@ -4,13 +4,12 @@ import threading
 
 import numpy as np
 import PyQt5.QtCore as QtCore
-import snooker_ball_tracker.settings as s
 from imutils.video import FPS
-from snooker_ball_tracker.ball_tracker import (BallDetectionSettings,
-                                               BallTracker,
-                                               ColourDetectionSettings, Logger)
-from snooker_ball_tracker.video_file_stream import VideoFileStream
-from snooker_ball_tracker.video_processor import VideoProcessor
+
+import magic
+from . import BallTracker
+from .video_file_stream import VideoFileStream
+from .video_processor import VideoProcessor
 
 
 class VideoPlayer(QtCore.QObject):
@@ -18,12 +17,12 @@ class VideoPlayer(QtCore.QObject):
         """Creates an instance of this class that contains properties used by the
         video player to display frames processed by the ball tracker"""
         super().__init__()
-        self.ball_tracker = ball_tracker
+        self.ball_tracker = ball_tracker or BallTracker()
         self.video_processor_lock = threading.Lock()
         self.video_processor_stop_event = threading.Event()
-        self.video_processor = None
-        self.video_file_stream = None
-        self.video_file = None
+        self.video_processor: VideoProcessor = None
+        self.video_file_stream: VideoFileStream = None
+        self.video_file: str = None
 
         self._width = 1100
         self._height = 600
@@ -277,7 +276,11 @@ class VideoPlayer(QtCore.QObject):
 
         :param video_file: video file to read from, defaults to None
         :type video_file: str, optional
+        :raises TypeError: if `video_file` isn't an actual video file
         """
+        if video_file and "video" not in magic.from_file(video_file, mime=True):
+            raise TypeError(f"{video_file} is not a video file")
+
         self.play = False
         self.video_file = video_file or self.video_file
 

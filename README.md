@@ -9,8 +9,8 @@ Python => 3.8.5
 
 ## Setup and Run
 - Run `python setup.py install` to install all required modules and dependencies
-- Run `python -m snooker_ball_tracker` to run the Video GUI app or;
-- Run `python -m snooker_ball_tracker.ball_tracker.ball_tracker_cli` to run the Image CLI
+- Run `python -m snooker_ball_tracker.gui` to run the Video GUI or;
+- Run `python -m snooker_ball_tracker.cli` to run the Image CLI
 
 ## Video GUI Examples
 The Video GUI provides an interface to allow you to configure the ball tracker in real-time as the app
@@ -28,13 +28,13 @@ is processing video. Currently only supports pre-recorded video.
 The Image CLI supports processing images.
 
 ### Image 1
-    python src/snooker_ball_tracker/ball_tracker/ball_tracker_cli.py \
+    python src/snooker_ball_tracker/cli.py \
         resources/images/image-1.jpg --settings resources/config/image_1.json
 
 <img src="examples/image-1-frame-1.jpg" width=100%></img>
 
 ### Image 2
-    python src/snooker_ball_tracker/ball_tracker/ball_tracker_cli.py \
+    python src/snooker_ball_tracker/cli.py \
         resources/images/image-2.jpg --settings resources/config/image_2.json
 
 <img src="examples/image-2-frame-1.jpg" width=100%></img>

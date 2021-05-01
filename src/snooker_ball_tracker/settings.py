@@ -3,7 +3,7 @@ from json import JSONEncoder
 
 import numpy as np
 
-from .colours import SnookerColour
+from .enums import SnookerColour
 
 
 class __SettingsJSONEncoder(JSONEncoder):

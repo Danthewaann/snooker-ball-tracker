@@ -1,7 +1,5 @@
 import PyQt5.QtCore as QtCore
-import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
-import snooker_ball_tracker.settings as s
 from snooker_ball_tracker.ball_tracker import ColourDetectionSettings, Logger
 
 from .components import Ui_Label, Ui_Line, Ui_PushButton

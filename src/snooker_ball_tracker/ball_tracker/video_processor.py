@@ -5,12 +5,8 @@ import typing
 from copy import deepcopy
 from queue import Queue
 
-import cv2
-
-import snooker_ball_tracker.settings as s
-
 if typing.TYPE_CHECKING:
-    from .ball_tracker import BallTracker, Logger, VideoPlayer, ColourDetectionSettings
+    from . import BallTracker, VideoPlayer
 
 from .video_stream import VideoStream
 

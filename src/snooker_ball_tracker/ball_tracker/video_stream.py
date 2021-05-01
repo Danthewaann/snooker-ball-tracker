@@ -6,15 +6,12 @@ from abc import ABC
 import cv2
 import imutils
 import numpy as np
-
-import snooker_ball_tracker.settings as s
-
-from .colours import SnookerColour
+from snooker_ball_tracker.enums import SnookerColour
 
 if typing.TYPE_CHECKING:
-    from .ball_tracker import VideoPlayer, ColourDetectionSettings
+    from . import VideoPlayer, ColourDetectionSettings
 
-from .ball_tracker.util import Image, get_mask_contours_for_colour
+from .util import Image, get_mask_contours_for_colour
 
 
 class VideoStream(ABC):
