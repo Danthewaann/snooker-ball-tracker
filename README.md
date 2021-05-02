@@ -8,9 +8,22 @@ The program allows you to configure all the settings that are used by the ball t
 Python => 3.8.5
 
 ## Setup and Run
+
+Carry out these steps to install `pyqt5` on your specific OS: https://pythonbasics.org/install-pyqt/
+
+Tested with version `5.14.1` of `pyqt5`
+
+### From source
+
 - Run `python setup.py install` to install all required modules and dependencies
 - Run `python -m snooker_ball_tracker.gui` to run the Video GUI or;
 - Run `python -m snooker_ball_tracker.cli` to run the Image CLI
+
+### From an executable
+
+- Run `python setup.py install` to install all required modules and dependencies
+- Run `python build.py` to create single file executable (Bundles Video GUI only)
+- Generated executable should be available in `dist/`
 
 ## Video GUI Examples
 The Video GUI provides an interface to allow you to configure the ball tracker in real-time as the app

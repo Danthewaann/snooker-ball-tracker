@@ -10,12 +10,14 @@ from .actions import (load_settings_action, save_settings_action,
 from .logging_view import LoggingView
 from .settings_view import SettingsView
 from .video_player_view import VideoPlayerView
+from argparse import Namespace
 
 
 class MainView(QtWidgets.QMainWindow):
-    def __init__(self, args):
+    def __init__(self, args: Namespace, icon: QtGui.QIcon):
         super().__init__()
 
+        self.setWindowIcon(icon)
         self.settings_file = args.settings_file
         self.menuBar().setStyleSheet("background-color: #e6e6e6")
         self.statusBar().show()
@@ -79,7 +81,6 @@ class MainView(QtWidgets.QMainWindow):
                 error.setWindowTitle("Invalid Video File!")
                 error.setText("Invalid file, please select a video file!")
                 error.exec_()
-
 
     def closeEvent(self, event: QtGui.QCloseEvent):
         """Handle the close event by closing child threads before

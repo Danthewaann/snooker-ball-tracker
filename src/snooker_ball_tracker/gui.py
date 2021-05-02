@@ -1,6 +1,8 @@
 import argparse
+import pathlib
 import sys
 
+from PyQt5 import QtGui
 from PyQt5.QtWidgets import QApplication
 
 from snooker_ball_tracker.views import MainView
@@ -28,7 +30,8 @@ class GUI():
         :type args: argparse.Namespace
         """
         app = QApplication([])
-        window = MainView(args)
+        icon = QtGui.QIcon(str(pathlib.Path(__file__).parent / "icon.ico"))
+        window = MainView(args, icon)
         window.show()
         sys.exit(app.exec())
 
