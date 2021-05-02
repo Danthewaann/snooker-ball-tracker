@@ -1,141 +1,167 @@
 {
-    "BLOB_DETECTOR": {
+    "BALL_DETECTION_SETTINGS": {
         "BLOB_COLOUR": 255,
         "FILTER_BY_AREA": true,
         "FILTER_BY_CIRCULARITY": false,
         "FILTER_BY_COLOUR": true,
         "FILTER_BY_CONVEXITY": false,
         "FILTER_BY_INERTIA": false,
-        "MAX_AREA": 200.0,
-        "MAX_CIRCULARITY": 1.0,
-        "MAX_CONVEXITY": 1.0,
-        "MAX_INERTIA_RATIO": 1.0,
+        "MAX_AREA": 200,
+        "MAX_CIRCULARITY": 1,
+        "MAX_CONVEXITY": 1,
+        "MAX_INERTIA": 1,
         "MAX_THRESHOLD": 255,
-        "MIN_AREA": 5.0,
-        "MIN_CIRCULARITY": 0.2,
-        "MIN_CONVEXITY": 0.5,
+        "MIN_AREA": 5,
+        "MIN_CIRCULARITY": 0,
+        "MIN_CONVEXITY": 0,
         "MIN_DIST_BETWEEN_BLOBS": 10.0,
-        "MIN_INERTIA_RATIO": 0.2,
+        "MIN_INERTIA": 0,
         "MIN_THRESHOLD": 170
     },
-    "COLOURS": {
-        "BLACK": {
-            "LOWER": [
-                0,
-                0,
-                0
-            ],
-            "UPPER": [
-                180,
-                255,
-                40
-            ]
+    "COLOUR_DETECTION_SETTINGS": {
+        "BALL_COLOURS": {
+            "BLACK": {
+                "DETECT": true,
+                "ORDER": 7
+            },
+            "BLUE": {
+                "DETECT": true,
+                "ORDER": 5
+            },
+            "BROWN": {
+                "DETECT": true,
+                "ORDER": 8
+            },
+            "GREEN": {
+                "DETECT": true,
+                "ORDER": 4
+            },
+            "PINK": {
+                "DETECT": true,
+                "ORDER": 6
+            },
+            "RED": {
+                "DETECT": true,
+                "ORDER": 1
+            },
+            "WHITE": {
+                "DETECT": true,
+                "ORDER": 2
+            },
+            "YELLOW": {
+                "DETECT": true,
+                "ORDER": 3
+            }
         },
-        "BLUE": {
-            "LOWER": [
-                85,
-                0,
-                60
-            ],
-            "UPPER": [
-                135,
-                255,
-                255
-            ]
-        },
-        "BROWN": {
-            "LOWER": [
-                5,
-                168,
-                73
-            ],
-            "UPPER": [
-                25,
-                209,
-                156
-            ]
-        },
-        "GREEN": {
-            "LOWER": [
-                58,
-                195,
-                0
-            ],
-            "UPPER": [
-                83,
-                255,
-                255
-            ]
-        },
-        "PINK": {
-            "LOWER": [
-                165,
-                34,
-                116
-            ],
-            "UPPER": [
-                180,
-                114,
-                255
-            ]
-        },
-        "RED": {
-            "LOWER": [
-                0,
-                245,
-                50
-            ],
-            "UPPER": [
-                180,
-                255,
-                255
-            ]
-        },
-        "TABLE": {
-            "LOWER": [
-                30,
-                105,
-                0
-            ],
-            "UPPER": [
-                65,
-                240,
-                255
-            ]
-        },
-        "WHITE": {
-            "LOWER": [
-                0,
-                0,
-                235
-            ],
-            "UPPER": [
-                30,
-                80,
-                255
-            ]
-        },
-        "YELLOW": {
-            "LOWER": [
-                15,
-                140,
-                120
-            ],
-            "UPPER": [
-                35,
-                255,
-                255
-            ]
+        "COLOURS": {
+            "BLACK": {
+                "LOWER": [
+                    32,
+                    0,
+                    0
+                ],
+                "UPPER": [
+                    105,
+                    247,
+                    79
+                ]
+            },
+            "BLUE": {
+                "LOWER": [
+                    85,
+                    0,
+                    60
+                ],
+                "UPPER": [
+                    135,
+                    255,
+                    255
+                ]
+            },
+            "BROWN": {
+                "LOWER": [
+                    5,
+                    168,
+                    73
+                ],
+                "UPPER": [
+                    25,
+                    209,
+                    156
+                ]
+            },
+            "GREEN": {
+                "LOWER": [
+                    58,
+                    195,
+                    0
+                ],
+                "UPPER": [
+                    83,
+                    255,
+                    255
+                ]
+            },
+            "PINK": {
+                "LOWER": [
+                    165,
+                    34,
+                    116
+                ],
+                "UPPER": [
+                    180,
+                    114,
+                    255
+                ]
+            },
+            "RED": {
+                "LOWER": [
+                    0,
+                    245,
+                    50
+                ],
+                "UPPER": [
+                    180,
+                    255,
+                    255
+                ]
+            },
+            "TABLE": {
+                "LOWER": [
+                    30,
+                    105,
+                    0
+                ],
+                "UPPER": [
+                    65,
+                    240,
+                    255
+                ]
+            },
+            "WHITE": {
+                "LOWER": [
+                    0,
+                    0,
+                    235
+                ],
+                "UPPER": [
+                    30,
+                    80,
+                    255
+                ]
+            },
+            "YELLOW": {
+                "LOWER": [
+                    15,
+                    140,
+                    120
+                ],
+                "UPPER": [
+                    35,
+                    255,
+                    255
+                ]
+            }
         }
-    },
-    "DETECT_COLOURS": {
-        "BLACK": true,
-        "BLUE": true,
-        "BROWN": true,
-        "GREEN": true,
-        "PINK": true,
-        "RED": true,
-        "WHITE": true,
-        "YELLOW": true
     }
 }
