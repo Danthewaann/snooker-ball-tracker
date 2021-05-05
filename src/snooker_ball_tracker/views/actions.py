@@ -1,9 +1,9 @@
 from copy import deepcopy
 
 import PyQt5.QtWidgets as QtWidgets
-import snooker_ball_tracker.settings as s
 from snooker_ball_tracker.ball_tracker import (BallDetectionSettings,
                                                ColourDetectionSettings)
+from snooker_ball_tracker.settings import settings as s
 
 
 def select_video_file_action(*args) -> str:

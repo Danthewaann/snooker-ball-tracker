@@ -3,9 +3,8 @@ from collections import namedtuple
 import cv2
 import imutils
 import numpy as np
-import snooker_ball_tracker.settings as s
 from snooker_ball_tracker.enums import SnookerColour
-
+from snooker_ball_tracker.settings import settings as s
 
 Image = namedtuple("Image", "frame binary_frame hsv_frame")
 

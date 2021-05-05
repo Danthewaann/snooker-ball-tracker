@@ -3,7 +3,7 @@ from collections import OrderedDict
 from copy import deepcopy
 
 import PyQt5.QtCore as QtCore
-import snooker_ball_tracker.settings as s
+from snooker_ball_tracker.settings import settings as s
 
 from .ball_detection_setting_group import BallDetectionSettingGroup
 
