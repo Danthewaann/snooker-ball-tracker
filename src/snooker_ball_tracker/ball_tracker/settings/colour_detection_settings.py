@@ -133,7 +133,8 @@ class ColourDetectionSettings(QtCore.QObject):
         :param value: value to set to colour value
         :type value: int
         """
-        self.colours[self._selected_colour][_range][index] = value
+        if self._selected_colour != "NONE":
+            self.colours[self._selected_colour][_range][index] = value
 
     def reset(self):
         """Reset selected colour in `colours` and `colour_model` with original values from settings"""
