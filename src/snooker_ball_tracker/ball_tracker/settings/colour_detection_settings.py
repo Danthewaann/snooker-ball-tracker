@@ -1,9 +1,7 @@
-from collections import OrderedDict
 from copy import deepcopy
 
-import numpy as np
 import PyQt5.QtCore as QtCore
-import snooker_ball_tracker.settings as s
+from snooker_ball_tracker.settings import settings as s
 
 from .hsv_colour import HSVColour
 

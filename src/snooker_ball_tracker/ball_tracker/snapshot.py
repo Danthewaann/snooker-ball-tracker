@@ -3,7 +3,7 @@ from __future__ import annotations
 import typing
 
 import cv2
-import snooker_ball_tracker.settings as s
+from snooker_ball_tracker.settings import settings as s
 
 from .balls import Ball, BallColour
 

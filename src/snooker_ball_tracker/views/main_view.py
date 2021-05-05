@@ -1,16 +1,16 @@
 import os.path
+from argparse import Namespace
 
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
-import snooker_ball_tracker.settings as s
 from snooker_ball_tracker.ball_tracker import BallTracker, VideoPlayer
+from snooker_ball_tracker.settings import settings as s
 
 from .actions import (load_settings_action, save_settings_action,
                       select_video_file_action)
 from .logging_view import LoggingView
 from .settings_view import SettingsView
 from .video_player_view import VideoPlayerView
-from argparse import Namespace
 
 
 class MainView(QtWidgets.QMainWindow):

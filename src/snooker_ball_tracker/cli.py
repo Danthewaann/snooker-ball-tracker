@@ -4,10 +4,10 @@ import os
 import cv2
 import numpy as np
 
-import snooker_ball_tracker.settings as s
 from snooker_ball_tracker.ball_tracker import BallTracker
 from snooker_ball_tracker.ball_tracker.util import Image, transform_frame
 from snooker_ball_tracker.enums import SnookerColour
+from snooker_ball_tracker.settings import settings as s
 
 
 class CLI():
