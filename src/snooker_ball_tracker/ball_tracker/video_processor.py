@@ -4,6 +4,7 @@ import threading
 import typing
 from copy import deepcopy
 from queue import Queue
+from time import sleep
 
 if typing.TYPE_CHECKING:
     from . import BallTracker, VideoPlayer
@@ -50,19 +51,14 @@ class VideoProcessor(threading.Thread):
 
         while not self.__stop_event.is_set():
             if self.__video_player.play_video and self.__image_producer.running():
-                if not self._process_next_image():
-                    continue
+                self._process_next_image()
             else:
                 self._process_image()
         with self.__producer_lock:
             self.__image_producer.stop()
 
-    def _process_next_image(self) -> bool:
-        """Process the next image obtained from the VideoStream
-
-        :return: True if VideoStream still has frames to read, False otherwise
-        :rtype: bool
-        """
+    def _process_next_image(self):
+        """Process the next image obtained from the VideoStream"""
         with self.__producer_lock:
             image = self.__image_producer.read()
             self.__video_player.update_fps()
@@ -71,8 +67,8 @@ class VideoProcessor(threading.Thread):
             self.__image = image
             self._process_image()
             self.__video_player.stop_fps()
-
-        return self.__image_producer.running()
+            # Limit frame processing speed
+            sleep(.01)
 
     def _process_image(self):
         """Process the currently loaded image"""
