@@ -1,5 +1,6 @@
 import argparse
 import os
+from copy import deepcopy
 
 import cv2
 import numpy as np
@@ -145,14 +146,14 @@ class CLI():
 
             # read in image provided
             in_frame = cv2.imread(args.image)
+            in_frame = transform_frame(in_frame, width=args.width)
 
             # frame display loop
             while True:
-                self.image = transform_frame(
-                    in_frame, width=args.width, morph=args.morph)
-                out_frame, _, _ = self.ball_tracker.process_image(
-                    self.image, show_threshold=args.show_threshold, detect_colour=args.detect_colour, mask_colour=args.mask_colour)
-                cv2.imshow(self.window_title, out_frame)
+                self.image, _, _ = self.ball_tracker.process_frame(
+                    deepcopy(in_frame), show_threshold=args.show_threshold, detect_colour=args.detect_colour, 
+                    mask_colour=args.mask_colour, perform_morph=args.morph)
+                cv2.imshow(self.window_title, self.image.frame)
 
                 # obtain key value if a key was pressed
                 key = cv2.waitKey(1) & 0xFF
@@ -175,7 +176,7 @@ class CLI():
                             "-frame-" + str(counter) + ".jpg"
                         if not os.path.exists(frame_name):
                             print("saving frame to " + frame_name)
-                            cv2.imwrite(frame_name, out_frame)
+                            cv2.imwrite(frame_name, self.image.frame)
                             break
                         counter += 1
 

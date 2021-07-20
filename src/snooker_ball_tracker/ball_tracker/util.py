@@ -3,7 +3,6 @@ from collections import namedtuple
 import cv2
 import imutils
 import numpy as np
-from snooker_ball_tracker.enums import SnookerColour
 from snooker_ball_tracker.settings import settings as s
 
 Image = namedtuple("Image", "frame binary_frame hsv_frame")
@@ -53,7 +52,7 @@ def get_mask_contours_for_colour(frame: np.ndarray, colour: str,
     return colour_mask, contours
 
 
-def transform_frame(frame: np.ndarray, width: int, morph: bool=False) -> Image:
+def transform_frame(frame: np.ndarray, width: int) -> Image:
     """Performs initial operations on `frame` before it is properly processed
 
     :param frame: frame to process
@@ -69,20 +68,6 @@ def transform_frame(frame: np.ndarray, width: int, morph: bool=False) -> Image:
         # resize the frame if width is provided
         frame = imutils.resize(frame, width=width)
 
-        # convert frame into HSV colour space
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-        # get mask of table cloth colour
-        threshold, contours = get_mask_contours_for_colour(
-            hsv, SnookerColour.TABLE, s.COLOUR_DETECTION_SETTINGS["COLOURS"])
-        threshold = cv2.cvtColor(threshold, cv2.COLOR_GRAY2BGR)
-        # threshold = cv2.bitwise_not(threshold)
-
-        # perform closing morphology if `morph` is True
-        if morph:
-            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
-            threshold = cv2.morphologyEx(threshold, cv2.MORPH_OPEN, kernel)
-
-        return Image(frame, threshold, hsv)
+        return frame
 
     return None

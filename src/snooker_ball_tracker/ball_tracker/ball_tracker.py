@@ -1,14 +1,15 @@
-import typing
+from typing import Optional, Dict, List, Tuple
 
 import cv2
 import numpy as np
+from snooker_ball_tracker.enums import SnookerColour
 
 from .logger import Logger
 from .settings import BallDetectionSettings, ColourDetectionSettings
 from .snapshot import SnapShot
 from .util import Image, dist_between_two_balls, get_mask_contours_for_colour
 
-Keypoints = typing.Dict[str, typing.List[cv2.KeyPoint]]
+Keypoints = Dict[str, List[cv2.KeyPoint]]
 
 
 class BallTracker():
@@ -37,6 +38,9 @@ class BallTracker():
 
         self.ball_settings = ball_settings or BallDetectionSettings()
         self.ball_settings.settingsChanged.connect(self.setup_blob_detector)
+
+        self.table_bounds: Optional[np.ndarray] = None
+        self.table_bounds_mask: Optional[np.ndarray] = None
             
         self.__keypoints: Keypoints = {}
         self.__blob_detector: cv2.SimpleBlobDetector = None
@@ -131,9 +135,10 @@ class BallTracker():
                     break
         return balls
 
-    def process_image(self, image: Image, show_threshold: bool=False, 
-                      detect_colour: str=None, mask_colour: bool=False) -> tuple:
-        """Process `image` to detect/track balls, determine if a shot has started/finished
+    def process_frame(self, frame: np.ndarray, show_threshold: bool=False, detect_table: bool=False,
+                      crop_frames: bool=False, perform_morph: bool=False,
+                      detect_colour: str=None, mask_colour: bool=False) -> Tuple[Image, str, int]:
+        """Process `frame` to detect/track balls, determine if a shot has started/finished
         and determine if a ball was potted
 
         We store 3 different Snapshots:
@@ -151,24 +156,51 @@ class BallTracker():
         started and finished, which is determined by comparing the
         Temporary SnapShot with the Current SnapShot
 
-        :param image: image to process, contains 3 frames (RGB, HSV and binary versions of image)
-        :type image: Image
-        :param show_threshold: if True return a binary version of `image`, defaults to False
+        :param frame: frame to process
+        :type frame: np.ndarray
+        :param show_threshold: if True return a binary version of `frame`, defaults to False
         :type show_threshold: bool, optional
-        :return: processed image, ball potted if any were and the number of balls potted
-        :rtype: tuple
+        :return: processed frame, ball potted if any were and the number of balls potted
+        :rtype: Tuple[Image, str, int]
         """
         ball_potted = None
         pot_count = 0
 
-        # Unpack image tuple
-        output_frame, binary_frame, hsv_frame = image
+        # convert frame into HSV colour space
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+        # get mask of table cloth colour
+        threshold, contours = get_mask_contours_for_colour(
+            hsv, SnookerColour.TABLE, self.colour_settings.colours)
+        threshold = cv2.cvtColor(threshold, cv2.COLOR_GRAY2BGR)
+        threshold = cv2.bitwise_not(threshold)
+
+        # perform closing morphology if `morph` is True
+        if perform_morph:
+            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
+            threshold = cv2.morphologyEx(threshold, cv2.MORPH_OPEN, kernel)
+
+        # get the bounds of the table
+        if detect_table:
+            self.create_table_boundary(frame, contours)
+
+        # draw the bounds of the table if we have it
+        if self.table_bounds is not None and not crop_frames:
+            cv2.drawContours(
+                frame, [self.table_bounds], -1, (255, 255, 255), 3)
+
+        # fill frame, hsv and threshold
+        if crop_frames and self.table_bounds is not None:
+            frame = self.fill(frame)
+            hsv = self.fill(hsv)
+            threshold = self.fill(threshold)
+
 
         # Every 5 images run the colour detection phase, otherwise just update ball positions
         if self.__image_counter == 0 or self.__image_counter % 5 == 0:
-            self.__keypoints = self.perform_colour_detection(binary_frame, hsv_frame)
+            self.__keypoints = self.perform_colour_detection(threshold, hsv)
         else:
-            cur_keypoints = self.__blob_detector.detect(binary_frame)
+            cur_keypoints = self.__blob_detector.detect(threshold)
             self.update_balls(self.__keypoints, cur_keypoints)
 
         if self.__image_counter == 0:
@@ -177,28 +209,28 @@ class BallTracker():
 
         # Swap output frame with binary frame if show threshold is True
         if show_threshold:
-            output_frame = binary_frame
+            frame = threshold
 
         # Draw contours around a colour to detect if not None
         if detect_colour:
             colour_mask, contours = self.detect_colour(
-                hsv_frame, self.colour_settings.colours[detect_colour]["LOWER"], 
+                hsv, self.colour_settings.colours[detect_colour]["LOWER"], 
                 self.colour_settings.colours[detect_colour]["UPPER"])
 
             # Show only the detected colour in the output frame
             if mask_colour:
-                output_frame = cv2.bitwise_and(
-                    output_frame, output_frame, mask=colour_mask)
+                frame = cv2.bitwise_and(
+                    frame, frame, mask=colour_mask)
 
-            cv2.drawContours(output_frame, contours, -1, (0, 255, 0), 2)
+            cv2.drawContours(frame, contours, -1, (0, 255, 0), 2)
 
         # Draw only the balls for the detected colour 
         # if we are only showing the detected colour
         if detect_colour and detect_colour in self.colour_settings.settings["BALL_COLOURS"] and mask_colour:
-            self.draw_balls(output_frame, { detect_colour: self.__keypoints[detect_colour] })
+            self.draw_balls(frame, { detect_colour: self.__keypoints[detect_colour] })
         else:
             # Otherwise just draw all detected balls
-            self.draw_balls(output_frame, self.__keypoints)
+            self.draw_balls(frame, self.__keypoints)
 
         # Every 5 images run the snapshot comparision/generation phase
         if self.__image_counter == 0 or self.__image_counter % 5 == 0:
@@ -233,7 +265,7 @@ class BallTracker():
 
         self.__image_counter += 1
 
-        return output_frame, ball_potted, pot_count
+        return Image(frame, threshold, hsv), ball_potted, pot_count
 
     def perform_colour_detection(self, binary_frame: np.ndarray, hsv_frame: np.ndarray) -> Keypoints:
         """Performs the colour detection process
@@ -253,7 +285,7 @@ class BallTracker():
             colour: list() for colour in self.colour_settings.settings["BALL_COLOURS"] 
         }
 
-        colour_contours: typing.List[np.ndarray] = {
+        colour_contours: List[np.ndarray] = {
             colour: list() for colour in self.colour_settings.settings["BALL_COLOURS"] 
         }
 
@@ -281,7 +313,7 @@ class BallTracker():
 
         return balls
 
-    def __keypoint_is_ball(self, colour: str, colour_contours: typing.List[np.ndarray], 
+    def __keypoint_is_ball(self, colour: str, colour_contours: List[np.ndarray], 
                            keypoint: cv2.KeyPoint, balls: Keypoints, 
                            biggest_contour: bool=False) -> bool:
         """Determine if `keypoint` is a ball of `colour`
@@ -289,7 +321,7 @@ class BallTracker():
         :param colour: colour to check `keypoint` against
         :type colour: str
         :param colour_contours: contours of `colour`
-        :type colour_contours: typing.List[np.ndarray]
+        :type colour_contours: List[np.ndarray]
         :param keypoint: keypoint to check
         :type keypoint: cv2.KeyPoint
         :param balls: list of balls already detected
@@ -412,3 +444,55 @@ class BallTracker():
         """
         dist = dist_between_two_balls(first_ball, second_ball)
         return True if dist > 0.1 else False
+
+    def create_table_boundary(self, frame: np.ndarray, contours: List[np.ndarray]=None):
+        """Creates the table boundary mask from `frame`
+
+        :param frame: frame to process
+        :type frame: np.ndarray
+        :param contours: list of contours to possibly use for the table boundary, defaults to None
+        :type contours: typing.List[np.ndarray], optional
+        """
+        # Create mask where white is what we want, black otherwise
+        self.table_bounds_mask = np.zeros_like(frame)
+        if contours:
+            if len(contours) > 1:
+                self.table_bounds = max(contours, key=lambda el: cv2.contourArea(el))
+            elif len(contours) == 1:
+                self.table_bounds = contours[0]
+        else:
+            self.table_bounds = None
+        if self.table_bounds is not None:
+            cv2.drawContours(self.table_bounds_mask, [
+                             self.table_bounds], -1, (255, 255, 255), -1)
+
+    def fill(self, frame: np.ndarray) -> np.ndarray:
+        """Fill `frame` using the detected table boundary
+
+        :param frame: frame to process
+        :type frame: np.ndarray
+        :return: frame filled around table boundary
+        :rtype: np.ndarray
+        """
+        # Extract out the object and place into output image
+        out = np.zeros(frame.shape).astype(frame.dtype)
+        out[self.table_bounds_mask == 255] = frame[self.table_bounds_mask == 255]
+        frame = cv2.bitwise_and(frame, out) 
+        return frame
+
+    def crop(self, frame: np.ndarray) -> np.ndarray:
+        """Crops `frame` using the detected table boundary
+
+        :param frame: frame to process
+        :type frame: np.ndarray
+        :return: frame cropped around table boundary
+        :rtype: np.ndarray
+        """
+        # Extract out the object and place into output image
+        out = np.zeros(frame.shape).astype(frame.dtype)
+        out[self._table_bounds_mask == 255] = frame[self._table_bounds_mask == 255]
+        (x, y, _) = np.where(self._table_bounds_mask == 255)
+        (topx, topy) = (np.min(x), np.min(y))
+        (bottomx, bottomy) = (np.max(x), np.max(y))
+        frame = out[topx:bottomx + 1, topy:bottomy + 1]
+        return frame
