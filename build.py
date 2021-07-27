@@ -31,9 +31,12 @@ PyInstaller.__main__.run([
     "--onefile",
     "--windowed",
     "-y",
-    "--add-data", str(BASE_DIR / "src" / CONF["metadata"]["name"] / "icon.ico") + ":icon.ico",
-    "-i", str(BASE_DIR / "src" / CONF["metadata"]["name"] / "icon.ico"),
+    "--add-data", str(BASE_DIR / "src" / CONF["metadata"]["name"] / "resources" / "icon.ico") + ":icon.ico",
+    "-i", str(BASE_DIR / "src" / CONF["metadata"]["name"] / "resources" / "icon.ico"),
     "-n", CONF["metadata"]["name"]+".exe",
     "--clean",
     "--version-file", str(BASE_DIR / "version_file.txt")
 ])
+
+shutil.copy(str(BASE_DIR / "src" / "snooker_ball_tracker" / "resources" / "icon.ico"), str(BASE_DIR / "dist"))
+shutil.copy(str(BASE_DIR / "src" / "snooker_ball_tracker" / "resources" / "default_settings.json"), str(BASE_DIR / "dist"))

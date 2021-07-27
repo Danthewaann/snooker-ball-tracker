@@ -18,7 +18,6 @@ resources/images/*
 !resources/images/image-2.jpg
 
 resources/config/*
-!resources/config/default_settings.json
 !resources/config/image_1.json
 !resources/config/image_2.json
 !resources/config/live_footage.json

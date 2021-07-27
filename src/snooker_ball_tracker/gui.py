@@ -1,14 +1,25 @@
 import argparse
 import pathlib
 import sys
+import os
 
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QApplication
 
 from snooker_ball_tracker.views import MainView
 
+from snooker_ball_tracker.utils import IS_FROZEN
+
 
 class GUI():
+
+    def __init__(self) -> None:
+        if IS_FROZEN:
+            self.icon_path = str(pathlib.Path(pathlib.Path(sys.executable).parent / "icon.ico").resolve())
+            self.default_settings_path = str(pathlib.Path(pathlib.Path(sys.executable).parent / "default_settings.json").resolve())
+        else:
+            self.icon_path = str(pathlib.Path(pathlib.Path(__file__).parent / "resources" / "icon.ico").resolve())
+            self.default_settings_path = str(pathlib.Path(pathlib.Path(__file__).parent / "resources" / "default_settings.json").resolve())
 
     def create_parser(self) -> argparse.ArgumentParser:
         """Create GUI argument parser
@@ -17,8 +28,8 @@ class GUI():
         :rtype: argparse.ArgumentParser
         """
         parser = argparse.ArgumentParser(description="Ball Tracker Video GUI (Only works with videos)")
-        parser.add_argument("-s", "--settings", dest="settings_file", default=None,
-                            help="Load settings from JSON file")
+        parser.add_argument("-s", "--settings", dest="settings_file", default=self.default_settings_path,
+                            help="Load settings from JSON file, defaults to %(default)s")
         parser.add_argument("-v", "--video", dest="video", default=None,
                             help="Video file to process")
         return parser
@@ -30,7 +41,7 @@ class GUI():
         :type args: argparse.Namespace
         """
         app = QApplication([])
-        icon = QtGui.QIcon(str(pathlib.Path(__file__).parent / "icon.ico"))
+        icon = QtGui.QIcon(self.icon_path)
         window = MainView(args, icon)
         window.show()
         sys.exit(app.exec())
