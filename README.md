@@ -12,7 +12,7 @@ The program allows you to configure all the settings that are used by the ball t
 
 - Run `poetry install` to install all required modules and dependencies
 - Run `poetry shell` to activate the python virtual environment;
-- Run `sbt-image` to run the Image CLI or;
+- Run `sbt-image` to run the image CLI or;
 - Run `sbt-video` to run the main video GUI
 
 ### From an executable
