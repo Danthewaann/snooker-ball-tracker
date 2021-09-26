@@ -16,8 +16,8 @@ imutils = "^0.5.4"
 python-magic = "^0.4.24"
 pyinstaller = "^4.5.1"
 pyinstaller-versionfile = "^2.0.0"
-PyQt5 = "^5.15.4"
-opencv-python-headless = "4.5.2.52"
+PyQt5 = "5.14.1"
+opencv-python = "4.5.2.52"
 
 [tool.poetry.dev-dependencies]
 
