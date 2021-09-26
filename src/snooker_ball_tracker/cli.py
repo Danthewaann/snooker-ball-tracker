@@ -198,8 +198,7 @@ class CLI():
             raise OSError(f"Failed to load image file: {args.image}")
 
 
-if __name__ == "__main__":
-
+def main() -> None:
     cli = CLI()
     parser = cli.create_parser()
     args = parser.parse_args()
@@ -212,3 +211,7 @@ if __name__ == "__main__":
         parser.exit(1, message=ex)
     finally:
         cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    main()

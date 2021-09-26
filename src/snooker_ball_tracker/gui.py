@@ -46,10 +46,13 @@ class GUI():
         window.show()
         sys.exit(app.exec())
 
-
-if __name__ == "__main__":
-
+    
+def main() -> None:
     gui = GUI()
     parser = gui.create_parser()
     args = parser.parse_args()
     gui.run(args)
+
+
+if __name__ == "__main__":
+    main()
