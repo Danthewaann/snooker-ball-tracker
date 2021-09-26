@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "snooker-ball-tracker"
+name = "snooker_ball_tracker"
 version = "0.1.0"
 description = "Demo app that tracks balls on a Snooker table"
 authors = ["dcrblack <danielcrblack@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.scripts]
-sbt = 'snooker_ball_tracker.gui:main'
+sbt-video = 'snooker_ball_tracker.gui:main'
 sbt-image = "snooker_ball_tracker.cli:main"
 
 [tool.poetry.dependencies]
@@ -14,12 +14,13 @@ python = ">=3.8,<3.11"
 numpy = "^1.21.2"
 imutils = "^0.5.4"
 python-magic = "^0.4.24"
-pyinstaller = "^4.5.1"
-pyinstaller-versionfile = "^2.0.0"
 PyQt5 = "5.14.1"
 opencv-python = "4.5.2.52"
 
 [tool.poetry.dev-dependencies]
+tomlkit = "^0.7.2"
+pyinstaller = "^4.5.1"
+pyinstaller-versionfile = "^2.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

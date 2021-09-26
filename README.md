@@ -4,24 +4,21 @@ This project is a prototype that I developed in Python to demo an idea I had for
 
 The program allows you to configure all the settings that are used by the ball tracker, from how it detects colours to how it detects balls. It also provides features that allows you to see what the ball trackers sees. 
 
-## Python version
-Python => 3.8.5
-
-## Setup and Run
-
-Carry out these steps to install `pyqt5` on your specific OS: https://pythonbasics.org/install-pyqt/
-
-Tested with version `5.14.1` of `pyqt5`
+## Requirements
+- [Python](https://www.python.org/) version 3.8 or greater
+- [Poetry](https://python-poetry.org/)
 
 ### From source
 
-- Run `python setup.py install` to install all required modules and dependencies
-- Run `python -m snooker_ball_tracker.gui` to run the Video GUI or;
-- Run `python -m snooker_ball_tracker.cli` to run the Image CLI
+- Run `poetry install` to install all required modules and dependencies
+- Run `poetry shell` to activate the python virtual environment;
+- Run `sbt-image` to run the Image CLI or;
+- Run `sbt-video` to run the main video GUI
 
 ### From an executable
 
-- Run `python setup.py install` to install all required modules and dependencies
+- Run `poetry install` to install all required modules and dependencies
+- Run `poetry shell` to activate the python virtual environment;
 - Run `python build.py` to create single file executable (Bundles Video GUI only)
 - Generated executable should be available in `dist/`
 
@@ -41,13 +38,11 @@ is processing video. Currently only supports pre-recorded video.
 The Image CLI supports processing images.
 
 ### Image 1
-    python src/snooker_ball_tracker/cli.py \
-        resources/images/image-1.jpg --settings resources/config/image_1.json
+    sbt-image resources/images/image-1.jpg --settings resources/config/image_1.json
 
 <img src="examples/image-1-frame-1.jpg" width=100%></img>
 
 ### Image 2
-    python src/snooker_ball_tracker/cli.py \
-        resources/images/image-2.jpg --settings resources/config/image_2.json
+    sbt-image resources/images/image-2.jpg --settings resources/config/image_2.json
 
 <img src="examples/image-2-frame-1.jpg" width=100%></img>
