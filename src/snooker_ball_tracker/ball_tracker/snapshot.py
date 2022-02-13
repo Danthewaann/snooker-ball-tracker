@@ -1,31 +1,39 @@
 from __future__ import annotations
 
-import typing
+from typing import TYPE_CHECKING, Any
 
-import cv2
 from snooker_ball_tracker.settings import settings as s
 
 from .balls import Ball, BallColour
 
+if TYPE_CHECKING:
+    from .types import Keypoints
 
-class SnapShot():
-    def __init__(self, balls: dict=None, ball_colours: dict=s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"]):
+
+class SnapShot:
+    def __init__(
+        self,
+        balls: Keypoints | None = None,
+        ball_colours: dict[str, Any] = s.COLOUR_DETECTION_SETTINGS["BALL_COLOURS"],
+    ) -> None:
         """Creates an instance of this class that contains ball counts for all
         possible ball colours
 
-        :param balls: dict of balls, where each key value pair 
+        :param balls: dict of balls, where each key value pair
                       is a ball colour and its count, defaults to None
         :type balls: dict, optional
         """
         if balls:
-            self._colours = { colour: BallColour(keypoints) for colour, keypoints in balls.items()}
+            self._colours = {
+                colour: BallColour(keypoints) for colour, keypoints in balls.items()
+            }
         else:
             self._colours = {
                 colour: BallColour() for colour in ball_colours if ball_colours[colour]
             }
 
     @property
-    def colours(self) -> typing.Dict[str, BallColour]:
+    def colours(self) -> dict[str, BallColour]:
         """Dict of colours where each key is a ball colour, and each
         value is a BallColour instance
 
@@ -35,7 +43,7 @@ class SnapShot():
         return self._colours
 
     @property
-    def white(self) -> typing.Optional[Ball]:
+    def white(self) -> Ball | None:
         """White ball property
 
         :return: white ball
@@ -43,7 +51,7 @@ class SnapShot():
         """
         return self._colours["WHITE"].balls[0] if self._colours["WHITE"].balls else None
 
-    def assign_balls_from_dict(self, balls: typing.Dict[str, typing.List[cv2.KeyPoint]]):
+    def assign_balls_from_dict(self, balls: Keypoints) -> None:
         """Assign balls to their appropriate ball colour instances from a dict
 
         :param balls: dict of colour and ball list pairs
@@ -52,7 +60,7 @@ class SnapShot():
         for colour, keypoints in balls.items():
             self._colours[colour].assign([Ball(pt) for pt in keypoints])
 
-    def assign_balls_from_snapshot(self, snapshot: SnapShot):
+    def assign_balls_from_snapshot(self, snapshot: SnapShot) -> None:
         """Assign balls to their appropriate ball colour instances from a SnapShot
 
         :param snapshot: snapshot to take balls from

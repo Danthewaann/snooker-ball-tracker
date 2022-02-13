@@ -1,10 +1,10 @@
-from typing import List
+from __future__ import annotations
 
 import PyQt5.QtCore as QtCore
 
 
 class BallsPotted(QtCore.QAbstractListModel):
-    def __init__(self, balls_potted: List[str]=None):
+    def __init__(self, balls_potted: list[str] | None = None):
         """Creates an instance of this class that stores the balls potted,
         as reported from the ball tracker
 
@@ -14,7 +14,11 @@ class BallsPotted(QtCore.QAbstractListModel):
         super().__init__()
         self._balls_potted = balls_potted or []
 
-    def data(self, index: QtCore.QModelIndex, role=QtCore.Qt.DisplayRole) -> str:
+    def data(
+        self,
+        index: QtCore.QModelIndex,
+        role: int = QtCore.Qt.DisplayRole,
+    ) -> str | None:
         """Get ball potted for index row
 
         :param index: model index
@@ -29,7 +33,7 @@ class BallsPotted(QtCore.QAbstractListModel):
             return text
         return None
 
-    def rowCount(self, parent=QtCore.QModelIndex()) -> int:
+    def rowCount(self, parent: QtCore.QModelIndex = QtCore.QModelIndex()) -> int:
         """Get count of items in balls potted list
 
         :param index: model index
@@ -39,7 +43,7 @@ class BallsPotted(QtCore.QAbstractListModel):
         """
         return len(self._balls_potted)
 
-    def addPottedBall(self, potted_ball: str):
+    def addPottedBall(self, potted_ball: str) -> None:
         """Append potted ball to balls potted list
 
         :param potted_ball: ball potted
@@ -48,9 +52,9 @@ class BallsPotted(QtCore.QAbstractListModel):
         self.beginInsertRows(QtCore.QModelIndex(), self.rowCount(), self.rowCount())
         self._balls_potted.append(potted_ball)
         self.endInsertRows()
-        self.layoutChanged.emit()
+        self.layoutChanged.emit()  # type: ignore[attr-defined]
 
-    def clear(self):
+    def clear(self) -> None:
         """Clear balls potted list"""
         self._balls_potted.clear()
-        self.layoutChanged.emit()
+        self.layoutChanged.emit()  # type: ignore[attr-defined]

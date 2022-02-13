@@ -1,19 +1,24 @@
 from __future__ import annotations
 
-import typing
+from typing import TYPE_CHECKING
 
 import cv2
 from imutils.video import FileVideoStream
 
-if typing.TYPE_CHECKING:
-    from . import ColourDetectionSettings, VideoPlayer
-
 from .video_stream import VideoStream
 
+if TYPE_CHECKING:
+    from . import ColourDetectionSettings, VideoPlayer
 
-class VideoFileStream(VideoStream, FileVideoStream):
-    def __init__(self, path: str, video_player: VideoPlayer, 
-                 colour_settings: ColourDetectionSettings, queue_size: int=128):
+
+class VideoFileStream(FileVideoStream, VideoStream):  # type: ignore[misc]
+    def __init__(
+        self,
+        path: str,
+        video_player: VideoPlayer,
+        colour_settings: ColourDetectionSettings,
+        queue_size: int = 128,
+    ):
         """Create instance of VideoFileStream that loads frames from a video file in a
         separate thread and performs some basic transformations
 
@@ -31,8 +36,13 @@ class VideoFileStream(VideoStream, FileVideoStream):
             if not video_file_stream.isOpened():
                 raise TypeError
         except Exception as error:
-           raise error
+            raise error
         finally:
             video_file_stream.release()
-        super().__init__(video=path, video_player=video_player, colours_settings=colour_settings, queue_size=queue_size)
+
+        self._video_player = video_player
+        self._colour_settings = colour_settings
+
+        super().__init__(path, queue_size=queue_size)
+        self.transform = self.transform_frame
         self.thread.name = self.__class__.__name__

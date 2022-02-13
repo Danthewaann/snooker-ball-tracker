@@ -1,14 +1,20 @@
-from collections import namedtuple
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 import cv2
 import imutils
 import numpy as np
+
 from snooker_ball_tracker.settings import settings as s
 
-Image = namedtuple("Image", "frame binary_frame hsv_frame")
+if TYPE_CHECKING:
+    from .types import Frame
 
 
-def dist_between_two_balls(first_ball: cv2.KeyPoint, second_ball: cv2.KeyPoint) -> float:
+def dist_between_two_balls(
+    first_ball: cv2.KeyPoint, second_ball: cv2.KeyPoint
+) -> float:
     """Obtains the distance between two balls in millimetres
 
     :param first_ball: first ball
@@ -23,11 +29,15 @@ def dist_between_two_balls(first_ball: cv2.KeyPoint, second_ball: cv2.KeyPoint) 
     # scale array to mm
     arr = arr * 40 / 1280
     # return distance, calculated by pythagoras
-    return np.sqrt(np.sum((arr[0] - arr[1]) ** 2))
+    dist: float = np.sqrt(np.sum((arr[0] - arr[1]) ** 2))
+    return dist
 
 
-def get_mask_contours_for_colour(frame: np.ndarray, colour: str, 
-                                 colour_settings: dict=s.COLOUR_DETECTION_SETTINGS["COLOURS"]) -> tuple:
+def get_mask_contours_for_colour(
+    frame: Frame,
+    colour: str,
+    colour_settings: dict[str, Any] = s.COLOUR_DETECTION_SETTINGS["COLOURS"],
+) -> tuple[Frame | None, list[cv2.KeyPoint] | None]:
     """Obtains the colour mask of `colour` from `frame`
 
     :param frame: frame to process
@@ -43,8 +53,7 @@ def get_mask_contours_for_colour(frame: np.ndarray, colour: str,
     contours = None
     if colour in colour_settings:
         colour_mask = cv2.inRange(
-            frame, colour_settings[colour]['LOWER'],
-            colour_settings[colour]['UPPER']
+            frame, colour_settings[colour]["LOWER"], colour_settings[colour]["UPPER"]
         )
         contours, _ = cv2.findContours(
             colour_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE
@@ -52,7 +61,7 @@ def get_mask_contours_for_colour(frame: np.ndarray, colour: str,
     return colour_mask, contours
 
 
-def transform_frame(frame: np.ndarray, width: int) -> Image:
+def transform_frame(frame: Frame | None, width: int) -> Frame | None:
     """Performs initial operations on `frame` before it is properly processed
 
     :param frame: frame to process
@@ -67,7 +76,5 @@ def transform_frame(frame: np.ndarray, width: int) -> Image:
     if frame is not None:
         # resize the frame if width is provided
         frame = imutils.resize(frame, width=width)
-
         return frame
-
     return None

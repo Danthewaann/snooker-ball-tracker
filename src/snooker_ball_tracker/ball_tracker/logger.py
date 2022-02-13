@@ -5,7 +5,7 @@ from .snapshot import SnapShot
 
 
 class Logger(QtCore.QObject):
-    def __init__(self):
+    def __init__(self) -> None:
         """Creates an instance of this class that contains properties for logging
         output from the ball tracker"""
         super().__init__()
@@ -30,18 +30,23 @@ class Logger(QtCore.QObject):
         :return: white status
         :rtype: str
         """
-        return self._cur_shot_snapshot.white.is_moving if self._cur_shot_snapshot.white else False
+        return (
+            self._cur_shot_snapshot.white.is_moving
+            if self._cur_shot_snapshot.white
+            else False
+        )
 
     white_statusChanged = QtCore.pyqtSignal(bool)
 
-    def set_white_status(self, value: bool):
+    def set_white_status(self, value: bool) -> None:
         """White status setter
 
         :param value: value to set
         :type value: str
         """
-        self._cur_shot_snapshot.white.is_moving = value
-        self.white_statusChanged.emit(value)
+        if self._cur_shot_snapshot.white:
+            self._cur_shot_snapshot.white.is_moving = value
+            self.white_statusChanged.emit(value)
 
     @property
     def last_shot_snapshot(self) -> SnapShot:

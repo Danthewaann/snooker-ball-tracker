@@ -1,38 +1,23 @@
 from __future__ import annotations
 
-import typing
-from abc import ABC
+from abc import ABC, abstractmethod
+from queue import Queue
+from typing import TYPE_CHECKING
 
-import cv2
 import imutils
-import numpy as np
 
-if typing.TYPE_CHECKING:
-    from . import VideoPlayer, ColourDetectionSettings
-
-from .util import Image, get_mask_contours_for_colour
+if TYPE_CHECKING:
+    from . import ColourDetectionSettings, VideoPlayer
+    from .types import Frame
 
 
 class VideoStream(ABC):
-    def __init__(self, video: typing.Any, video_player: VideoPlayer, 
-                 colours_settings: ColourDetectionSettings, queue_size: int=128):
-        """VideoStream abstract base class that contains base functionality to
-        process video streams
 
-        :param video: video representation
-        :type video: typing.Any
-        :param video_player: video player to obtain transformation settings from
-        :type video_player: VideoPlayer
-        :param colours_settings: settings to obtain colours from
-        :type colours_settings: ColourDetectionSettings
-        :param queue_size: max number of frames to process and store at a time, defaults to 128
-        :type queue_size: int, optional
-        """
-        self._video_player = video_player
-        self._colour_settings = colours_settings
-        super().__init__(video, transform=self.transform_frame, queue_size=queue_size)
+    Q: Queue[Frame]
+    _video_player: VideoPlayer
+    _colour_settings: ColourDetectionSettings
 
-    def transform_frame(self, frame: np.ndarray) -> np.ndarray:
+    def transform_frame(self, frame: Frame | None) -> Frame | None:
         """Performs initial operations on `frame` before it is properly processed
 
         :param frame: frame to process
@@ -42,10 +27,32 @@ class VideoStream(ABC):
         """
         if frame is not None:
             # resize the frame if width is provided
-            frame = imutils.resize(frame, width=self._video_player.width)
-
+            resized_frame: Frame = imutils.resize(frame, width=self._video_player.width)
             # set video player height to height of resized frame
-            self._video_player.height = frame.shape[0]
-            return frame
-
+            self._video_player.height = resized_frame.shape[0]
+            return resized_frame
         return None
+
+    @abstractmethod
+    def start(self) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def update(self) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def read(self) -> Frame:
+        raise NotImplementedError
+
+    @abstractmethod
+    def running(self) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def more(self) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def stop(self) -> None:
+        raise NotImplementedError

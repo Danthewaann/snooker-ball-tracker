@@ -1,13 +1,18 @@
-import typing
+from __future__ import annotations
+
 from copy import deepcopy
+from typing import TYPE_CHECKING
 
 import PyQt5.QtCore as QtCore
 
 from .ball import Ball
 
+if TYPE_CHECKING:
+    import cv2
+
 
 class BallColour(QtCore.QObject):
-    def __init__(self, keypoints: list=None):
+    def __init__(self, keypoints: list[cv2.Keypoint] | None = None):
         """Creates an instance of this class that keeps track of the balls
         for a specific colour
 
@@ -21,7 +26,7 @@ class BallColour(QtCore.QObject):
             self._balls = []
 
     @property
-    def balls(self) -> typing.List[Ball]:
+    def balls(self) -> list[Ball]:
         """Balls property
 
         :return: balls list
@@ -40,12 +45,12 @@ class BallColour(QtCore.QObject):
 
     countChanged = QtCore.pyqtSignal(int)
 
-    def clear(self):
+    def clear(self) -> None:
         """Clear underlying balls list"""
         self._balls.clear()
         self.countChanged.emit(self.count)
 
-    def assign(self, balls: typing.List[Ball]):
+    def assign(self, balls: list[Ball]) -> None:
         """Override own Ball list with `balls`
 
         :param balls: list of Ball instances
