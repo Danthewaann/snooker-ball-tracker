@@ -56,7 +56,7 @@ class Observer(QtCore.QObject):
         setter: Callable[..., Any],
         valueChangedSignal: QtCore.pyqtSignal,
         types: list[type] | None = None,
-    ):
+    ) -> None:
         """Creates an endpoint and call bindToEndpoint(endpoint). This is a convenience method.
 
         :param instance: object to obtain getter, setter and changedSignal from
@@ -76,7 +76,7 @@ class Observer(QtCore.QObject):
 
     def bind_to_endpoint(
         self, bindingEndpoint: BindingEndpoint, types: list[type] | None = None
-    ):
+    ) -> None:
         """2-way binds the target endpoint to all other registered endpoints.
 
         :param bindingEndpoint: binding endpoint to bind with other endpoints
@@ -87,13 +87,13 @@ class Observer(QtCore.QObject):
         self.bindings[bindingEndpoint.instance_id] = bindingEndpoint
         if types:
             for _type in types:
-                bindingEndpoint.valueChangedSignal[_type].connect(self._updateEndpoints)
+                bindingEndpoint.valueChangedSignal[_type].connect(self._updateEndpoints)  # type: ignore[index]
         else:
-            bindingEndpoint.valueChangedSignal.connect(self._updateEndpoints)
+            bindingEndpoint.valueChangedSignal.connect(self._updateEndpoints)  # type: ignore[attr-defined]
 
     def bind_to_property(
         self, instance: object, propertyName: str, types: list[type] | None = None
-    ):
+    ) -> None:
         """2-way binds to an instance property according to one of the following naming conventions:
 
         @property, propertyName.setter and pyqtSignal
@@ -131,7 +131,7 @@ class Observer(QtCore.QObject):
 
         self.bind(instance, getter, setter, valueChangedSignal, types)
 
-    def _updateEndpoints(self, *args, **kwargs):
+    def _updateEndpoints(self, *args: Any, **kwargs: dict[str, Any]) -> None:
         """Updates all endpoints except the one from which this slot was called.
 
         Note: this method is probably not complete threadsafe.

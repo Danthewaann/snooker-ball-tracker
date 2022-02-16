@@ -1,2 +1,2 @@
-from .options import Options
-from .player import Player
+from .options import Options as Options
+from .player import Player as Player

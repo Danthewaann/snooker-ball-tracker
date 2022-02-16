@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import cv2
 import imutils
 import numpy as np
+import numpy.typing as npt
 
 from snooker_ball_tracker.settings import settings as s
 
@@ -25,9 +26,9 @@ def dist_between_two_balls(
     :rtype: float
     """
     # create numpy array with keypoint positions
-    arr = np.array([first_ball.pt, second_ball.pt])
+    arr: npt.NDArray[np.float64] = np.array([first_ball.pt, second_ball.pt])
     # scale array to mm
-    arr = arr * 40 / 1280
+    arr = cast(npt.NDArray[np.float64], arr * 40 / 1280)
     # return distance, calculated by pythagoras
     dist: float = np.sqrt(np.sum((arr[0] - arr[1]) ** 2))
     return dist

@@ -1,25 +1,26 @@
+from __future__ import annotations
+
 import argparse
 import os
 from copy import deepcopy
+from typing import Any
 
 import cv2
 import numpy as np
 
 from snooker_ball_tracker.ball_tracker import BallTracker
-from snooker_ball_tracker.ball_tracker.util import Image, transform_frame
+from snooker_ball_tracker.ball_tracker.types import Image
+from snooker_ball_tracker.ball_tracker.util import transform_frame
 from snooker_ball_tracker.enums import SnookerColour
 from snooker_ball_tracker.settings import settings as s
 
 
-class CLI():
+class CLI:
 
-    image: Image = None
-    ball_tracker: BallTracker = None
+    image: Image | None = None
+    ball_tracker: BallTracker | None = None
     window_title = "Snooker Ball Tracker Image CLI"
-    colour = {
-        "LOWER": np.array([0, 0, 0]),
-        "UPPER": np.array([0, 0, 0])
-    }
+    colour = {"LOWER": np.array([0, 0, 0]), "UPPER": np.array([0, 0, 0])}
 
     def create_parser(self) -> argparse.ArgumentParser:
         """Create CLI argument parser
@@ -28,27 +29,64 @@ class CLI():
         :rtype: argparse.ArgumentParser
         """
         parser = argparse.ArgumentParser(
-            description="Ball Tracker Image CLI (Only works with images)")
+            description="Ball Tracker Image CLI (Only works with images)"
+        )
+        parser.add_argument("image", help="Image file to detect and track balls from")
         parser.add_argument(
-            "image", help="Image file to detect and track balls from")
-        parser.add_argument("-s", "--settings", dest="settings", default=os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
-            os.path.abspath(__file__)))), "resources", "config", "default_settings.json"),
-            help="Settings file to use, defaults to \"%(default)s\"")
-        parser.add_argument("-w", "--width", dest="width", default=800, type=int,
-                            help="Set width of image for processing, defaults to \"%(default)s\" pixels")
-        parser.add_argument("-d", "--detect-colour", dest="detect_colour", default=None,
-                            type=str.upper, choices=[
-                                colour.value for colour in SnookerColour],
-                            help="Detect contours matching provided colour")
-        parser.add_argument("--mask-colour", dest="mask_colour", action="store_true", default=False,
-                            help="Mask contours of provided colour")
-        parser.add_argument("--show-threshold", dest="show_threshold", action="store_true", default=False,
-                            help="Show thresholded frames")
-        parser.add_argument("--morph", dest="morph", action="store_true", default=False,
-                            help="Perform morph closing morphology on processed frames")
+            "-s",
+            "--settings",
+            dest="settings",
+            default=os.path.join(
+                os.path.dirname(
+                    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                ),
+                "resources",
+                "config",
+                "default_settings.json",
+            ),
+            help='Settings file to use, defaults to "%(default)s"',
+        )
+        parser.add_argument(
+            "-w",
+            "--width",
+            dest="width",
+            default=800,
+            type=int,
+            help='Set width of image for processing, defaults to "%(default)s" pixels',
+        )
+        parser.add_argument(
+            "-d",
+            "--detect-colour",
+            dest="detect_colour",
+            default=None,
+            type=str.upper,
+            choices=[colour.value for colour in SnookerColour],
+            help="Detect contours matching provided colour",
+        )
+        parser.add_argument(
+            "--mask-colour",
+            dest="mask_colour",
+            action="store_true",
+            default=False,
+            help="Mask contours of provided colour",
+        )
+        parser.add_argument(
+            "--show-threshold",
+            dest="show_threshold",
+            action="store_true",
+            default=False,
+            help="Show thresholded frames",
+        )
+        parser.add_argument(
+            "--morph",
+            dest="morph",
+            action="store_true",
+            default=False,
+            help="Perform morph closing morphology on processed frames",
+        )
         return parser
 
-    def __pick_color(self, event: int, x_pos: int, y_pos: int, *ignore):
+    def __pick_color(self, event: int, x_pos: int, y_pos: int, *ignore: Any) -> None:
         """Listens to a left click event on the processed frame to
         extract colour values from pixel located using `x_pos` and `y_pos`
 
@@ -60,6 +98,11 @@ class CLI():
         :type y_pos: int
         """
         if event == cv2.EVENT_LBUTTONDOWN:
+            if not self.image:
+                return
+            if not self.ball_tracker:
+                return
+
             hsv = self.image.hsv_frame
             pixel = hsv[y_pos, x_pos]
             upper = np.array([pixel[0] + 10, pixel[1] + 10, pixel[2] + 40])
@@ -77,7 +120,7 @@ class CLI():
             cv2.setTrackbarPos("V (lower)", self.window_title, self.colour["LOWER"][2])
             cv2.setTrackbarPos("V (upper)", self.window_title, self.colour["UPPER"][2])
 
-    def run(self, args: argparse.Namespace):
+    def run(self, args: argparse.Namespace) -> None:
         """Run the CLI app
 
         :param args: args parsed from CLI parser
@@ -104,7 +147,9 @@ class CLI():
             print("=================================")
             if args.detect_colour is not None:
                 print("Click on image to obtain HSV values from selected pixel")
-                print(f"This will be used to update colour values for: {args.detect_colour}")
+                print(
+                    f"This will be used to update colour values for: {args.detect_colour}"
+                )
                 print("=================================")
             print("waiting for user input...\n")
 
@@ -118,8 +163,12 @@ class CLI():
             if args.detect_colour is not None:
                 self.ball_tracker.colour_settings.selected_colour = args.detect_colour
                 colour = {
-                    "LOWER": s.COLOUR_DETECTION_SETTINGS["COLOURS"][args.detect_colour]["LOWER"],
-                    "UPPER": s.COLOUR_DETECTION_SETTINGS["COLOURS"][args.detect_colour]["UPPER"]
+                    "LOWER": s.COLOUR_DETECTION_SETTINGS["COLOURS"][args.detect_colour][
+                        "LOWER"
+                    ],
+                    "UPPER": s.COLOUR_DETECTION_SETTINGS["COLOURS"][args.detect_colour][
+                        "UPPER"
+                    ],
                 }
 
                 # create trackbars for lower and upper HSV values
@@ -151,29 +200,34 @@ class CLI():
             # frame display loop
             while True:
                 self.image, _, _ = self.ball_tracker.process_frame(
-                    deepcopy(in_frame), show_threshold=args.show_threshold, detect_colour=args.detect_colour, 
-                    mask_colour=args.mask_colour, perform_morph=args.morph)
+                    deepcopy(in_frame),
+                    show_threshold=args.show_threshold,
+                    detect_colour=args.detect_colour,
+                    mask_colour=args.mask_colour,
+                    perform_morph=args.morph,
+                )
                 cv2.imshow(self.window_title, self.image.frame)
 
                 # obtain key value if a key was pressed
-                key = cv2.waitKey(1) & 0xFF
+                pressed_key: int = cv2.waitKey(1) & 0xFF
 
                 # if window is closed, exit program
                 if cv2.getWindowProperty(self.window_title, cv2.WND_PROP_VISIBLE) == 0:
                     break
 
                 # if the "q" key is pressed, exit program
-                if key == ord("q"):
+                if pressed_key == ord("q"):
                     break
 
                 # if the "s" key is pressed, save processed frame to file
-                if key == ord("s"):
+                if pressed_key == ord("s"):
                     counter = 1
-                    file_name = os.path.join(os.path.dirname(args.image),
-                                             os.path.splitext(os.path.basename(args.image))[0])
+                    file_name = os.path.join(
+                        os.path.dirname(args.image),
+                        os.path.splitext(os.path.basename(args.image))[0],
+                    )
                     while True:
-                        frame_name = file_name + \
-                            "-frame-" + str(counter) + ".jpg"
+                        frame_name = file_name + "-frame-" + str(counter) + ".jpg"
                         if not os.path.exists(frame_name):
                             print("saving frame to " + frame_name)
                             cv2.imwrite(frame_name, self.image.frame)
@@ -208,7 +262,7 @@ def main() -> None:
     try:
         cli.run(args)
     except OSError as ex:
-        parser.exit(1, message=ex)
+        parser.exit(1, message=str(ex))
     finally:
         cv2.destroyAllWindows()
 
