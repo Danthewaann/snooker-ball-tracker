@@ -46,6 +46,10 @@ ignore_missing_imports = true
 module = "cv2.*"
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = "snooker_ball_tracker.views.*"
+ignore_errors = true
+
 [tool.black]
 line-length = 88
 target-version = ['py38']
