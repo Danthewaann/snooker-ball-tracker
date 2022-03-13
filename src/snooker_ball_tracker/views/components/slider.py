@@ -4,9 +4,17 @@ import PyQt5.QtWidgets as QtWidgets
 
 
 class Ui_Slider(QtWidgets.QSlider):
-    def __init__(self, max_range=100, parent=None, name=None,
-                 objectName=None, width=None, height=None, orientation=QtCore.Qt.Horizontal,
-                 sizePolicy=(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)):
+    def __init__(
+        self,
+        max_range=100,
+        parent=None,
+        name=None,
+        objectName=None,
+        width=None,
+        height=None,
+        orientation=QtCore.Qt.Horizontal,
+        sizePolicy=(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
+    ):
         super().__init__(parent)
         if width:
             self.setMinimumWidth(width[0])
@@ -14,7 +22,8 @@ class Ui_Slider(QtWidgets.QSlider):
         if height:
             self.setMinimumHeight(height[0])
             self.setMaximumHeight(height[1])
-        if objectName: self.setObjectName(objectName)
+        if objectName:
+            self.setObjectName(objectName)
         self.name = name
 
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))

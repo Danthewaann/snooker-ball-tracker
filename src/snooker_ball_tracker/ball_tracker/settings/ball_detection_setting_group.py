@@ -14,7 +14,8 @@ class BallDetectionSettingGroup(QtCore.QObject):
 
         :param name: name of ball detection setting group
         :type name: str
-        :param multiplier: multiplier used to scale min/max values for sliders, defaults to 100
+        :param multiplier: multiplier used to scale min/max values for sliders,
+                           defaults to 100
         :type multiplier: int, optional
         """
         super().__init__()

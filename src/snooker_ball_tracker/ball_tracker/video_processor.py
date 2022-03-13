@@ -29,7 +29,8 @@ class VideoProcessor(threading.Thread):
         :type video_stream: VideoStream
         :param video_player: video player instance that we pass processed frames to
         :type video_player: VideoPlayer
-        :param ball_tracker: ball tracker that we pass frames obtained from VideoStream to
+        :param ball_tracker: ball tracker that we pass frames obtained from
+                             VideoStream to
         :type ball_tracker: BallTracker
         :param lock: lock used to manage access to VideoStream
         :type lock: threading.Lock

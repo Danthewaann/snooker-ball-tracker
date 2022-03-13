@@ -13,8 +13,10 @@ class BindingEndpoint(object):
         setter: Callable[..., Any],
         valueChangedSignal: QtCore.pyqtSignal,
     ):
-        """Creates an instace of this class that contains the triplet of: getter, setter and change notification signal,
-        as well as the object instance and it's memory id to which the binding triplet belongs.
+        """Creates an instace of this class that contains the triplet of:
+        getter, setter and change notification signal,
+        as well as the object instance and it's memory id
+        to which the binding triplet belongs.
 
         :param instance: object to obtain getter and setter from
         :type instance: object
@@ -87,21 +89,29 @@ class Observer(QtCore.QObject):
         self.bindings[bindingEndpoint.instance_id] = bindingEndpoint
         if types:
             for _type in types:
-                bindingEndpoint.valueChangedSignal[_type].connect(self._updateEndpoints)  # type: ignore[index]
+                bindingEndpoint.valueChangedSignal[
+                    _type
+                ].connect(  # type: ignore[index]
+                    self._updateEndpoints
+                )
         else:
-            bindingEndpoint.valueChangedSignal.connect(self._updateEndpoints)  # type: ignore[attr-defined]
+            bindingEndpoint.valueChangedSignal.connect(  # type: ignore[attr-defined]
+                self._updateEndpoints
+            )
 
     def bind_to_property(
         self, instance: object, propertyName: str, types: list[type] | None = None
     ) -> None:
-        """2-way binds to an instance property according to one of the following naming conventions:
+        """2-way binds to an instance property according to one of the
+        following naming conventions:
 
         @property, propertyName.setter and pyqtSignal
         - getter: propertyName
         - setter: propertyName
         - changedSignal: propertyNameChanged
 
-        getter, setter and pyqtSignal (this is used when binding to standard QWidgets like QSpinBox)
+        getter, setter and pyqtSignal (this is used when binding to
+        standard QWidgets like QSpinBox)
         - getter: propertyName()
         - setter: setPropertyName()
         - changedSignal: propertyNameChanged
@@ -114,9 +124,12 @@ class Observer(QtCore.QObject):
         :type types: list, optional
         """
         getterAttribute = getattr(instance, propertyName)
+
         if callable(getterAttribute):
-            # the propertyName turns out to be a method (like value()), assume the corresponding setter is called setValue()
+            # the propertyName turns out to be a method
+            # (like value()), assume the corresponding setter is called setValue()
             getter = getterAttribute
+
             if len(propertyName) > 1:
                 setter = getattr(
                     instance, "set" + propertyName[0].upper() + propertyName[1:]
@@ -124,8 +137,12 @@ class Observer(QtCore.QObject):
             else:
                 setter = getattr(instance, "set" + propertyName[0].upper())
         else:
-            getter = lambda: getterAttribute
-            setter = lambda value: setattr(instance, propertyName, value)
+
+            def getter() -> Any:
+                return getterAttribute
+
+            def setter(value: Any) -> None:
+                setattr(instance, propertyName, value)
 
         valueChangedSignal = getattr(instance, propertyName + "Changed")
 

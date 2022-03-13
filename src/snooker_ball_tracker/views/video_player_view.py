@@ -1,7 +1,7 @@
 import PyQt5.QtCore as QtCore
 import PyQt5.QtWidgets as QtWidgets
-from snooker_ball_tracker.ball_tracker import (ColourDetectionSettings,
-                                               VideoPlayer)
+
+from snooker_ball_tracker.ball_tracker import ColourDetectionSettings, VideoPlayer
 
 from .video_player import Options, Player
 

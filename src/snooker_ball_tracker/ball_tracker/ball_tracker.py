@@ -222,9 +222,11 @@ class BallTracker:
 
         :param frame: frame to process
         :type frame: np.ndarray
-        :param show_threshold: if True return a binary version of `frame`, defaults to False
+        :param show_threshold: if True return a binary version of `frame`,
+                               defaults to False
         :type show_threshold: bool, optional
-        :return: processed frame, ball potted if any were and the number of balls potted
+        :return: processed frame, ball potted if any were and the number
+                                  of balls potted
         :rtype: Tuple[Image, str, int]
         """
         ball_potted: str | None = None
@@ -264,7 +266,8 @@ class BallTracker:
             hsv = self.fill(hsv)
             threshold = self.fill(threshold)
 
-        # Every 5 images run the colour detection phase, otherwise just update ball positions
+        # Every 5 images run the colour detection phase,
+        # otherwise just update ball positions
         if self.__image_counter == 0 or self.__image_counter % 5 == 0:
             self.__keypoints = self.perform_colour_detection(threshold, hsv)
         else:
@@ -357,11 +360,13 @@ class BallTracker:
         This method handles the colour detection phase and returns a list of
         detected balls in the image and maps the appropriate colour to each ball
 
-        :param binary_frame: binary frame where detected balls are white on a black background
+        :param binary_frame: binary frame where detected balls are
+                             white on a black background
         :type binary_frame: np.ndarray
         :param hsv_frame: HSV frame to detect colours with
         :type hsv_frame: np.ndarray
-        :return: list of keypoints mapped to an appropriate colour found in `binary_frame`
+        :return: list of keypoints mapped to an appropriate colour
+                 found in `binary_frame`
         :rtype: Keypoints
         """
 
@@ -376,7 +381,8 @@ class BallTracker:
         # Detect balls in the binary image (White circles on a black background)
         keypoints = self.blob_detector.detect(binary_frame)
 
-        # Obtain colours contours for each ball colour from the HSV colour space of the image
+        # Obtain colours contours for each ball colour from the
+        # HSV colour space of the image
         for colour, properties in self.colour_settings.settings["BALL_COLOURS"].items():
             if properties["DETECT"]:
                 _, contours = get_mask_contours_for_colour(
@@ -395,8 +401,9 @@ class BallTracker:
             key=order_value,
         )
 
-        # For each ball found, determine what colour it is and add it to the list of balls
-        # If a ball is not mapped to an appropriate colour, it is discarded
+        # For each ball found, determine what colour it is and add
+        # it to the list of balls. If a ball is not mapped to an
+        # appropriate colour, it is discarded
         for keypoint in keypoints:
             for colour in colours:
                 if self.colour_settings.settings["BALL_COLOURS"][colour]["DETECT"]:
@@ -426,7 +433,8 @@ class BallTracker:
         :param balls: list of balls already detected
         :type balls: Keypoints
         :param biggest_contour: use only the biggest contour in `colour_contours`
-                                to determine if `keypoint` is a ball of `colour`, defaults to False
+                                to determine if `keypoint` is a ball of `colour`,
+                                defaults to False
         :type biggest_contour: bool, optional
         :return: True if `keypoint` is within `contour`, False otherwise
         :rtype: bool
@@ -571,7 +579,8 @@ class BallTracker:
 
         :param frame: frame to process
         :type frame: np.ndarray
-        :param contours: list of contours to possibly use for the table boundary, defaults to None
+        :param contours: list of contours to possibly use for the table boundary,
+                         defaults to None
         :type contours: typing.List[np.ndarray], optional
         """
         # Create mask where white is what we want, black otherwise

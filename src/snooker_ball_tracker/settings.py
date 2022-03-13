@@ -181,7 +181,8 @@ class Settings:
                 return super().__getattribute__(key)
             else:
                 print(
-                    f"Error: could not find key '{key}' in loaded settings, using default"
+                    f"Error: could not find key '{key}' "
+                    "in loaded settings, using default"
                 )
                 return default_value
 

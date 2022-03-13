@@ -148,7 +148,8 @@ class CLI:
             if args.detect_colour is not None:
                 print("Click on image to obtain HSV values from selected pixel")
                 print(
-                    f"This will be used to update colour values for: {args.detect_colour}"
+                    f"This will be used to update colour values for: "
+                    f"{args.detect_colour}"
                 )
                 print("=================================")
             print("waiting for user input...\n")

@@ -28,7 +28,8 @@ class VideoFileStream(FileVideoStream, VideoStream):  # type: ignore[misc]
         :type video_player: VideoPlayer
         :param colour_settings: colour settings to obtain colours from
         :type colour_settings: ColourDetectionSettings
-        :param queue_size: max number of frames to process and store at a time, defaults to 128
+        :param queue_size: max number of frames to process and store at a time,
+                           defaults to 128
         :type queue_size: int, optional
         """
         try:

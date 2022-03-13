@@ -4,10 +4,17 @@ import PyQt5.QtWidgets as QtWidgets
 
 
 class Ui_RadioButton(QtWidgets.QRadioButton):
-
-    def __init__(self, name, value, checked=False, parent=None, 
-                 objectName=None, width=None, height=None, 
-                 sizePolicy=(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)):
+    def __init__(
+        self,
+        name,
+        value,
+        checked=False,
+        parent=None,
+        objectName=None,
+        width=None,
+        height=None,
+        sizePolicy=(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred),
+    ):
         super().__init__(name, parent)
         if width:
             self.setMinimumWidth(width[0])
@@ -15,7 +22,8 @@ class Ui_RadioButton(QtWidgets.QRadioButton):
         if height:
             self.setMinimumHeight(height[0])
             self.setMaximumHeight(height[1])
-        if objectName: self.setObjectName(objectName)
+        if objectName:
+            self.setObjectName(objectName)
 
         self._value = value
 

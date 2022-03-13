@@ -282,7 +282,9 @@ class VideoPlayer(QtCore.QObject):
         :type video_file: str, optional
         :raises TypeError: if `video_file` isn't an actual video file
         """
-        if video_file and "video" not in magic.from_file(video_file, mime=True):  # type: ignore[no-untyped-call]
+        if video_file and "video" not in magic.from_file(
+            video_file, mime=True
+        ):  # type: ignore[no-untyped-call]
             raise TypeError(f"{video_file} is not a video file")
 
         self.play = False

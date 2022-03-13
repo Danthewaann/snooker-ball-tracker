@@ -5,10 +5,18 @@ import PyQt5.QtWidgets as QtWidgets
 class Ui_Label(QtWidgets.QLabel):
 
     textChanged = QtCore.pyqtSignal(str)
-    
-    def __init__(self, name, parent=None, objectName=None, width=None, 
-                 height=None, alignment=None, styleSheet=None,
-                 sizePolicy=(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)):
+
+    def __init__(
+        self,
+        name,
+        parent=None,
+        objectName=None,
+        width=None,
+        height=None,
+        alignment=None,
+        styleSheet=None,
+        sizePolicy=(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred),
+    ):
         super().__init__(name, parent)
         if width:
             self.setMinimumWidth(width[0])
@@ -16,9 +24,12 @@ class Ui_Label(QtWidgets.QLabel):
         if height:
             self.setMinimumHeight(height[0])
             self.setMaximumHeight(height[1])
-        if alignment: self.setAlignment(alignment)
-        if objectName: self.setObjectName(objectName)
-        if styleSheet: self.setStyleSheet(styleSheet)
+        if alignment:
+            self.setAlignment(alignment)
+        if objectName:
+            self.setObjectName(objectName)
+        if styleSheet:
+            self.setStyleSheet(styleSheet)
 
         self.setSizePolicy(QtWidgets.QSizePolicy(sizePolicy[0], sizePolicy[1]))
 

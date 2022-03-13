@@ -1,8 +1,11 @@
 from copy import deepcopy
 
 import PyQt5.QtWidgets as QtWidgets
-from snooker_ball_tracker.ball_tracker import (BallDetectionSettings,
-                                               ColourDetectionSettings)
+
+from snooker_ball_tracker.ball_tracker import (
+    BallDetectionSettings,
+    ColourDetectionSettings,
+)
 from snooker_ball_tracker.settings import settings as s
 
 
@@ -16,20 +19,24 @@ def select_video_file_action(*args) -> str:
     :return: video file path or None
     :rtype: str
     """
-    video_file, _ = QtWidgets.QFileDialog().getOpenFileName(None, "Select Video File", "")
+    video_file, _ = QtWidgets.QFileDialog().getOpenFileName(
+        None, "Select Video File", ""
+    )
     return video_file
 
 
 def load_settings_action(*args) -> tuple:
-    """Load settings from user provided file  
+    """Load settings from user provided file
 
-    :return: path of loaded settings file, loaded colour settings 
-    and loaded ball settings  
-    :rtype: tuple  
-    """ 
+    :return: path of loaded settings file, loaded colour settings
+    and loaded ball settings
+    :rtype: tuple
+    """
     colours_settings = {}
     ball_settings = {}
-    settings_file, _ = QtWidgets.QFileDialog().getOpenFileName(None, "Load Settings", "")
+    settings_file, _ = QtWidgets.QFileDialog().getOpenFileName(
+        None, "Load Settings", ""
+    )
 
     if not settings_file:
         return
@@ -42,35 +49,42 @@ def load_settings_action(*args) -> tuple:
     else:
         error = QtWidgets.QMessageBox(None)
         error.setWindowTitle("Invalid Settings File!")
-        error.setText('Invalid file, please select a valid json file!')
+        error.setText("Invalid file, please select a valid json file!")
         error.exec_()
 
     return settings_file, colours_settings, ball_settings
 
 
-def save_settings_action(colour_settings: ColourDetectionSettings,
-                         ball_settings: BallDetectionSettings,
-                         settings_file: str) -> str:
-    """Save settings to user provided file  
+def save_settings_action(
+    colour_settings: ColourDetectionSettings,
+    ball_settings: BallDetectionSettings,
+    settings_file: str,
+) -> str:
+    """Save settings to user provided file
 
-    :param colour_settings: colour settings to save  
-    :type colour_settings: ColourDetectionSettings  
-    :param ball_settings: ball settings to save  
-    :type ball_settings: BallDetectionSettings  
-    :param settings_file: settings file path to write to  
-    :type settings_file: str  
-    :return: settings file we saved to  
-    :rtype: str  
+    :param colour_settings: colour settings to save
+    :type colour_settings: ColourDetectionSettings
+    :param ball_settings: ball settings to save
+    :type ball_settings: BallDetectionSettings
+    :param settings_file: settings file path to write to
+    :type settings_file: str
+    :return: settings file we saved to
+    :rtype: str
     """
-    settings_file, _ = QtWidgets.QFileDialog().getSaveFileName(None, "Save Settings", settings_file)
+    settings_file, _ = QtWidgets.QFileDialog().getSaveFileName(
+        None, "Save Settings", settings_file
+    )
 
     if not settings_file:
         return
 
-    success, error = s.save(settings_file, settings={
-        "COLOUR_DETECTION_SETTINGS": colour_settings.settings,
-        "BALL_DETECTION_SETTINGS": ball_settings.settings
-    })
+    success, error = s.save(
+        settings_file,
+        settings={
+            "COLOUR_DETECTION_SETTINGS": colour_settings.settings,
+            "BALL_DETECTION_SETTINGS": ball_settings.settings,
+        },
+    )
 
     if success:
         s.COLOUR_DETECTION_SETTINGS = deepcopy(colour_settings.settings)

@@ -45,7 +45,8 @@ def get_mask_contours_for_colour(
     :type frame: np.ndarray
     :param colour: colour to extract contours from `frame`
     :type colour: str
-    :param colour_settings: colours settings to obtain colour values from, defaults to s.COLOURS
+    :param colour_settings: colours settings to obtain colour values from,
+                            defaults to s.COLOURS
     :type colour_settings: dict, optional
     :return: colour mask of `colour` and a list of contours
     :rtype: tuple

@@ -3,11 +3,15 @@ from argparse import Namespace
 
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
+
 from snooker_ball_tracker.ball_tracker import BallTracker, VideoPlayer
 from snooker_ball_tracker.settings import settings as s
 
-from .actions import (load_settings_action, save_settings_action,
-                      select_video_file_action)
+from .actions import (
+    load_settings_action,
+    save_settings_action,
+    select_video_file_action,
+)
 from .logging_view import LoggingView
 from .settings_view import SettingsView
 from .video_player_view import VideoPlayerView
@@ -25,7 +29,9 @@ class MainView(QtWidgets.QMainWindow):
 
         if self.settings_file is not None:
             s.load(self.settings_file)
-            self.statusBar().showMessage(f"Loaded settings from \"{os.path.basename(self.settings_file)}\"")
+            self.statusBar().showMessage(
+                f'Loaded settings from "{os.path.basename(self.settings_file)}"'
+            )
 
         self.setWindowTitle("Snooker Ball Tracker Demo")
         self.showMaximized()
@@ -40,10 +46,16 @@ class MainView(QtWidgets.QMainWindow):
         self.ball_tracker = BallTracker()
         self.video_player = VideoPlayer(self.ball_tracker)
 
-        self.settings_view = SettingsView(colour_settings=self.ball_tracker.colour_settings, 
-            ball_settings=self.ball_tracker.ball_settings)
-        self.logging_view = LoggingView(self.ball_tracker.logger, self.ball_tracker.colour_settings)
-        self.video_player_view = VideoPlayerView(self.video_player, self.ball_tracker.colour_settings)
+        self.settings_view = SettingsView(
+            colour_settings=self.ball_tracker.colour_settings,
+            ball_settings=self.ball_tracker.ball_settings,
+        )
+        self.logging_view = LoggingView(
+            self.ball_tracker.logger, self.ball_tracker.colour_settings
+        )
+        self.video_player_view = VideoPlayerView(
+            self.video_player, self.ball_tracker.colour_settings
+        )
 
         self.column_1.addWidget(self.logging_view, 40)
         self.column_1.addWidget(self.settings_view, 40)
@@ -116,7 +128,9 @@ class MainView(QtWidgets.QMainWindow):
         loaded_settings = load_settings_action()
         if loaded_settings:
             settings_file, colour_settings, ball_settings = loaded_settings
-            self.statusBar().showMessage(f"Loaded settings from \"{os.path.basename(settings_file)}\"")
+            self.statusBar().showMessage(
+                f'Loaded settings from "{os.path.basename(settings_file)}"'
+            )
             self.settings_file = settings_file
             self.ball_tracker.colour_settings.settings = colour_settings
             self.ball_tracker.ball_settings.settings = ball_settings
@@ -124,10 +138,12 @@ class MainView(QtWidgets.QMainWindow):
     def save_settings(self):
         """Save settings to user provided file"""
         settings_file = save_settings_action(
-            self.ball_tracker.colour_settings, 
-            self.ball_tracker.ball_settings, 
-            self.settings_file
+            self.ball_tracker.colour_settings,
+            self.ball_tracker.ball_settings,
+            self.settings_file,
         )
         if settings_file:
             self.settings_file = settings_file
-            self.statusBar().showMessage(f"Saved settings to \"{os.path.basename(self.settings_file)}\"")
+            self.statusBar().showMessage(
+                f'Saved settings to "{os.path.basename(self.settings_file)}"'
+            )
