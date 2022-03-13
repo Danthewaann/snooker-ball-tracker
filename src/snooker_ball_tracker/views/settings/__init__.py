@@ -1,2 +1,2 @@
-from .ball_detection_tab import BallDetectionTab
-from .colour_detection_tab import ColourDetectionTab
+from .ball_detection_tab import BallDetectionTab as BallDetectionTab
+from .colour_detection_tab import ColourDetectionTab as ColourDetectionTab

@@ -4,7 +4,15 @@ import PyQt5.QtWidgets as QtWidgets
 
 
 class Ui_PushButton(QtWidgets.QPushButton):
-    def __init__(self, name, parent=None, objectName=None, width=None, height=None, sizePolicy=None):
+    def __init__(
+        self,
+        name,
+        parent=None,
+        objectName=None,
+        width=None,
+        height=None,
+        sizePolicy=None,
+    ):
         super().__init__(name, parent)
         if width:
             self.setMinimumWidth(width[0])
@@ -12,8 +20,10 @@ class Ui_PushButton(QtWidgets.QPushButton):
         if height:
             self.setMinimumHeight(height[0])
             self.setMaximumHeight(height[1])
-        if objectName: self.setObjectName(objectName)
-        if sizePolicy: self.setSizePolicy(sizePolicy)
+        if objectName:
+            self.setObjectName(objectName)
+        if sizePolicy:
+            self.setSizePolicy(sizePolicy)
         self.setStyleSheet("padding: .3em")
 
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))

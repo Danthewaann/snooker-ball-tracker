@@ -21,6 +21,49 @@ opencv-python = "4.5.2.52"
 tomlkit = "^0.7.2"
 pyinstaller = "^4.5.1"
 pyinstaller-versionfile = "^2.0.0"
+mypy = "^0.931"
+PyQt5-stubs = "^5.15.2"
+black = "^22.1.0"
+isort = "^5.10.1"
+flake8 = "^4.0.1"
+
+[tool.mypy]
+python_version = "3.8"
+cache_dir = ".mypy_cache"
+exclude = "tests"
+files = "src"
+
+strict = true
+namespace_packages = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = "imutils.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "cv2.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "snooker_ball_tracker.views.*"
+ignore_errors = true
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+exclude = '''
+(
+  /(
+    \.git
+    | \.venv
+  )/
+)
+'''
+
+[tool.isort]
+profile = "black"
+skip_gitignore = true
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
