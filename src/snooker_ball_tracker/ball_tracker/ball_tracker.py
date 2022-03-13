@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import cv2
 import numpy as np
@@ -20,54 +20,59 @@ def max_table_bound(el: Frame) -> Frame:
     return bounds
 
 
-def setup_blob_detector(
-    ball_settings: BallDetectionSettings, **kwargs: dict[str, Any]
-) -> cv2.SimpleBlobDetector:
+def setup_blob_detector(ball_tracker: BallTracker, **kwargs: dict[str, Any]) -> None:
     """Setup underlying blob detector with provided kwargs"""
     params = cv2.SimpleBlobDetector_Params()
     params.filterByConvexity = kwargs.get(
-        "FILTER_BY_CONVEXITY", ball_settings.settings["FILTER_BY_CONVEXITY"]
+        "FILTER_BY_CONVEXITY",
+        ball_tracker.ball_settings.settings["FILTER_BY_CONVEXITY"],
     )
     params.minConvexity = kwargs.get(
-        "MIN_CONVEXITY", ball_settings.settings["MIN_CONVEXITY"]
+        "MIN_CONVEXITY", ball_tracker.ball_settings.settings["MIN_CONVEXITY"]
     )
     params.maxConvexity = kwargs.get(
-        "MAX_CONVEXITY", ball_settings.settings["MAX_CONVEXITY"]
+        "MAX_CONVEXITY", ball_tracker.ball_settings.settings["MAX_CONVEXITY"]
     )
     params.filterByCircularity = kwargs.get(
         "FILTER_BY_CIRCULARITY",
-        ball_settings.settings["FILTER_BY_CIRCULARITY"],
+        ball_tracker.ball_settings.settings["FILTER_BY_CIRCULARITY"],
     )
     params.minCircularity = kwargs.get(
-        "MIN_CIRCULARITY", ball_settings.settings["MIN_CIRCULARITY"]
+        "MIN_CIRCULARITY", ball_tracker.ball_settings.settings["MIN_CIRCULARITY"]
     )
     params.maxCircularity = kwargs.get(
-        "MAX_CIRCULARITY", ball_settings.settings["MAX_CIRCULARITY"]
+        "MAX_CIRCULARITY", ball_tracker.ball_settings.settings["MAX_CIRCULARITY"]
     )
     params.filterByInertia = kwargs.get(
-        "FILTER_BY_INERTIA", ball_settings.settings["FILTER_BY_INERTIA"]
+        "FILTER_BY_INERTIA", ball_tracker.ball_settings.settings["FILTER_BY_INERTIA"]
     )
     params.minInertiaRatio = kwargs.get(
-        "MIN_INERTIA", ball_settings.settings["MIN_INERTIA"]
+        "MIN_INERTIA", ball_tracker.ball_settings.settings["MIN_INERTIA"]
     )
     params.maxInertiaRatio = kwargs.get(
-        "MAX_INERTIA", ball_settings.settings["MAX_INERTIA"]
+        "MAX_INERTIA", ball_tracker.ball_settings.settings["MAX_INERTIA"]
     )
     params.filterByArea = kwargs.get(
-        "FILTER_BY_AREA", ball_settings.settings["FILTER_BY_AREA"]
+        "FILTER_BY_AREA", ball_tracker.ball_settings.settings["FILTER_BY_AREA"]
     )
-    params.minArea = kwargs.get("MIN_AREA", ball_settings.settings["MIN_AREA"])
-    params.maxArea = kwargs.get("MAX_AREA", ball_settings.settings["MAX_AREA"])
+    params.minArea = kwargs.get(
+        "MIN_AREA", ball_tracker.ball_settings.settings["MIN_AREA"]
+    )
+    params.maxArea = kwargs.get(
+        "MAX_AREA", ball_tracker.ball_settings.settings["MAX_AREA"]
+    )
     params.filterByColor = kwargs.get(
-        "FILTER_BY_COLOUR", ball_settings.settings["FILTER_BY_COLOUR"]
+        "FILTER_BY_COLOUR", ball_tracker.ball_settings.settings["FILTER_BY_COLOUR"]
     )
-    params.blobColor = kwargs.get("BLOB_COLOR", ball_settings.settings["BLOB_COLOUR"])
+    params.blobColor = kwargs.get(
+        "BLOB_COLOR", ball_tracker.ball_settings.settings["BLOB_COLOUR"]
+    )
     params.minDistBetweenBlobs = kwargs.get(
         "MIN_DEST_BETWEEN_BLOBS",
-        ball_settings.settings["MIN_DIST_BETWEEN_BLOBS"],
+        ball_tracker.ball_settings.settings["MIN_DIST_BETWEEN_BLOBS"],
     )
     blob_detector: cv2.SimpleBlobDetector = cv2.SimpleBlobDetector_create(params)
-    return blob_detector
+    ball_tracker.blob_detector = blob_detector
 
 
 class BallTracker:
@@ -91,24 +96,19 @@ class BallTracker:
                          the underlying blob detector to detect balls with
         """
         self.logger = logger or Logger()
-
         self.__last_shot_snapshot = self.logger.last_shot_snapshot
         self.__cur_shot_snapshot = self.logger.cur_shot_snapshot
         self.__temp_snapshot = self.logger.temp_snapshot
         self.__white_status_setter = self.logger.set_white_status
-
+        self.blob_detector: cv2.SimpleBlobDetector = cv2.SimpleBlobDetector_create()
         self.colour_settings = colour_settings or ColourDetectionSettings()
-
         self.ball_settings = ball_settings or BallDetectionSettings()
         self.ball_settings.settingsChanged.connect(
-            partial(setup_blob_detector, self.ball_settings)
+            partial(setup_blob_detector, self, **kwargs)
         )
-
-        self.__blob_detector = setup_blob_detector(self.ball_settings, **kwargs)
-
+        setup_blob_detector(self, **kwargs)
         self.table_bounds: Frame | None = None
         self.table_bounds_mask: Frame | None = None
-
         self.__keypoints: Keypoints = {}
         self.__image_counter = 0
         self.__shot_in_progess = False
@@ -268,7 +268,7 @@ class BallTracker:
         if self.__image_counter == 0 or self.__image_counter % 5 == 0:
             self.__keypoints = self.perform_colour_detection(threshold, hsv)
         else:
-            cur_keypoints = self.__blob_detector.detect(threshold)
+            cur_keypoints = self.blob_detector.detect(threshold)
             self.update_balls(self.__keypoints, cur_keypoints)
 
         if self.__image_counter == 0:
@@ -374,7 +374,7 @@ class BallTracker:
         }
 
         # Detect balls in the binary image (White circles on a black background)
-        keypoints = self.__blob_detector.detect(binary_frame)
+        keypoints = self.blob_detector.detect(binary_frame)
 
         # Obtain colours contours for each ball colour from the HSV colour space of the image
         for colour, properties in self.colour_settings.settings["BALL_COLOURS"].items():
