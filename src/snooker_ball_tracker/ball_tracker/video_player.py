@@ -37,8 +37,8 @@ class VideoPlayer(QtCore.QObject):
         self._detect_table = False
         self._queue_size = 0
         self._fps = FPS()
-        self._output_frame = np.array([])
-        self._hsv_frame = np.array([])
+        self._output_frame: Frame = np.array([])
+        self._hsv_frame: Frame = np.array([])
 
     widthChanged = QtCore.pyqtSignal(int)
 

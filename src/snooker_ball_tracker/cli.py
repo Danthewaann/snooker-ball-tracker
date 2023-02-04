@@ -3,16 +3,18 @@ from __future__ import annotations
 import argparse
 import os
 from copy import deepcopy
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import cv2
 import numpy as np
 
 from snooker_ball_tracker.ball_tracker import BallTracker
-from snooker_ball_tracker.ball_tracker.types import Image
 from snooker_ball_tracker.ball_tracker.util import transform_frame
 from snooker_ball_tracker.enums import SnookerColour
 from snooker_ball_tracker.settings import settings as s
+
+if TYPE_CHECKING:
+    from snooker_ball_tracker.ball_tracker.types import Frame, Image
 
 
 class CLI:
@@ -20,7 +22,10 @@ class CLI:
     image: Image | None = None
     ball_tracker: BallTracker | None = None
     window_title = "Snooker Ball Tracker Image CLI"
-    colour = {"LOWER": np.array([0, 0, 0]), "UPPER": np.array([0, 0, 0])}
+    colour: dict[str, Frame] = {
+        "LOWER": np.array([0, 0, 0]),
+        "UPPER": np.array([0, 0, 0]),
+    }
 
     def create_parser(self) -> argparse.ArgumentParser:
         """Create CLI argument parser
@@ -105,8 +110,8 @@ class CLI:
 
             hsv = self.image.hsv_frame
             pixel = hsv[y_pos, x_pos]
-            upper = np.array([pixel[0] + 10, pixel[1] + 10, pixel[2] + 40])
-            lower = np.array([pixel[0] - 10, pixel[1] - 10, pixel[2] - 40])
+            upper: Frame = np.array([pixel[0] + 10, pixel[1] + 10, pixel[2] + 40])
+            lower: Frame = np.array([pixel[0] - 10, pixel[1] - 10, pixel[2] - 40])
 
             self.colour["LOWER"] = lower
             self.colour["UPPER"] = upper

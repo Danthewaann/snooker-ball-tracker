@@ -32,23 +32,23 @@ pre-commit = "^2.17.0"
 python_version = "3.8"
 cache_dir = ".mypy_cache"
 exclude = "tests"
-files = "src"
-
+files = "src, build.py"
 strict = true
 namespace_packages = true
 show_error_codes = true
 
 [[tool.mypy.overrides]]
-module = "imutils.*"
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module = "cv2.*"
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
 module = "snooker_ball_tracker.views.*"
 ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = [
+  "PyInstaller.*",
+  "pyinstaller_versionfile.*",
+  "imutils.*",
+  "cv2.*",
+]
+ignore_missing_imports = true
 
 [tool.black]
 line-length = 88

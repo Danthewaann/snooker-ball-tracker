@@ -1,10 +1,13 @@
+from __future__ import annotations
+
 import os
 import pathlib
 import shutil
+from typing import Any
 
 import PyInstaller.__main__
 import pyinstaller_versionfile
-import tomlkit
+from tomlkit.api import parse
 
 BASE_DIR = pathlib.Path(__file__).parent
 
@@ -12,11 +15,11 @@ BASE_DIR = pathlib.Path(__file__).parent
 os.environ["PYTHONOPTIMIZE"] = "1"
 
 
-def _get_project_meta():
+def _get_project_meta() -> Any:
     with open("./pyproject.toml") as pyproject:
         file_contents = pyproject.read()
 
-    return tomlkit.parse(file_contents)["tool"]["poetry"]
+    return parse(file_contents)["tool"]["poetry"]  # type: ignore
 
 
 pkg_meta = _get_project_meta()

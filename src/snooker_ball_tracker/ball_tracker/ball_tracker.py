@@ -83,8 +83,8 @@ class BallTracker:
         ball_settings: BallDetectionSettings | None = None,
         **kwargs: dict[str, Any],
     ) -> None:
-        """Creates an instance of BallTracker that detects balls in images provided to it
-        and maps colours to each ball detected.
+        """Creates an instance of BallTracker that detects balls in images
+        provided to it and maps colours to each ball detected.
 
         :param logger: logger that contains snapshots to log to, defaults to None
         :type logger: Logger, optional
@@ -202,8 +202,8 @@ class BallTracker:
         detect_colour: str | None = None,
         mask_colour: bool = False,
     ) -> tuple[Image, str | None, int]:
-        """Process `frame` to detect/track balls, determine if a shot has started/finished
-        and determine if a ball was potted
+        """Process `frame` to detect/track balls, determine if a shot has
+        started/finished and determine if a ball was potted
 
         We store 3 different Snapshots:
         - Previous shot SnapShot
@@ -607,7 +607,7 @@ class BallTracker:
         :rtype: np.ndarray
         """
         # Extract out the object and place into output image
-        out = np.zeros(frame.shape).astype(frame.dtype)
+        out: Frame = np.zeros(frame.shape).astype(frame.dtype)
         out[self.table_bounds_mask == 255] = frame[self.table_bounds_mask == 255]
         frame = cv2.bitwise_and(frame, out)
         return frame
@@ -621,10 +621,10 @@ class BallTracker:
         :rtype: np.ndarray
         """
         # Extract out the object and place into output image
-        out = np.zeros(frame.shape).astype(frame.dtype)
+        out: Frame = np.zeros(frame.shape).astype(frame.dtype)
         out[self.table_bounds_mask == 255] = frame[self.table_bounds_mask == 255]
         (x, y, _) = np.where(self.table_bounds_mask == 255)
-        (topx, topy) = (np.min(x), np.min(y))  # type: ignore[no-untyped-call]
-        (bottomx, bottomy) = (np.max(x), np.max(y))  # type: ignore[no-untyped-call]
+        (topx, topy) = (np.min(x), np.min(y))
+        (bottomx, bottomy) = (np.max(x), np.max(y))
         frame = out[topx : bottomx + 1, topy : bottomy + 1]
         return frame
