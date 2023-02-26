@@ -17,7 +17,6 @@ def select_video_file_action(*args) -> str:
 
     :raises TypeError: If the video file is not valid will display an error box
     :return: video file path or None
-    :rtype: str
     """
     video_file, _ = QtWidgets.QFileDialog().getOpenFileName(
         None, "Select Video File", ""
@@ -30,7 +29,6 @@ def load_settings_action(*args) -> tuple:
 
     :return: path of loaded settings file, loaded colour settings
     and loaded ball settings
-    :rtype: tuple
     """
     colours_settings = {}
     ball_settings = {}
@@ -63,13 +61,9 @@ def save_settings_action(
     """Save settings to user provided file
 
     :param colour_settings: colour settings to save
-    :type colour_settings: ColourDetectionSettings
     :param ball_settings: ball settings to save
-    :type ball_settings: BallDetectionSettings
     :param settings_file: settings file path to write to
-    :type settings_file: str
     :return: settings file we saved to
-    :rtype: str
     """
     settings_file, _ = QtWidgets.QFileDialog().getSaveFileName(
         None, "Save Settings", settings_file

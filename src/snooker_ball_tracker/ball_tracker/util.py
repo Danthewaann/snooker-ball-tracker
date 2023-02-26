@@ -19,11 +19,8 @@ def dist_between_two_balls(
     """Obtains the distance between two balls in millimetres
 
     :param first_ball: first ball
-    :type first_ball: cv2.KeyPoint
     :param second_ball: second ball
-    :type second_ball: cv2.KeyPoint
     :return: distance between `first_ball` and `second_ball` in millimetres
-    :rtype: float
     """
     # create numpy array with keypoint positions
     arr: npt.NDArray[np.float64] = np.array([first_ball.pt, second_ball.pt])
@@ -42,14 +39,10 @@ def get_mask_contours_for_colour(
     """Obtains the colour mask of `colour` from `frame`
 
     :param frame: frame to process
-    :type frame: np.ndarray
     :param colour: colour to extract contours from `frame`
-    :type colour: str
     :param colour_settings: colours settings to obtain colour values from,
                             defaults to s.COLOURS
-    :type colour_settings: dict, optional
     :return: colour mask of `colour` and a list of contours
-    :rtype: tuple
     """
     colour_mask = None
     contours = None
@@ -67,13 +60,9 @@ def transform_frame(frame: Frame | None, width: int) -> Frame | None:
     """Performs initial operations on `frame` before it is properly processed
 
     :param frame: frame to process
-    :type frame: np.ndarray
     :param width: width to resize frame to
-    :type width: int
     :param morph: perform morphology to cleanup noise on binary frame, defaults to False
-    :type morph: bool, optional
     :return: processed `frame`, binary version of `frame` and HSV version of `frame`
-    :rtype: Image
     """
     if frame is not None:
         # resize the frame if width is provided

@@ -8,6 +8,7 @@ build/
 dist/
 *venv*/
 version_file.txt
+Session.vim
 
 resources/videos/*
 !resources/videos/pre-recorded-1.mp4

@@ -19,7 +19,6 @@ class Logger(QtCore.QObject):
         """Balls potted property
 
         :return: balls potted list model
-        :rtype: BallsPottedListModel
         """
         return self._balls_potted
 
@@ -28,7 +27,6 @@ class Logger(QtCore.QObject):
         """White status property
 
         :return: white status
-        :rtype: str
         """
         return (
             self._cur_shot_snapshot.white.is_moving
@@ -42,7 +40,6 @@ class Logger(QtCore.QObject):
         """White status setter
 
         :param value: value to set
-        :type value: str
         """
         if self._cur_shot_snapshot.white:
             self._cur_shot_snapshot.white.is_moving = value
@@ -53,7 +50,6 @@ class Logger(QtCore.QObject):
         """Last shot snapshot property
 
         :return: last shot snapshot model
-        :rtype: SnapShot
         """
         return self._last_shot_snapshot
 
@@ -62,7 +58,6 @@ class Logger(QtCore.QObject):
         """Current shot snapshot property
 
         :return: current shot snapshot model
-        :rtype: SnapShot
         """
         return self._cur_shot_snapshot
 
@@ -71,6 +66,5 @@ class Logger(QtCore.QObject):
         """Temporary snapshot property
 
         :return: temp shot snapshot model
-        :rtype: SnapShot
         """
         return self._temp_snapshot

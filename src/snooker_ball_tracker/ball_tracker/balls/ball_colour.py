@@ -17,7 +17,6 @@ class BallColour(QtCore.QObject):
         for a specific colour
 
         :param keypoints: lists of balls to manage, defaults to None
-        :type keypoints: list, optional
         """
         super().__init__()
         if keypoints:
@@ -30,7 +29,6 @@ class BallColour(QtCore.QObject):
         """Balls property
 
         :return: balls list
-        :rtype: typing.List[Ball]
         """
         return self._balls
 
@@ -39,7 +37,6 @@ class BallColour(QtCore.QObject):
         """Count of balls
 
         :return: count
-        :rtype: int
         """
         return len(self._balls)
 
@@ -54,7 +51,6 @@ class BallColour(QtCore.QObject):
         """Override own Ball list with `balls`
 
         :param balls: list of Ball instances
-        :type balls: typing.List[Ball]
         """
         self._balls.clear()
         self._balls = deepcopy(balls)

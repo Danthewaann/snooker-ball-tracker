@@ -14,7 +14,6 @@ class Ball(QtCore.QObject):
         """Creates an instance of this class that keeps track of an individual ball
 
         :param keypoint: keypoint of ball, defaults to None
-        :type keypoint: cv2.KeyPoint, optional
         """
         super().__init__()
         self._keypoint = keypoint
@@ -24,9 +23,7 @@ class Ball(QtCore.QObject):
         """Return a deepcopy of self
 
         :param memo: memo
-        :type memo: dict
         :return: Ball instance copy of self
-        :rtype: Ball
         """
         if self._keypoint:
             keypoint = cv2.KeyPoint(
@@ -49,7 +46,6 @@ class Ball(QtCore.QObject):
         """Keypoint property
 
         :return: keypoint
-        :rtype: cv2.KeyPoint
         """
         return self._keypoint
 
@@ -58,7 +54,6 @@ class Ball(QtCore.QObject):
         """Count of balls
 
         :return: count
-        :rtype: int
         """
         return self._is_moving
 
@@ -67,7 +62,6 @@ class Ball(QtCore.QObject):
         """Count setter
 
         :param value: value to set
-        :type value: int
         """
         self._is_moving = value
         self.is_movingChanged.emit(self._is_moving)

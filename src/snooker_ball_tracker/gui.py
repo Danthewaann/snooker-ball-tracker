@@ -40,7 +40,6 @@ class GUI:
         """Create GUI argument parser
 
         :return: GUI argument parser
-        :rtype: argparse.ArgumentParser
         """
         parser = argparse.ArgumentParser(
             description="Ball Tracker Video GUI (Only works with videos)"
@@ -61,7 +60,6 @@ class GUI:
         """Run the GUI app
 
         :param args: args parsed from GUI parser
-        :type args: argparse.Namespace
         """
         app = QApplication([])
         icon = QtGui.QIcon(self.icon_path)

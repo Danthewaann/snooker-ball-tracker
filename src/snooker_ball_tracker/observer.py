@@ -19,14 +19,10 @@ class BindingEndpoint(object):
         to which the binding triplet belongs.
 
         :param instance: object to obtain getter and setter from
-        :type instance: object
         :param getter: property or function from object
-        :type getter: Callable[[], Any]
         :param setter: setter or function from object
-        :type setter: Callable[[], Any]
         :param valueChangedSignal: signal from object used to notify that the
                                    underlined property has changed
-        :type valueChangedSignal: QtCore.pyqtSignal
         """
         self.instance_id = id(instance)
         self.instance = instance
@@ -42,7 +38,6 @@ class Observer(QtCore.QObject):
 
         :param bindings: list of tuples representing objects, property names
                          and signal types to bind together, defaults to None
-        :type bindings: List[Tuple[object, str, List[type]]], optional
         """
         super().__init__()
         self.bindings: dict[int, BindingEndpoint] = {}
@@ -62,16 +57,11 @@ class Observer(QtCore.QObject):
         """Creates an endpoint and call bindToEndpoint(endpoint). This is a convenience method.
 
         :param instance: object to obtain getter, setter and changedSignal from
-        :type instance: object
         :param getter: getter of property from object
-        :type getter: Callable[[], Any]
         :param setter: setter of property from object
-        :type setter: Callable[[], Any]
         :param valueChangedSignal: signal from object used to notify that the
                                    underlined property has changed
-        :type valueChangedSignal: QtCore.pyqtSignal
         :param types: list of types to bind against signal, defaults to None
-        :type types: list, optional
         """
         endpoint = BindingEndpoint(instance, getter, setter, valueChangedSignal)
         self.bind_to_endpoint(endpoint, types)
@@ -82,9 +72,7 @@ class Observer(QtCore.QObject):
         """2-way binds the target endpoint to all other registered endpoints.
 
         :param bindingEndpoint: binding endpoint to bind with other endpoints
-        :type bindingEndpoint: BindingEndpoint
         :param types: list of types to bind against signal, defaults to None
-        :type types: list, optional
         """
         self.bindings[bindingEndpoint.instance_id] = bindingEndpoint
         if types:
@@ -117,11 +105,8 @@ class Observer(QtCore.QObject):
         - changedSignal: propertyNameChanged
 
         :param instance: object to obtain getter/setter/properties from
-        :type instance: object
         :param propertyName: name of property to obtain getter/setter from
-        :type propertyName: str
         :param types: list of types to bind against signal, defaults to None
-        :type types: list, optional
         """
         getterAttribute = getattr(instance, propertyName)
 

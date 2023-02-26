@@ -99,7 +99,6 @@ class MainView(QtWidgets.QMainWindow):
         accepting the close event
 
         :param event: close event instance
-        :type event: QtGui.QCloseEvent
         """
         self.video_player.destroy_video_threads()
         event.accept()

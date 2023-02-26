@@ -23,14 +23,10 @@ class VideoFileStream(FileVideoStream, VideoStream):  # type: ignore[misc]
         separate thread and performs some basic transformations
 
         :param path: file path to video file to process
-        :type path: str
         :param video_player: video player to obtain transformation settings from
-        :type video_player: VideoPlayer
         :param colour_settings: colour settings to obtain colours from
-        :type colour_settings: ColourDetectionSettings
         :param queue_size: max number of frames to process and store at a time,
                            defaults to 128
-        :type queue_size: int, optional
         """
         try:
             video_file_stream = cv2.VideoCapture(path)

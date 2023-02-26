@@ -13,10 +13,8 @@ class BallDetectionSettingGroup(QtCore.QObject):
         setting group that is used for ball detection by the ball tracker
 
         :param name: name of ball detection setting group
-        :type name: str
         :param multiplier: multiplier used to scale min/max values for sliders,
                            defaults to 100
-        :type multiplier: int, optional
         """
         super().__init__()
         self._name = name
@@ -30,7 +28,6 @@ class BallDetectionSettingGroup(QtCore.QObject):
         """Name property
 
         :return: name
-        :rtype: str
         """
         return self._name
 
@@ -39,7 +36,6 @@ class BallDetectionSettingGroup(QtCore.QObject):
         """Multiplier property used to scale min/max values for sliders
 
         :return: multiplier
-        :rtype: int
         """
         return self._multiplier
 
@@ -50,7 +46,6 @@ class BallDetectionSettingGroup(QtCore.QObject):
         """Min value property
 
         :return: min value
-        :rtype: int
         """
         return self._min_value
 
@@ -59,7 +54,6 @@ class BallDetectionSettingGroup(QtCore.QObject):
         """Min value setter
 
         :param value: value to set
-        :type value: int
         """
         self._min_value = value
         self.min_valueChanged[str, int].emit(
@@ -74,7 +68,6 @@ class BallDetectionSettingGroup(QtCore.QObject):
         """Max value property
 
         :return: max value
-        :rtype: int
         """
         return self._max_value
 
@@ -83,7 +76,6 @@ class BallDetectionSettingGroup(QtCore.QObject):
         """Max value setter
 
         :param value: value to set
-        :type value: int
         """
         self._max_value = value
         self.max_valueChanged[str, int].emit(
@@ -98,7 +90,6 @@ class BallDetectionSettingGroup(QtCore.QObject):
         """Filter by property
 
         :return: filter by
-        :rtype: bool
         """
         return self._filter_by
 
@@ -107,7 +98,6 @@ class BallDetectionSettingGroup(QtCore.QObject):
         """Filter by setter
 
         :param value: value to set
-        :type value: int
         """
         self._filter_by = value
         self.filter_byChanged[str, bool].emit(
@@ -119,7 +109,6 @@ class BallDetectionSettingGroup(QtCore.QObject):
         """Update properties with values in `settings`
 
         :param settings: settings to obtain values from
-        :type settings: dict
         """
         self.min_value = settings["MIN_" + self._name.upper()] * self._multiplier
         self.max_value = settings["MAX_" + self._name.upper()] * self._multiplier

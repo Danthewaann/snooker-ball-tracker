@@ -25,7 +25,6 @@ class HSVColour(QtCore.QObject):
         """Get lower colour values concated into an array
 
         :return: lower colour values
-        :rtype: np.ndarray
         """
         return np.array([self._l_Hue, self._l_Saturation, self._l_Value])
 
@@ -33,7 +32,6 @@ class HSVColour(QtCore.QObject):
         """Get upper colour values concated into an array
 
         :return: upper colour values
-        :rtype: np.ndarray
         """
         return np.array([self._u_Hue, self._u_Saturation, self._u_Value])
 
@@ -44,7 +42,6 @@ class HSVColour(QtCore.QObject):
         """Lower hue property
 
         :return: lower hue
-        :rtype: int
         """
         return self._l_Hue
 
@@ -53,7 +50,6 @@ class HSVColour(QtCore.QObject):
         """Lower hue setter
 
         :param value: value to set
-        :type value: int
         """
         self._l_Hue = value
         self.l_HueChanged.emit(self._l_Hue)
@@ -65,7 +61,6 @@ class HSVColour(QtCore.QObject):
         """Upper hue property
 
         :return: upper hue
-        :rtype: int
         """
         return self._u_Hue
 
@@ -74,7 +69,6 @@ class HSVColour(QtCore.QObject):
         """Upper hue setter
 
         :param value: value to set
-        :type value: int
         """
         self._u_Hue = value
         self.u_HueChanged.emit(self._u_Hue)
@@ -86,7 +80,6 @@ class HSVColour(QtCore.QObject):
         """Lower saturation property
 
         :return: lower saturation
-        :rtype: int
         """
         return self._l_Saturation
 
@@ -95,7 +88,6 @@ class HSVColour(QtCore.QObject):
         """Lower saturation setter
 
         :param value: value to set
-        :type value: int
         """
         self._l_Saturation = value
         self.l_SaturationChanged.emit(self._l_Saturation)
@@ -107,7 +99,6 @@ class HSVColour(QtCore.QObject):
         """Upper saturation property
 
         :return: upper saturation
-        :rtype: int
         """
         return self._u_Saturation
 
@@ -116,7 +107,6 @@ class HSVColour(QtCore.QObject):
         """Upper saturation setter
 
         :param value: value to set
-        :type value: int
         """
         self._u_Saturation = value
         self.u_SaturationChanged.emit(self._u_Saturation)
@@ -128,7 +118,6 @@ class HSVColour(QtCore.QObject):
         """Lower value property
 
         :return: lower value
-        :rtype: int
         """
         return self._l_Value
 
@@ -137,7 +126,6 @@ class HSVColour(QtCore.QObject):
         """Lower value setter
 
         :param value: value to set
-        :type value: int
         """
         self._l_Value = value
         self.l_ValueChanged.emit(self._l_Value)
@@ -149,7 +137,6 @@ class HSVColour(QtCore.QObject):
         """Upper value property
 
         :return: upper value
-        :rtype: int
         """
         return self._u_Value
 
@@ -158,7 +145,6 @@ class HSVColour(QtCore.QObject):
         """Upper value setter
 
         :param value: value to set
-        :type value: int
         """
         self._u_Value = value
         self.u_ValueChanged.emit(self._u_Value)
@@ -167,7 +153,6 @@ class HSVColour(QtCore.QObject):
         """Update colour properties with provided colour values
 
         :param colour: colour dict with lower and upper range values
-        :type colour: dict
         """
         self.l_Hue = colour["LOWER"][0]
         self.l_Saturation = colour["LOWER"][1]

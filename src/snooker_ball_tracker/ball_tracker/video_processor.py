@@ -26,16 +26,11 @@ class VideoProcessor(threading.Thread):
         passing them to the video player to display
 
         :param video_stream: video stream that produces images to process
-        :type video_stream: VideoStream
         :param video_player: video player instance that we pass processed frames to
-        :type video_player: VideoPlayer
         :param ball_tracker: ball tracker that we pass frames obtained from
                              VideoStream to
-        :type ball_tracker: BallTracker
         :param lock: lock used to manage access to VideoStream
-        :type lock: threading.Lock
         :param stop_event: stop event used to shut down the VideoProcessor
-        :type stop_event: threading.Event
         """
         super().__init__(name=self.__class__.__name__, daemon=True)
         self.__logger = ball_tracker.logger

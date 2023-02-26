@@ -87,11 +87,8 @@ class BallTracker:
         provided to it and maps colours to each ball detected.
 
         :param logger: logger that contains snapshots to log to, defaults to None
-        :type logger: Logger, optional
         :param colour_settings: colour detection settings instance, defaults to None
-        :type colour_settings: ColourDetectionSettings, optional
         :param ball_settings: ball detection settings instance, defaults to None
-        :type ball_settings: BallDetectionSettings, optional
         :param **kwargs: dictionary of options to use to configure
                          the underlying blob detector to detect balls with
         """
@@ -118,7 +115,6 @@ class BallTracker:
 
         :return: table comparision between `last_shot_snapshot`
                  and `cur_shot_snapshot` in a string format
-        :rtype: str
         """
         report = "--------------------------------------\n"
         report += "PREVIOUS SNAPSHOT | CURRENT SNAPSHOT \n"
@@ -140,9 +136,7 @@ class BallTracker:
         """Draws each ball from `balls` onto `frame`
 
         :param frame: frame to process
-        :type frame: np.ndarray
         :param balls: list of balls to draw onto `frame`
-        :type balls: Keypoints
         """
         for ball_colour, ball_list in balls.items():
             for ball in ball_list:
@@ -168,15 +162,9 @@ class BallTracker:
         it is deemed to be the same ball and the ball in `balls` is updated
         with the ball colour info from `cur_balls`
 
-        :param balls: list of detected balls
-        :param cur_ball: list of current balls that are were already detected
-
         :param balls: list of newly detected balls
-        :type balls: Keypoints
         :param cur_balls: list of balls that are were detected previously
-        :type cur_balls: Keypoints
         :return: list of newly detected balls mapped to their appropriate colours
-        :rtype: Keypoints
         """
         for cur_ball in cur_balls:
             matched = False
@@ -221,13 +209,10 @@ class BallTracker:
         Temporary SnapShot with the Current SnapShot
 
         :param frame: frame to process
-        :type frame: np.ndarray
         :param show_threshold: if True return a binary version of `frame`,
                                defaults to False
-        :type show_threshold: bool, optional
         :return: processed frame, ball potted if any were and the number
                                   of balls potted
-        :rtype: Tuple[Image, str, int]
         """
         ball_potted: str | None = None
         pot_count = 0
@@ -362,14 +347,10 @@ class BallTracker:
 
         :param binary_frame: binary frame where detected balls are
                              white on a black background
-        :type binary_frame: np.ndarray
         :param hsv_frame: HSV frame to detect colours with
-        :type hsv_frame: np.ndarray
         :return: list of keypoints mapped to an appropriate colour
                  found in `binary_frame`
-        :rtype: Keypoints
         """
-
         balls: Keypoints = {
             colour: list() for colour in self.colour_settings.settings["BALL_COLOURS"]
         }
@@ -425,19 +406,13 @@ class BallTracker:
         """Determine if `keypoint` is a ball of `colour`
 
         :param colour: colour to check `keypoint` against
-        :type colour: str
         :param colour_contours: contours of `colour`
-        :type colour_contours: List[np.ndarray]
         :param keypoint: keypoint to check
-        :type keypoint: cv2.KeyPoint
         :param balls: list of balls already detected
-        :type balls: Keypoints
         :param biggest_contour: use only the biggest contour in `colour_contours`
                                 to determine if `keypoint` is a ball of `colour`,
                                 defaults to False
-        :type biggest_contour: bool, optional
         :return: True if `keypoint` is within `contour`, False otherwise
-        :rtype: bool
         """
         if len(colour_contours) > 1 and biggest_contour:
             colour_contour = max(colour_contours, key=max_table_bound)
@@ -455,11 +430,8 @@ class BallTracker:
         """Determine if `keypoint` is contained within `contour`
 
         :param keypoint: keypoint to check
-        :type keypoint: cv2.KeyPoint
         :param contour: contour to check
-        :type contour: np.ndarray
         :return: True if `keypoint` is within `contour`, False otherwise
-        :rtype: bool
         """
         dist = cv2.pointPolygonTest(contour, keypoint.pt, False)
         return True if dist == 1 else False
@@ -470,13 +442,9 @@ class BallTracker:
         """Detects a colour in `frame` based on the `lower` and `upper` HSV values
 
         :param frame: frame to process
-        :type frame: np.ndarray
         :param lower: lower range of colour HSV values
-        :type lower: np.ndarray
         :param upper: upper range of colour HSV values
-        :type upper: np.ndarray
         :return: colour mask of `lower` and `upper` HSV values and a list of contours
-        :rtype: tuple
         """
         colour_mask = cv2.inRange(frame, lower, upper)
         contours, _ = cv2.findContours(
@@ -491,11 +459,8 @@ class BallTracker:
         with `second_snapshot` white ball
 
         :param first_snapshot: first snapshot
-        :type first_snapshot: SnapShot
         :param second_snapshot: second snapshot
-        :type second_snapshot: SnapShot
         :return: True if the shot has started, otherwise False
-        :rtype: bool
         """
         if first_snapshot.colours["WHITE"].count > 0:
             if (
@@ -520,11 +485,8 @@ class BallTracker:
         with `second_snapshot` white ball
 
         :param first_snapshot: first snapshot
-        :type first_snapshot: SnapShot
         :param second_snapshot: second snapshot
-        :type second_snapshot: SnapShot
         :return: True if the shot has finished, otherwise False
-        :rtype: bool
         """
         if first_snapshot.colours["WHITE"].count > 0:
             if (
@@ -548,11 +510,8 @@ class BallTracker:
         """Determine if a specific ball has stopped
 
         :param first_ball: first ball
-        :type first_ball: cv2.KeyPoint
         :param second_ball: second ball
-        :type second_ball: cv2.KeyPoint
         :return: True if the ball has stopped, otherwise False
-        :rtype: bool
         """
         dist = dist_between_two_balls(first_ball, second_ball)
         return True if dist <= 0.1 else False
@@ -563,11 +522,8 @@ class BallTracker:
         """Determine if a specific ball has moved
 
         :param first_ball: first ball
-        :type first_ball: cv2.KeyPoint
         :param second_ball: second ball
-        :type second_ball: cv2.KeyPoint
         :return: True if the ball has moved, otherwise False
-        :rtype: bool
         """
         dist = dist_between_two_balls(first_ball, second_ball)
         return True if dist > 0.1 else False
@@ -578,10 +534,8 @@ class BallTracker:
         """Creates the table boundary mask from `frame`
 
         :param frame: frame to process
-        :type frame: np.ndarray
         :param contours: list of contours to possibly use for the table boundary,
                          defaults to None
-        :type contours: typing.List[np.ndarray], optional
         """
         # Create mask where white is what we want, black otherwise
         self.table_bounds_mask = np.zeros_like(frame)
@@ -602,9 +556,7 @@ class BallTracker:
         """Fill `frame` using the detected table boundary
 
         :param frame: frame to process
-        :type frame: np.ndarray
         :return: frame filled around table boundary
-        :rtype: np.ndarray
         """
         # Extract out the object and place into output image
         out: Frame = np.zeros(frame.shape).astype(frame.dtype)
@@ -616,9 +568,7 @@ class BallTracker:
         """Crops `frame` using the detected table boundary
 
         :param frame: frame to process
-        :type frame: np.ndarray
         :return: frame cropped around table boundary
-        :rtype: np.ndarray
         """
         # Extract out the object and place into output image
         out: Frame = np.zeros(frame.shape).astype(frame.dtype)

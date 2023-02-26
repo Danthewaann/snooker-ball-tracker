@@ -38,7 +38,6 @@ class BallDetectionSettings(QtCore.QObject):
         """Copy of ball detection settings loaded from settings
 
         :return: blob detector
-        :rtype: dict
         """
         return self._settings
 
@@ -47,7 +46,6 @@ class BallDetectionSettings(QtCore.QObject):
         """Settings setter
 
         :param value: value to set
-        :type value: dict
         """
         for model in self.groups.values():
             model.update(value)
@@ -56,9 +54,7 @@ class BallDetectionSettings(QtCore.QObject):
         """Update settings key value setting
 
         :param key: name of setting to update
-        :type key: str
         :param value: value to apply to setting
-        :type value: typing.Any
         """
         self._settings[key] = value
         self.settingsChanged.emit()

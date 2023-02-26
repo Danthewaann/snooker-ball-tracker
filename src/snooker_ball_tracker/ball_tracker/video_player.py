@@ -47,7 +47,6 @@ class VideoPlayer(QtCore.QObject):
         """Width property
 
         :return: player width
-        :rtype: int
         """
         return self._width
 
@@ -56,7 +55,6 @@ class VideoPlayer(QtCore.QObject):
         """Width setter
 
         :param value: value to set
-        :type value: int
         """
         self._width = value
         self.widthChanged.emit(self._width)
@@ -68,7 +66,6 @@ class VideoPlayer(QtCore.QObject):
         """Height property
 
         :return: player height
-        :rtype: int
         """
         return self._height
 
@@ -77,7 +74,6 @@ class VideoPlayer(QtCore.QObject):
         """Height setter
 
         :param value: value to set
-        :type value: int
         """
         self._height = value
         self.heightChanged.emit(self._height)
@@ -89,7 +85,6 @@ class VideoPlayer(QtCore.QObject):
         """Play property
 
         :return: play video
-        :rtype: bool
         """
         return self._play
 
@@ -98,7 +93,6 @@ class VideoPlayer(QtCore.QObject):
         """Play setter
 
         :param value: value to set
-        :type value: bool
         """
         self._play = value
         self.playChanged.emit(self._play)
@@ -110,7 +104,6 @@ class VideoPlayer(QtCore.QObject):
         """Crop frames property
 
         :return: crop frames
-        :rtype: bool
         """
         return self._crop_frames
 
@@ -119,7 +112,6 @@ class VideoPlayer(QtCore.QObject):
         """Crop frames setter
 
         :param value: value to set
-        :type value: bool
         """
         self._crop_frames = value
         self.crop_framesChanged.emit(self._crop_frames)
@@ -131,7 +123,6 @@ class VideoPlayer(QtCore.QObject):
         """Show threshold property
 
         :return: show threshold
-        :rtype: bool
         """
         return self._show_threshold
 
@@ -140,7 +131,6 @@ class VideoPlayer(QtCore.QObject):
         """Show threshold setter
 
         :param value: value to set
-        :type value: bool
         """
         self._show_threshold = value
         self.show_thresholdChanged.emit(self._show_threshold)
@@ -152,7 +142,6 @@ class VideoPlayer(QtCore.QObject):
         """Perform morph property
 
         :return: perform morph
-        :rtype: bool
         """
         return self._perform_morph
 
@@ -161,7 +150,6 @@ class VideoPlayer(QtCore.QObject):
         """Perform morph setter
 
         :param value: value to set
-        :type value: bool
         """
         self._perform_morph = value
         self.perform_morphChanged.emit(self._perform_morph)
@@ -173,7 +161,6 @@ class VideoPlayer(QtCore.QObject):
         """Detect table property
 
         :return: detect table
-        :rtype: bool
         """
         return self._detect_table
 
@@ -182,7 +169,6 @@ class VideoPlayer(QtCore.QObject):
         """Detect table setter
 
         :param value: value to set
-        :type value: bool
         """
         self._detect_table = value
         self.detect_tableChanged.emit(self._detect_table)
@@ -194,7 +180,6 @@ class VideoPlayer(QtCore.QObject):
         """Queue size property
 
         :return: queue size
-        :rtype: int
         """
         return self._queue_size
 
@@ -203,7 +188,6 @@ class VideoPlayer(QtCore.QObject):
         """Queue size setter
 
         :param value: value to set
-        :type value: int
         """
         self._queue_size = value
         self.queue_sizeChanged.emit(self._queue_size)
@@ -231,7 +215,6 @@ class VideoPlayer(QtCore.QObject):
         """Frame property
 
         :return: output frame
-        :rtype: np.ndarray
         """
         return self._output_frame
 
@@ -240,7 +223,6 @@ class VideoPlayer(QtCore.QObject):
         """Output frame setter
 
         :param value: value to set
-        :type value: np.ndarray
         """
         self._output_frame = value
         self.output_frameChanged.emit(self._output_frame)
@@ -252,7 +234,6 @@ class VideoPlayer(QtCore.QObject):
         """HSV frame property
 
         :return: hsv frame
-        :rtype: np.ndarray
         """
         return self._hsv_frame
 
@@ -261,7 +242,6 @@ class VideoPlayer(QtCore.QObject):
         """HSV frame setter
 
         :param value: value to set
-        :type value: np.ndarray
         """
         self._hsv_frame = value
         self.hsv_frameChanged.emit(self._hsv_frame)
@@ -279,7 +259,6 @@ class VideoPlayer(QtCore.QObject):
         to display to the user.
 
         :param video_file: video file to read from, defaults to None
-        :type video_file: str, optional
         :raises TypeError: if `video_file` isn't an actual video file
         """
         if video_file and "video" not in magic.from_file(

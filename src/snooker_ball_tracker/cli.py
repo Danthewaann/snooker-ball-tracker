@@ -31,7 +31,6 @@ class CLI:
         """Create CLI argument parser
 
         :return: CLI argument parser
-        :rtype: argparse.ArgumentParser
         """
         parser = argparse.ArgumentParser(
             description="Ball Tracker Image CLI (Only works with images)"
@@ -96,11 +95,8 @@ class CLI:
         extract colour values from pixel located using `x_pos` and `y_pos`
 
         :param event: event type
-        :type event: int
         :param x_pos: x position in frame
-        :type x_pos: int
         :param y_pos: y position in frame
-        :type y_pos: int
         """
         if event == cv2.EVENT_LBUTTONDOWN:
             if not self.image:
@@ -129,7 +125,6 @@ class CLI:
         """Run the CLI app
 
         :param args: args parsed from CLI parser
-        :type args: argparse.Namespace
         :raises OSError: if `settings` arg failed to load
         :raises OSError: if `image` arg failed to load
         """

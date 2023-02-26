@@ -46,7 +46,6 @@ class ColourDetectionSettings(QtCore.QObject):
         """Copy of colour values loaded from settings
 
         :return: colours
-        :rtype: dict
         """
         return self._settings["COLOURS"]
 
@@ -55,7 +54,6 @@ class ColourDetectionSettings(QtCore.QObject):
         """Colours setter
 
         :param value: value to set
-        :type value: dict
         """
         self._settings["COLOURS"] = value
         if self._selected_colour != "NONE":
@@ -66,7 +64,6 @@ class ColourDetectionSettings(QtCore.QObject):
         """Copy of colour detection settings loaded from settings
 
         :return: settings
-        :rtype: dict
         """
         return self._settings
 
@@ -75,7 +72,6 @@ class ColourDetectionSettings(QtCore.QObject):
         """Settings setter
 
         :param value: value to set
-        :type value: dict
         """
         for colour in self.colours:
             self.colours[colour] = value["COLOURS"][colour]
@@ -89,7 +85,6 @@ class ColourDetectionSettings(QtCore.QObject):
         """Colour model used to store temporary values in sliders
 
         :return: colour model
-        :rtype: HSVColourModel
         """
         return self._colour_model
 
@@ -100,7 +95,6 @@ class ColourDetectionSettings(QtCore.QObject):
         """Mask selected colour in frames if True
 
         :return: colour mask
-        :rtype: bool
         """
         return self._colour_mask
 
@@ -109,7 +103,6 @@ class ColourDetectionSettings(QtCore.QObject):
         """Colour mask setter
 
         :param value: value to set
-        :type value: bool
         """
         self._colour_mask = value
         self.colour_maskChanged.emit(self._colour_mask)
@@ -121,7 +114,6 @@ class ColourDetectionSettings(QtCore.QObject):
         """Selected colour that we are currently detecting in frames
 
         :return: selected colour
-        :rtype: str
         """
         return self._selected_colour
 
@@ -130,7 +122,6 @@ class ColourDetectionSettings(QtCore.QObject):
         """Selected colour setter
 
         :param value: value to set
-        :type value: str
         """
         self._selected_colour = value.upper()
 
@@ -147,11 +138,8 @@ class ColourDetectionSettings(QtCore.QObject):
         """Update specific colour range value
 
         :param _range: either `LOWER` or `UPPER`
-        :type _range: str
         :param index: index from 0 to 2
-        :type index: int
         :param value: value to set to colour value
-        :type value: int
         """
         if self._selected_colour != "NONE":
             self.colours[self._selected_colour][_range][index] = value

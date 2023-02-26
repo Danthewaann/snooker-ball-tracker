@@ -121,9 +121,7 @@ class Settings:
         """Load settings from provided json file.
 
         :param settings_file: path to json file to read from
-        :type settings_file: str
         :return: True/False if load operation succeeded/failed and error message
-        :rtype: tuple
         """
         try:
             with open(settings_file, "r") as fp:
@@ -139,11 +137,8 @@ class Settings:
         """Save settings to provided json file.
 
         :param settings_file: path to json to write to
-        :type settings_file: str
         :param settings: settings to save, defaults to None
-        :type settings: dict, optional
         :return: True/False if save operation succeeded/failed and error message
-        :rtype: tuple
         """
         settings_to_save = self.__SETTINGS
         if settings:
@@ -168,9 +163,7 @@ class Settings:
         get base attribute
 
         :param key: setting key to get
-        :type key: str
         :return: value of setting
-        :rtype: Any
         """
         try:
             return self.__SETTINGS[key]

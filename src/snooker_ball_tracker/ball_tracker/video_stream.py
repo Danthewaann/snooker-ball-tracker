@@ -21,9 +21,7 @@ class VideoStream(ABC):
         """Performs initial operations on `frame` before it is properly processed
 
         :param frame: frame to process
-        :type frame: np.ndarray
         :return: processed frame
-        :rtype: np.ndarray
         """
         if frame is not None:
             # resize the frame if width is provided
