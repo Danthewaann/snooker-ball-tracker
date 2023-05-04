@@ -10,7 +10,7 @@ sbt-video = 'snooker_ball_tracker.gui:main'
 sbt-image = "snooker_ball_tracker.cli:main"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.11"
+python = ">=3.8,<3.9"
 numpy = "^1.22.0"
 imutils = "^0.5.4"
 python-magic = "^0.4.24"

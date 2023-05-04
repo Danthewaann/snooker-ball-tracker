@@ -5,7 +5,7 @@ This project is a prototype that I developed in Python to demo an idea I had for
 The program allows you to configure all the settings that are used by the ball tracker, from how it detects colours to how it detects balls. It also provides features that allows you to see what the ball trackers sees. 
 
 ## Requirements
-- [Python](https://www.python.org/) version 3.8 or greater
+- [Python](https://www.python.org/) version 3.8
 - [Poetry](https://python-poetry.org/)
 
 ### From source
