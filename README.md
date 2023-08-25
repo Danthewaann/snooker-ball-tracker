@@ -6,7 +6,7 @@ The program allows you to configure all the settings that are used by the ball t
 
 ## Requirements
 - [Python](https://www.python.org/) version 3.8
-- [Poetry](https://python-poetry.org/)
+- [Poetry](https://python-poetry.org/) version 1.5.0
 
 ### From source
 

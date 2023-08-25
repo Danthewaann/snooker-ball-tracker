@@ -16,6 +16,7 @@ imutils = "^0.5.4"
 python-magic = "^0.4.24"
 PyQt5 = "5.14.1"
 opencv-python = "4.5.2.52"
+python-magic-bin = {version = "0.4.14", platform = "win32"}
 
 [tool.poetry.dev-dependencies]
 tomlkit = "^0.7.2"
