@@ -20,7 +20,7 @@ python-magic-bin = {version = "0.4.14", platform = "win32"}
 
 [tool.poetry.dev-dependencies]
 tomlkit = "^0.7.2"
-pyinstaller = "^4.5.1"
+pyinstaller = "^5.13.1"
 pyinstaller-versionfile = "^2.0.0"
 mypy = "^0.931"
 PyQt5-stubs = "^5.15.2"
